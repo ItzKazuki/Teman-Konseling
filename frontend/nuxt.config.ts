@@ -1,0 +1,37 @@
+import tailwindcss from "@tailwindcss/vite";
+
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  compatibilityDate: "2025-07-15",
+  devtools: { enabled: true },
+  css: ["~/assets/css/main.css"],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
+  runtimeConfig: {
+    appEnv: process.env.APP_ENV || "production",
+    debug: process.env.APP_ENV !== "production",
+
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_URL ?? "http://localhost:8000",
+      apiVersion: process.env.NUXT_PUBLIC_API_VERSION ?? "v1",
+      appLocale: process.env.NUXT_APP_LOCALE ?? "id-ID",
+      appTimezone: process.env.NUXT_APP_TIMEZONE ?? "Asia/Jakarta",
+    },
+  },
+
+  app: {
+    head: {
+      title: process.env.NUXT_APP_NAME,
+    },
+  },
+
+  icon: {
+    mode: "css",
+    cssLayer: "base",
+  },
+
+  modules: ["@pinia/nuxt", "@nuxt/icon"],
+});
