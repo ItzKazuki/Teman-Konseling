@@ -77,4 +77,25 @@ return [
         public_path('storage') => storage_path('app/public'),
     ],
 
+    /*
+    |-----------------------------------------------------------------------
+    | Allowed File Types
+    |-----------------------------------------------------------------------
+    |
+    | Here is a spesific allowed file types for upload validation.
+    |
+    */
+
+    'allowed_types' => [
+        'image/jpeg',
+        'image/png',
+        'image/jpg',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain',
+    ],
+
 ];
