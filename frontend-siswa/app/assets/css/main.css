@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+@import 'tailwindcss';
+
+@theme {
+  /* font section */
+  --font-sans: 'Plus Jakarta Sans', sans-serif; /* Default font */
+
+  --font-poppins: 'Poppins', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  /* end font section */
+}
+
+@layer components {
+  .input-field {
+    @apply w-full bg-white placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease-in focus:outline-none focus:border-blue-500 hover:border-blue-300 shadow-sm focus:shadow disabled:cursor-not-allowed disabled:bg-gray-100 disabled:border-gray-300;
+  }
+
+  /* Jika Anda ingin border merah tetap ada saat fokus */
+  .input-field.input-error:focus {
+    /* Override focus:border-blue-500 */
+    @apply border-red-500 ring-red-200 focus:ring-1;
+    /* Tambahkan ring (cincin) merah untuk visual fokus yang lebih jelas */
+  }
+
+  /* Jika Anda ingin menghilangkan efek hover biru saat error */
+  .input-field.input-error:hover {
+    /* Override hover:border-blue-300 */
+    @apply border-red-500;
+  }
+
+  /* * =======================================================
+   * BUTTON BASE & SIZES
+   * =======================================================
+   */
+  .btn-base {
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Button Sizes */
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+  .btn-md {
+    @apply px-4 py-2 text-sm;
+  }
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+  /* Ini adalah size untuk tombol submit full width (menggantikan .btn-submit) */
+  .btn-full {
+    @apply w-full py-3 sm:py-4 text-base;
+  }
+
+  /* * =======================================================
+   * BUTTON VARIANTS (Warna & Gaya)
+   * =======================================================
+   */
+
+  /* 1. Primary Button (untuk aksi utama) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-blue-700 text-white shadow-md hover:bg-blue-800 focus:ring-blue-500;
+  }
+  .btn-primary.btn-full {
+    @apply w-full py-3 sm:py-4 bg-blue-800 text-white rounded-lg font-semibold hover:bg-blue-900 focus:ring-blue-500;
+  }
+
+  /* 2. Secondary Button (Gaya abu-abu netral/sekunder) */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-400;
+  }
+
+  /* 3. Danger Button (Untuk aksi destruktif) */
+  .btn-danger {
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-red-600 text-white shadow-md hover:bg-red-700 focus:ring-red-500;
+  }
+
+  /* 4. Outline Button (Transparan dengan border) */
+  .btn-outline {
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-white border border-blue-500 text-blue-600 hover:bg-blue-50 focus:ring-blue-300;
+  }
+  .btn-outline.btn-danger {
+    /* Menggunakan base utilitas yang sama, hanya override warna */
+    @apply border-red-500 text-red-600 hover:bg-red-50 focus:ring-red-300;
+  }
+
+  /* 5. Ghost Button (Hanya teks, tanpa border/background yang kuat) */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-transparent text-blue-600 hover:bg-blue-50 focus:ring-blue-300;
+  }
+  .btn-ghost.btn-danger {
+    /* Menggunakan base utilitas yang sama, hanya override warna */
+    @apply text-red-600 hover:bg-red-50 focus:ring-red-300;
+  }
+}
+
+@utility no-scrollbar {
+  @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
+
+@layer utilities {
+  .center-flex {
+    @apply flex items-center justify-center;
+  }
+
+  .space-between {
+    @apply flex items-center justify-between;
+  }
+
+  .card {
+    @apply bg-white shadow-md rounded-xl p-4 sm:p-6 transition hover:shadow-lg;
+  }
+
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .divider {
+    @apply border-b border-slate-200 my-4;
+  }
+}
+
+@layer utilities {
+  .heading {
+    @apply text-2xl font-semibold text-slate-800;
+  }
+
+  .subheading {
+    @apply text-lg text-slate-600 font-medium;
+  }
+
+  .text-link {
+    @apply text-blue-600 hover:text-blue-700 underline-offset-2 hover:underline;
+  }
+
+  .truncate-text {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  .muted {
+    @apply text-slate-500 text-sm;
+  }
+
+  .no-spinner::-webkit-inner-spin-button,
+  .no-spinner::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  .fade-in {
+    @apply opacity-0 animate-[fadeIn_0.4s_ease-in-out_forwards];
+  }
+
+  .scale-hover {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@layer components {
+  .btn-outline {
+    @apply border border-blue-800 text-blue-800 hover:bg-blue-800 hover:text-white rounded-lg font-semibold py-2 px-4 transition;
+  }
+
+  .btn-disabled {
+    @apply bg-gray-300 text-gray-500 cursor-not-allowed;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:border-red-600 focus:ring-red-300;
+  }
+
+  .form-label {
+    @apply block text-xs font-medium text-slate-700 mb-1;
+  }
+}
+
+@layer utilities {
+  .shadow-soft {
+    @apply shadow-md hover:shadow-lg transition-shadow;
+  }
+
+  .rounded-xl-lg {
+    @apply rounded-xl sm:rounded-2xl;
+  }
+
+  .blur-bg {
+    @apply backdrop-blur-md bg-white/70;
+  }
+
+  .transition-base {
+    @apply transition duration-300 ease-in-out;
+  }
+}
