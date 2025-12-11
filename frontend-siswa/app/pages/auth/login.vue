@@ -1,44 +1,111 @@
 <template>
-  <div class="min-h-screen flex flex-col justify-center items-center p-4">
-    <div class="w-full max-w-md">
+  <div class="w-full max-w-sm sm:max-w-md bg-white p-6 sm:p-8 md:p-10">
 
-      <div class="flex justify-center mb-8">
-        <img src="/static/teman-konseling-md.svg" alt="Logo Ilustrator" class="h-10 w-auto" />
+    <div class="flex justify-center mb-10">
+      <img src="/static/teman-konseling-md.svg" alt="Logo Teman Konseling" class="h-10 w-auto">
+    </div>
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Hi, Welcome!</h1>
+
+    <form class="space-y-6" @submit.prevent="handleLogin">
+
+      <div>
+        <label for="email" class="font-normal text-base block mb-1">Email address</label>
+        <input id="email" type="email"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:border-gray-500 focus:ring-0 focus:outline-none placeholder-gray-400"
+          placeholder="Your email">
       </div>
 
-      <div class="flex flex-col space-y-7">
-        <h1 class="text-3xl font-bold text-center">Hi, Welcome!</h1>
-
-        <form class="space-y-5" @submit.prevent="handleLogin">
-          
-          <div>
-            <label for="email" class="font-light text-sm block mb-1">Email</label>
-            <input id="email" type="email" class="w-full border border-gray-300 p-3 rounded-lg focus:border-gray-600 focus:outline-none"
-              placeholder="Your email">
-          </div>
-
-          <div>
-            <label for="password" class="font-light text-sm block mb-1">Password</label>
-            <input id="password" type="password" class="w-full border border-gray-300 p-3 rounded-lg focus:border-gray-600 focus:outline-none"
-              placeholder="•••••••••••">
-          </div>
-
-          <button type="submit" class="w-full py-4 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 focus:ring-2 focus:ring-primary-400">Login</button>
-        </form>
+      <div class="relative">
+        <label for="password" class="font-normal text-base block mb-1">Password</label>
+        <input id="password" :type="passwordFieldType"
+          class="w-full border border-gray-300 p-3 pr-10 rounded-lg focus:border-gray-500 focus:ring-0 focus:outline-none placeholder-gray-400"
+          placeholder="Password">
+        <button type="button" @click="togglePasswordVisibility"
+          class="absolute inset-y-0 right-0 top-6 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+          <svg v-if="passwordFieldType === 'password'" class="w-5 h-5" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+            </path>
+          </svg>
+          <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7 1.274-4.057 5.065-7 9.542-7 1.141 0 2.228.188 3.239.52M1 1l22 22">
+            </path>
+          </svg>
+        </button>
       </div>
 
-      <div class="text-center mt-6">
-        <h4 class="text-gray-500 font-light text-sm">Don’t have an account? 
-          <NuxtLink to="/auth/register" class="text-black underline font-medium">Sign up</NuxtLink>
-        </h4>
+      <div class="flex justify-between items-center text-sm">
+        <div class="flex items-center">
+          <input id="remember-me" name="remember-me" type="checkbox"
+            class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+          <label for="remember-me" class="ml-2 block text-gray-700">Remember me</label>
+        </div>
+        <NuxtLink to="/auth/forgot-password" class="font-medium text-primary-600 hover:text-primary-700">
+          Forgot password?
+        </NuxtLink>
       </div>
+
+      <button type="submit"
+        class="w-full py-3.5 bg-primary-600 text-white rounded-lg font-semibold shadow-md hover:bg-primary-700 focus:ring-2 focus:ring-primary-400 transition duration-150">
+        Log in
+      </button>
+    </form>
+
+    <!-- <div class="flex items-center my-6">
+        <div class="grow border-t border-gray-300"></div>
+        <span class="shrink mx-4 text-gray-500 text-sm">Or with</span>
+        <div class="grow border-t border-gray-300"></div>
+      </div>
+
+      <div class="flex space-x-4">
+        
+        <button class="w-1/2 flex items-center justify-center py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition duration-150">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h3.295l-.527 2.986h-2.768v7.01C18.343 21.128 22 16.991 22 12z"></path></svg>
+          Facebook
+        </button>
+        
+        <button class="w-1/2 flex items-center justify-center py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition duration-150">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.000 4.800a7.207 7.207 0 015.143 2.006l-1.928 1.928c-1.077-.962-2.478-1.547-3.215-1.547-2.618 0-4.743 2.125-4.743 4.743s2.125 4.743 4.743 4.743c1.373 0 2.651-.624 3.528-1.562l1.928 1.928A8.887 8.887 0 0112 21.6c-4.969 0-9-4.031-9-9s4.031-9 9-9z" fill="#EA4335"/><path d="M21.000 12.000c0-.829-.071-1.631-.202-2.416H12v4.832h4.943c-.227 1.128-.888 2.115-1.789 2.871l2.45 2.378A8.956 8.956 0 0021 12.000z" fill="#4285F4"/><path d="M12 21.600c2.811 0 5.253-.94 7.000-2.585l-2.45-2.378c-.97.77-2.19 1.229-3.483 1.229-2.618 0-4.743-2.125-4.743-4.743s2.125-4.743 4.743-4.743c1.373 0 2.651-.624 3.528-1.562L17.143 4.8A8.898 8.898 0 0012 2.400c-4.969 0-9 4.031-9 9s4.031 9 9 9z" fill="#FBBC05"/><path d="M5.385 12c0-1.168.204-2.296.586-3.351L3.543 6.643A8.995 8.995 0 003 12c0 1.957.514 3.791 1.41 5.378l2.193-1.897C5.589 14.187 5.385 13.125 5.385 12z" fill="#34A853"/></svg>
+          Google
+        </button>
+      </div> -->
+
+    <div class="text-center mt-10">
+      <p class="text-gray-500 text-sm">Don’t have an account?
+        <NuxtLink to="/auth/register" class="text-black font-semibold hover:text-gray-800">Sign up</NuxtLink>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-function handleLogin() {
-  // Pastikan navigateTo benar-benar berfungsi di lingkungan Anda (Nuxt 3)
-  return navigateTo('/home') 
-}
+definePageMeta({
+  layout: 'auth'
+})
+
+// State untuk tipe input password (untuk fungsi show/hide)
+const passwordFieldType = ref('password');
+
+// Fungsi untuk mengganti tipe input password
+const togglePasswordVisibility = () => {
+  passwordFieldType.value = passwordFieldType.value === 'password' ? 'text' : 'password';
+};
+
+// Fungsi untuk menangani proses login
+const handleLogin = () => {
+  // Logika login di sini (misalnya: memanggil API, validasi)
+
+  // Contoh Navigasi (Gunakan navigateTo di Nuxt 3)
+  return navigateTo('/home');
+};
 </script>
+
+<style scoped>
+/* Anda bisa menambahkan styling kustom di sini jika diperlukan */
+</style>
