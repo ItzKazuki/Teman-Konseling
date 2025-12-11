@@ -1,7 +1,7 @@
 <template>
-  <div v-if="props.show" class="fixed inset-x-0 bottom-0 left-0 z-50 w-full bg-white h-16 mx-auto overflow-hidden border-t border-gray-200 
-      sm:bottom-5 sm:shadow-lg sm:shadow-base-500/30 hover:shadow-md duration-300 sm:border 
-      sm:max-w-md sm:rounded-xl sm:h-16">
+  <div v-if="props.show" class="fixed inset-x-0 bottom-0 left-0 z-40 w-full bg-white h-16 mx-auto overflow-hidden border-t border-gray-200 
+        sm:bottom-5 sm:shadow-lg sm:shadow-base-500/30 hover:shadow-md duration-300 sm:border 
+        sm:max-w-md sm:rounded-xl sm:h-16">
     <div class="h-full mx-auto font-medium grid grid-cols-4">
       <NuxtLink v-for="item in props.nav" :key="item.name" :to="item.to"
         class="inline-flex flex-col items-center justify-center px-5 group gap-1 text-base-500"
