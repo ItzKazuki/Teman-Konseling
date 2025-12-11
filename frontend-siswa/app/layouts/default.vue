@@ -1,7 +1,7 @@
 <template>
   <template v-if="showNavbar">
     <div class="min-h-screen">
-      <main class="mx-6 my-8 pb-14">
+      <main class="mx-6 my-8 pb-16">
         <slot />
       </main>
       <AppNavbar :show="showNavbar" :nav="navItems" />
