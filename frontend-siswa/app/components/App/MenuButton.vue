@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white border border-gray-100 flex flex-col rounded-xl shadow-xl divide-y divide-gray-300">
+  <div class="bg-white border border-gray-100 flex flex-col rounded-xl shadow-sm divide-y divide-gray-300">
     <component v-for="(item, idx) in items" :key="idx" :is="item.to ? NuxtLink : 'button'" :to="item.to"
       @click="item.onClick && item.onClick()" :class="[
         'px-5 py-4 flex items-center gap-3 text-sm transition w-full text-left',
