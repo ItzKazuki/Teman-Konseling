@@ -22,8 +22,8 @@ const route = useRoute()
 // Daftar navbar dan logika hideNavbarRoutes tidak berubah
 const navItems = [
   { name: 'Home', to: '/home', icon: 'tk:home-bold' },
-  { name: 'Konseling', to: '/chat', icon: 'tk:chat-bold' },
-  { name: 'Emotion', to: '/emotion', icon: 'tk:emotion-bold' },
+  { name: 'Konseling', to: '/chats', icon: 'tk:chat-bold' },
+  { name: 'Emotion', to: '/emotions', icon: 'tk:emotion-bold' },
   { name: 'Profile', to: '/profile', icon: 'tk:profile-bold' },
 ];
 
