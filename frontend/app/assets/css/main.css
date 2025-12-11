@@ -11,23 +11,54 @@
   --font-poppins: 'Poppins', sans-serif;
   --font-montserrat: 'Montserrat', sans-serif;
   /* end font section */
+
+  --color-primary-900: #1e417b;
+  --color-primary-800: #2757a4;
+  --color-primary-700: #316ccd;
+  --color-primary-600: #3b82f6;
+  --color-primary-500: #5c97f8;
+  --color-primary-400: #7cacf9;
+  --color-primary-300: #9dc1fb;
+  --color-primary-200: #bed5fc;
+  --color-primary-100: #deeafe;
+  --color-primary-50: #f7faff;
+
+  --color-secondary-900: #7d3a0a;
+  --color-secondary-800: #9b490c;
+  --color-secondary-700: #c36214;
+  --color-secondary-600: #ea8a28; /* Warna Aksi Sekunder */
+  --color-secondary-500: #f5a047;
+  --color-secondary-400: #f9b66f;
+  --color-secondary-300: #fbcf97;
+  --color-secondary-200: #fde7c0;
+  --color-secondary-100: #fff3e0;
+  --color-secondary-50: #fff3e0;
+
+  --color-success-bold: #10b981;
+  --color-success-light: #d1fae5;
+
+  --color-danger-bold: #ef4444;
+  --color-danger-light: #fee2e2;
+
+  --color-warning-bold: #facc15;
+  --color-warning-light: #fef9c3;
 }
 
 @layer components {
   .input-field {
-    @apply w-full bg-white placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease-in focus:outline-none focus:border-blue-500 hover:border-blue-300 shadow-sm focus:shadow disabled:cursor-not-allowed disabled:bg-gray-100 disabled:border-gray-300;
+    @apply w-full bg-white placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease-in focus:outline-none focus:border-primary-500 hover:border-primary-300 shadow-sm focus:shadow disabled:cursor-not-allowed disabled:bg-gray-100 disabled:border-gray-300;
   }
 
   /* Jika Anda ingin border merah tetap ada saat fokus */
   .input-field.input-error:focus {
-    /* Override focus:border-blue-500 */
+    /* Override focus:border-primary-500 */
     @apply border-red-500 ring-red-200 focus:ring-1;
     /* Tambahkan ring (cincin) merah untuk visual fokus yang lebih jelas */
   }
 
   /* Jika Anda ingin menghilangkan efek hover biru saat error */
   .input-field.input-error:hover {
-    /* Override hover:border-blue-300 */
+    /* Override hover:border-primary-300 */
     @apply border-red-500;
   }
 
@@ -61,10 +92,10 @@
 
   /* 1. Primary Button (untuk aksi utama) */
   .btn-primary {
-    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-blue-700 text-white shadow-md hover:bg-blue-800 focus:ring-blue-500;
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-primary-700 text-white shadow-md hover:bg-primary-800 focus:ring-primary-500;
   }
   .btn-primary.btn-full {
-    @apply w-full py-3 sm:py-4 bg-blue-800 text-white rounded-lg font-semibold hover:bg-blue-900 focus:ring-blue-500;
+    @apply w-full py-3 sm:py-4 bg-primary-800 text-white rounded-lg font-semibold hover:bg-primary-900 focus:ring-primary-500;
   }
 
   /* 2. Secondary Button (Gaya abu-abu netral/sekunder) */
@@ -79,7 +110,7 @@
 
   /* 4. Outline Button (Transparan dengan border) */
   .btn-outline {
-    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-white border border-blue-500 text-blue-600 hover:bg-blue-50 focus:ring-blue-300;
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-white border border-primary-500 text-primary-600 hover:bg-primary-50 focus:ring-primary-300;
   }
   .btn-outline.btn-danger {
     /* Menggunakan base utilitas yang sama, hanya override warna */
@@ -88,7 +119,7 @@
 
   /* 5. Ghost Button (Hanya teks, tanpa border/background yang kuat) */
   .btn-ghost {
-    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-transparent text-blue-600 hover:bg-blue-50 focus:ring-blue-300;
+    @apply inline-flex items-center justify-center font-semibold rounded-lg transition duration-300 ease-in-out whitespace-nowrap focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed bg-transparent text-primary-600 hover:bg-primary-50 focus:ring-primary-300;
   }
   .btn-ghost.btn-danger {
     /* Menggunakan base utilitas yang sama, hanya override warna */
@@ -132,7 +163,7 @@
   }
 
   .text-link {
-    @apply text-blue-600 hover:text-blue-700 underline-offset-2 hover:underline;
+    @apply text-primary-600 hover:text-primary-700 underline-offset-2 hover:underline;
   }
 
   .truncate-text {
@@ -168,7 +199,7 @@
 
 @layer components {
   .btn-outline {
-    @apply border border-blue-800 text-blue-800 hover:bg-blue-800 hover:text-white rounded-lg font-semibold py-2 px-4 transition;
+    @apply border border-primary-800 text-primary-800 hover:bg-primary-800 hover:text-white rounded-lg font-semibold py-2 px-4 transition;
   }
 
   .btn-disabled {

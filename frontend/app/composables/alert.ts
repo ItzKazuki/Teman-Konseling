@@ -55,7 +55,7 @@ export const useAlert = defineStore("modal", {
       // Selalu nonaktifkan autoClose untuk confirm
       this._setupAlert("info", message, false, 0, [
         { label: "Batal", color: "bg-gray-500 hover:bg-gray-600 text-white" },
-        { label: "Ya", color: "bg-blue-800 hover:bg-blue-900 text-white" },
+        { label: "Ya", color: "bg-primary-800 hover:bg-primary-900 text-white" },
       ]);
       
       // Mengubah type menjadi warning/info agar sesuai dengan konteks

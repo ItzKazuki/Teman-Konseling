@@ -29,7 +29,7 @@
 
       <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
         <div class="flex items-center space-x-4">
-          <div class="p-3 bg-blue-100 rounded-full flex items-center text-blue-500">
+          <div class="p-3 bg-primary-100 rounded-full flex items-center text-primary-500">
             <Icon name="tabler:currency-dollar" class="w-6 h-6" />
           </div>
           <div>
@@ -57,14 +57,14 @@
       <div class="bg-white p-6 rounded-xl shadow-lg">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-xl font-semibold">Project Summary</h3>
-          <select class="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500">
+          <select class="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
             <option>All Project</option>
           </select>
         </div>
 
         <div class="flex space-x-4 border-b border-gray-100 mb-4 overflow-x-auto">
           <button
-            class="shrink-0 pb-2 text-sm font-semibold text-blue-600 border-b-2 border-blue-600">Ongoing</button>
+            class="shrink-0 pb-2 text-sm font-semibold text-primary-600 border-b-2 border-primary-600">Ongoing</button>
           <button class="shrink-0 pb-2 text-sm font-medium text-gray-500 hover:text-gray-800">Negotiation</button>
           <button class="shrink-0 pb-2 text-sm font-medium text-gray-500 hover:text-gray-800">Completed</button>
         </div>
@@ -210,7 +210,7 @@
           <div class="flex justify-between items-center text-sm">
             <span class="font-medium text-gray-700">Income</span>
             <div class="flex items-center space-x-2">
-              <div class="h-2 w-20 bg-blue-500 rounded-full"></div>
+              <div class="h-2 w-20 bg-primary-500 rounded-full"></div>
               <span class="font-bold text-gray-900">10</span>
             </div>
           </div>

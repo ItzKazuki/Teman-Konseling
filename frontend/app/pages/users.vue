@@ -17,7 +17,7 @@
 
         <button 
           @click="handleCreate"
-          class="flex items-center px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+          class="flex items-center px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md"
         >
           <Icon name="tabler:plus" class="w-5 h-5 mr-1" />
           Tambah Pengguna
@@ -32,11 +32,11 @@
             type="text" 
             v-model="filterForm.search" 
             placeholder="Cari Nama, Email, atau NIP"
-            class="form-input rounded-lg text-sm border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" 
+            class="form-input rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500" 
           />
           <select 
             v-model="filterForm.role" 
-            class="form-select rounded-lg text-sm border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="form-select rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">Semua Peran (Role)</option>
             <option value="guru">Guru</option>
@@ -45,13 +45,13 @@
           </select>
           <select 
             v-model="filterForm.isVerified" 
-            class="form-select rounded-lg text-sm border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="form-select rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">Status Verifikasi Email</option>
             <option value="true">Sudah Diverifikasi</option>
             <option value="false">Belum Diverifikasi</option>
           </select>
-          <button @click="applyFilter" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 md:col-span-3 lg:col-span-1">
+          <button @click="applyFilter" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 md:col-span-3 lg:col-span-1">
             Terapkan Filter
           </button>
         </div>
@@ -88,7 +88,7 @@
             </td>
           </tr>
 
-          <tr v-for="user in filteredUsers" :key="user.id" class="hover:bg-blue-50/50 transition-colors duration-100">
+          <tr v-for="user in filteredUsers" :key="user.id" class="hover:bg-primary-50/50 transition-colors duration-100">
             
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
@@ -118,7 +118,7 @@
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
-              <button @click="handleEdit(user.id)" class="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-100/50">
+              <button @click="handleEdit(user.id)" class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
                 <Icon name="tabler:edit" class="w-4 h-4" />
               </button>
               <button @click="handleDelete(user.id, user.name)" class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">

@@ -1,0 +1,3 @@
+<template>
+  Buat Artikel
+</template>

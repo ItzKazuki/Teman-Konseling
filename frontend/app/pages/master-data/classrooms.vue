@@ -14,7 +14,7 @@
         </button>
 
         <button @click="handleCreate"
-          class="flex items-center px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md">
+          class="flex items-center px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md">
           <Icon name="tabler:plus" class="w-5 h-5 mr-1" />
           Tambah Baru
         </button>
@@ -26,16 +26,16 @@
       <h4 class="text-sm font-semibold mb-3 text-gray-700">Opsi Filter Lanjutan</h4>
       <div class="flex flex-col sm:flex-row gap-4 items-center">
         <input type="text" v-model="filterForm.search" placeholder="Cari berdasarkan Nama atau Deskripsi"
-          class="form-input rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-blue-500 focus:border-blue-500" />
+          class="form-input rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-primary-500 focus:border-primary-500" />
         <select v-model="filterForm.level"
-          class="form-select rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-blue-500 focus:border-blue-500">
+          class="form-select rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-primary-500 focus:border-primary-500">
           <option value="">Semua Level (X, XI, XII)</option>
           <option value="X">Kelas X</option>
           <option value="XI">Kelas XI</option>
           <option value="XII">Kelas XII</option>
         </select>
         <button @click="applyFilter"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 w-full sm:w-auto">
+          class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 w-full sm:w-auto">
           Terapkan
         </button>
       </div>
@@ -70,7 +70,7 @@
           </tr>
 
           <tr v-for="classItem in filteredClasses" :key="classItem.id"
-            class="hover:bg-blue-50/50 transition-colors duration-100">
+            class="hover:bg-primary-50/50 transition-colors duration-100">
 
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
               {{ classItem.name }}
@@ -86,7 +86,7 @@
 
             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
               <button @click="handleEdit(classItem.id)"
-                class="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-100/50">
+                class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
                 <Icon name="tabler:edit" class="w-4 h-4" />
               </button>
               <button @click="handleDelete(classItem.id, classItem.name)"

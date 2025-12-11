@@ -10,6 +10,12 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
+  // DON'T CHANGE THIS VALUE, CHANGE USING .env
+  devServer: {
+    host: process.env.NUXT_APP_HOST ?? 'localhost',
+    port: process.env.NUXT_APP_PORT ? Number(process.env.NUXT_APP_PORT) : 3000,
+  },
+
   runtimeConfig: {
     appEnv: process.env.APP_ENV || "production",
     debug: process.env.APP_ENV !== "production",

@@ -12,7 +12,7 @@
         <div class="relative">
           <Icon name="tabler:mail" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input type="email" id="email" v-model="email" placeholder="Masukkan email Anda"
-            class="pl-9 pr-4 py-2 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900"
+            class="pl-9 pr-4 py-2 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 text-sm text-gray-900"
             required />
         </div>
       </div>
@@ -22,7 +22,7 @@
         <div class="relative">
           <Icon name="tabler:lock" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input :type="passwordFieldType" id="password" v-model="password" placeholder="Masukkan password Anda"
-            class="pl-9 pr-10 py-2 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900"
+            class="pl-9 pr-10 py-2 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 text-sm text-gray-900"
             required />
           <button type="button" @click="togglePasswordVisibility"
             class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 flex items-center">
@@ -34,16 +34,16 @@
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center">
           <input id="remember_me" name="remember_me" type="checkbox"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+            class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" />
           <label for="remember_me" class="ml-2 block text-sm text-gray-900">Ingat Saya</label>
         </div>
-        <NuxtLink to="/forgot-password" class="text-sm font-medium text-blue-600 hover:text-blue-500">
+        <NuxtLink to="/forgot-password" class="text-sm font-medium text-primary-600 hover:text-primary-500">
           Lupa Password?
         </NuxtLink>
       </div>
 
       <button type="submit"
-        class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+        class="w-full bg-primary-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
         :disabled="loading">
         <span v-if="!loading">Login</span>
         <Icon v-else name="mdi:loading" class="animate-spin w-5 h-5 mx-auto" />

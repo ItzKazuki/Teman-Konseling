@@ -14,7 +14,7 @@
         </button>
 
         <button @click="handleCreate"
-          class="flex items-center px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md">
+          class="flex items-center px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md">
           <Icon name="tabler:plus" class="w-5 h-5 mr-1" />
           Tambah Siswa
         </button>
@@ -26,9 +26,9 @@
       <h4 class="text-sm font-semibold mb-3 text-gray-700">Opsi Filter Siswa</h4>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <input type="text" v-model="filterForm.search" placeholder="Cari Nama, NIS, atau NISN"
-          class="form-input rounded-lg text-sm border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+          class="form-input rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500" />
         <select v-model="filterForm.classId"
-          class="form-select rounded-lg text-sm border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+          class="form-select rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500">
           <option value="">Semua Kelas</option>
           <option v-for="c in classRooms" :key="c.id" :value="c.id">
             {{ c.name }}
@@ -36,7 +36,7 @@
         </select>
 
         <button @click="applyFilter"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 w-full">
+          class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 w-full">
           Terapkan Filter
         </button>
       </div>
@@ -74,7 +74,7 @@
           </tr>
 
           <tr v-for="student in filteredStudents" :key="student.id"
-            class="hover:bg-blue-50/50 transition-colors duration-100">
+            class="hover:bg-primary-50/50 transition-colors duration-100">
 
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
               {{ student.name }}
@@ -95,7 +95,7 @@
 
             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
               <button @click="handleEdit(student.id)"
-                class="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-100/50">
+                class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
                 <Icon name="tabler:edit" class="w-4 h-4" />
               </button>
               <button @click="handleDelete(student.id, student.name)"
