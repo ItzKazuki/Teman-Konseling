@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Common;
 
 use App\Enums\Visibility;
 use App\Helpers\ApiResponse;
@@ -12,7 +12,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Enum;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('File: Manajemen File upload')]
 class FileController
 {
     /**

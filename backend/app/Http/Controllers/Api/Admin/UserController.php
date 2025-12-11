@@ -7,7 +7,9 @@ use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Admin: Data Pengguna')]
 class UserController extends Controller
 {
     /**

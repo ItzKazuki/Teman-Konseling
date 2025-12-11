@@ -8,7 +8,7 @@ use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-#[Group('Authentication')]
+#[Group('Auth')]
 class LogoutController extends Controller
 {
     /**

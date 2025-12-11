@@ -9,7 +9,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StudentRequest;
 use App\Http\Resources\StudentResource;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Admin: Data Siswa')]
 class StudentController extends Controller
 {
     /**

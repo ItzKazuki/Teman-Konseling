@@ -40,6 +40,16 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'student' => [
+            'driver' => 'sanctum', // Ini adalah koneksinya!
+            'provider' => 'students',
+        ],
+
+        'user' => [
+            'driver' => 'sanctum', // Ini adalah koneksinya!
+            'provider' => 'users',
+        ],
     ],
 
     /*

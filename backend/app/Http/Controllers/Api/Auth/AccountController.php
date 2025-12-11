@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Controllers\Api\Auth;
+
+use App\Helpers\ApiResponse;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\StudentResource;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Dedoc\Scramble\Attributes\Group;
+
+#[Group('Account')]
+class AccountController extends Controller
+{
+    /**
+     * Detail data siswa.
+     */
+    public function student(Request $request)
+    {
+        $student = Auth::guard('student')->user();
+
+        return ApiResponse::success(new StudentResource($student));
+    }
+
+    /**
+     * Detail pengguna.
+     */
+    public function user(Request $request)
+    {
+        $user = Auth::guard('user')->user();
+
+        return ApiResponse::success(new StudentResource($user));
+    }
+}

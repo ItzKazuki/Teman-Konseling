@@ -7,7 +7,9 @@ use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClassRoomResource;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Admin: Master Data Kelas')]
 class ClassroomController extends Controller
 {
     /**
