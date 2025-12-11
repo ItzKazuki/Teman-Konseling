@@ -2,7 +2,9 @@
   <div class="flex justify-between text-black">
     <img :src="logo" alt="Logo Ilustrator" />
 
-    <Icon name="tk:notification-bold" size="25" />
+    <NuxtLink to="/notifications">
+      <Icon name="tk:notification-bold" size="25" />
+    </NuxtLink>
   </div>
 </template>
 
