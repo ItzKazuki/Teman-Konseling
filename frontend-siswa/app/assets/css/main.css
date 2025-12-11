@@ -6,11 +6,30 @@
 
 @theme {
   /* font section */
-  --font-sans: 'Plus Jakarta Sans', sans-serif; /* Default font */
+  --font-sans: 'Poppins', sans-serif; /* Default font */
 
-  --font-poppins: 'Poppins', sans-serif;
+  --font-plus-jakarta: 'Plus Jakarta Sans', sans-serif;
   --font-montserrat: 'Montserrat', sans-serif;
   /* end font section */
+
+  --color-primary-900: #1E417B;
+  --color-primary-800: #2757A4;
+  --color-primary-700: #316CCD;
+  --color-primary-600: #3B82F6;
+  --color-primary-500: #5C97F8;
+  --color-primary-400: #7CACF9;
+  --color-primary-300: #9DC1FB;
+  --color-primary-200: #BED5FC;
+  --color-primary-100: #DEEAFE;
+  
+  --color-success-bold: #10B981;
+  --color-success-light: #D1FAE5;
+  
+  --color-danger-bold: #EF4444;
+  --color-danger-light: #FEE2E2;
+  
+  --color-warning-bold: #FACC15;
+  --color-warning-light: #FEF9C3;
 }
 
 @layer components {

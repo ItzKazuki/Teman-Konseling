@@ -3,11 +3,17 @@ import tailwindcss from "@tailwindcss/vite";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   css: ["~/assets/css/main.css"],
 
   vite: {
     plugins: [tailwindcss()],
+  },
+
+   // DON'T CHANGE THIS VALUE, CHANGE USING .env
+  devServer: {
+    host: process.env.NUXT_APP_HOST ?? 'localhost',
+    port: process.env.NUXT_APP_PORT ? Number(process.env.NUXT_APP_PORT) : 3000,
   },
 
   runtimeConfig: {
@@ -31,6 +37,14 @@ export default defineNuxtConfig({
   icon: {
     mode: "css",
     cssLayer: "base",
+
+    customCollections: [
+      {
+        prefix: 'tk', 
+        dir: './app/assets/teman-konseling-icons',
+        recursive: true, // if you want to include all the icons in nested directories enable recursive
+      },
+    ],
   },
 
   modules: ["@pinia/nuxt", "@nuxt/icon"],
