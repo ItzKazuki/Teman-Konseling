@@ -25,7 +25,7 @@
               class="w-full py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 block">
               Lanjut ke Mood Tracking
             </NuxtLink>
-            <NuxtLink to="/chat"
+            <NuxtLink to="/chats"
               class="w-full py-3 border border-primary-600 text-primary-600 rounded-lg font-semibold hover:bg-primary-50 block">
               Ingin Konseling?
             </NuxtLink>
