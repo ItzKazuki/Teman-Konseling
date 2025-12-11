@@ -22,9 +22,7 @@
 
         <div class="bg-white border-gray-300 border flex flex-col rounded-xl shadow-xl divide-y divide-gray-300">
           <AppMenuButton :items="myAccountMenu" />
-
         </div>
-
       </div>
 
       <div class="space-y-2">
@@ -32,10 +30,9 @@
 
         <div class="bg-white border border-gray-300 flex flex-col rounded-xl shadow-xl divide-y divide-gray-300">
           <AppMenuButton :items="detailAppMenu" />
-
         </div>
-
       </div>
+      <p class="text-center text-gray-500 text-xs">v1.0.0-dev</p>
     </div>
   </div>
 </template>
