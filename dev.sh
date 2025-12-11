@@ -8,12 +8,18 @@ fi
 echo "Starting Laravel..."
 (
     cd backend || exit 1
-    php artisan serve --port=8182 --host=0.0.0.0
+    php artisan serve --port=8821 --host=0.0.0.0
 ) &
 
-echo "Starting Nuxt..."
+echo "Starting Nuxt for Admin..."
 (
     cd frontend || exit 1
+    npm run dev
+) &
+
+echo "Starting Nuxt for Students..."
+(
+    cd frontend-siswa || exit 1
     npm run dev
 ) &
 
