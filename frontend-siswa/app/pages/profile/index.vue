@@ -1,14 +1,19 @@
 <template>
-  <div class="space-y-10">
+  <div class="space-y-8">
     <AppHeader />
 
-    <div class="flex items-center flex-col gap-3">
-      <img src="/static/images/profile.png" alt="Profile" class="w-32 object-cover rounded-full" />
+    <div class="pt-4 pb-6 border-b border-gray-100 flex items-center flex-col gap-3">
 
-      <div class="text-center">
-        <h3 class="text-lg font-bold">Chaeza Ibnu Akbar</h3>
-        <p class="text-sm text-gray-500">Student</p>
+      <div class="relative w-28 h-28">
+        <img src="/static/images/profile.png" alt="Profile"
+          class="w-full h-full object-cover rounded-full border-4 border-white shadow-lg" />
       </div>
+
+      <div class="text-center space-y-0.5">
+        <h3 class="text-xl font-extrabold text-gray-900">Chaeza Ibnu Akbar</h3>
+        <p class="text-sm text-primary-600 font-semibold">Student</p>
+      </div>
+
     </div>
 
     <div class="space-y-4">
@@ -36,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-  interface MenuButtonItem {
+interface MenuButtonItem {
   label: string
   icon: string
   to?: string
