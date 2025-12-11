@@ -20,12 +20,25 @@
         {{ article.title }}
       </h1>
 
-      <div class="flex items-center space-x-3 text-sm text-gray-600">
-        <Icon name="tabler:user" class="w-4 h-4 text-primary-600" />
-        <p class="font-medium">{{ article.author }}</p>
-        <span class="text-gray-400">•</span>
-        <Icon name="tabler:calendar" class="w-4 h-4 text-primary-600" />
-        <time :datetime="article.date">{{ article.date }}</time>
+      <div class="flex items-center space-x-4 text-sm text-gray-600">
+
+        <div class="flex items-center space-x-2">
+          <Icon name="tabler:user-circle" class="w-5 h-5 text-gray-500" />
+          <p class="font-semibold text-gray-800">{{ article.author }}</p>
+        </div>
+
+        <span class="text-gray-300">|</span>
+        <div class="flex items-center space-x-1.5">
+          <Icon name="tabler:calendar" class="w-5 h-5 text-gray-500" />
+          <time :datetime="article.date" class="font-medium text-gray-700">{{ article.date }}</time>
+        </div>
+
+        <span class="text-gray-300 hidden sm:inline">|</span>
+        <div v-if="article.readingTime" class="items-center space-x-1.5 hidden sm:flex">
+          <Icon name="tabler:clock" class="w-5 h-5 text-gray-500" />
+          <p class="text-gray-700">{{ article.readingTime }}</p>
+        </div>
+
       </div>
     </header>
 
@@ -35,7 +48,7 @@
 
     <footer class="pt-8 border-t border-gray-200 text-center">
       <h3 class="text-xl font-bold text-gray-800 mb-4">Butuh Bantuan Lebih Lanjut?</h3>
-      <NuxtLink to="/counselors" class="inline-flex items-center justify-center py-3 px-6 bg-primary-600 text-white rounded-lg font-semibold 
+      <NuxtLink to="/chats" class="inline-flex items-center justify-center py-3 px-6 bg-primary-600 text-white rounded-lg font-semibold 
                  hover:bg-primary-700 transition duration-200 shadow-md">
         Mulai Konseling dengan Guru BK
       </NuxtLink>
@@ -44,7 +57,11 @@
   </article>
 
   <div v-else class="text-center py-20">
-    <h1 class="text-3xl font-bold text-gray-900">Artikel Tidak Ditemukan</h1>
+    <div class="mx-auto">
+      <img src="/static/404.svg" class="p-6" alt="">
+      <p class="text-6xl font-bold text-primary-800">404</p>
+    </div>
+    <h1 class="text-3xl font-bold text-gray-900 mt-4">Artikel Tidak Ditemukan</h1>
     <p class="text-gray-600 mt-2">Maaf, artikel yang Anda cari mungkin telah dihapus atau URL salah.</p>
   </div>
 </template>
