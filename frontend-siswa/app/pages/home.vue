@@ -79,9 +79,9 @@
             </h3>
 
             <div class="flex items-center text-xs text-gray-500 mt-1 space-x-2">
-              <p class="font-medium">oleh Tim Teman Konseling</p>
+              <p class="font-medium">oleh Dr. Rina</p>
               <span class="text-gray-300">•</span>
-              <p>7 menit baca</p>
+              <p>10 menit baca</p>
             </div>
           </div>
         </NuxtLink>
