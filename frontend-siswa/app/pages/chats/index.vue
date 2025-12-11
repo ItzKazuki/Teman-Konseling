@@ -1,8 +1,9 @@
 <template>
   <div class="space-y-8">
-    <AppHeader />
-
-    <p class="text-gray-600">Pilih Guru BK yang tersedia di bawah ini untuk memulai sesi konseling.</p>
+    
+    <AppHeader title="Pilih Konselor Anda" icon="tk:chat-bold" />
+    
+    <p class="text-gray-600">Pilih Guru BK yang tersedia di bawah ini untuk **membuat jadwal sesi konseling**.</p>
 
     <div class="space-y-4">
       <div v-for="counselor in availableCounselors" :key="counselor.id"
@@ -20,87 +21,87 @@
               <span
                 :class="['w-2.5 h-2.5 rounded-full mr-2', counselor.isAvailable ? 'bg-green-500' : 'bg-red-500']"></span>
               <p :class="['text-xs font-semibold', counselor.isAvailable ? 'text-green-600' : 'text-red-600']">
-                {{ counselor.isAvailable ? 'Tersedia Sekarang' : 'Sedang Sibuk' }}
+                {{ counselor.isAvailable ? 'Menerima Jadwal' : 'Penuh Hari Ini' }}
               </p>
             </div>
+            
+            <div class="mt-3">
+                 <button 
+                    @click="scheduleConsultation(counselor)"
+                    :disabled="!counselor.isAvailable"
+                    :class="[
+                        'py-2 px-4 rounded-lg font-semibold text-sm transition duration-150',
+                        counselor.isAvailable 
+                            ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm' 
+                            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    ]">
+                    Buat Jadwal
+                </button>
+            </div>
           </div>
-
-          <!-- <div class="shrink-0 self-center">
-            <button
-              @click="startChat(counselor)"
-              :disabled="!counselor.isAvailable"
-              :class="[
-                'py-2 px-4 rounded-lg font-semibold text-sm transition duration-150',
-                counselor.isAvailable 
-                  ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm' 
-                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-              ]"
-            >
-              Mulai Chat
-            </button>
-          </div> -->
         </div>
       </div>
 
       <div v-if="!availableCounselors.length" class="text-center py-10 text-gray-500">
-        <p>Saat ini tidak ada Guru BK yang tersedia untuk konseling.</p>
+        <p>Saat ini tidak ada Guru BK yang tersedia untuk membuat jadwal.</p>
         <p class="mt-2">Silakan coba beberapa saat lagi.</p>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
 import { reactive } from 'vue';
+// Asumsi AppHeader dan AppBackButton ada atau sudah di handle di layout
 
-// 1. Data Dummy Guru BK
+// 1. Data Dummy Guru BK (tetap sama)
 const availableCounselors = reactive([
+  // ... data konselor ...
   {
     id: 1,
     name: "Bpk. Dwi Prasetyo, M.Pd",
     title: "Guru BK Kelas X & XI",
     phoneNumber: "6281234567890",
-    photoUrl: "/static/images/profile.png", // Ganti dengan path foto
-    isAvailable: true,
+    photoUrl: "/static/images/profile.png",
+    isAvailable: true, // Berarti bisa menerima jadwal baru
   },
   {
     id: 2,
     name: "Ibu Rina Amalia, S.Psi",
     title: "Guru BK Kelas XII",
     phoneNumber: "6285098765432",
-    photoUrl: "/static/images/profile.png", // Ganti dengan path foto
-    isAvailable: false, // Sedang sibuk
+    photoUrl: "/static/images/profile.png",
+    isAvailable: false, 
   },
   {
     id: 3,
     name: "Bpk. Budi Santoso, S.Pd",
     title: "Guru BK Umum",
     phoneNumber: "6287112233445",
-    photoUrl: "/static/images/profile.png", // Ganti dengan path foto
+    photoUrl: "/static/images/profile.png",
     isAvailable: true,
   },
 ]);
 
-// 2. Fungsi untuk Memulai Chat (WhatsApp Redirect)
-function startChat(counselor) {
+// 2. Fungsi untuk Memulai Proses Penjadwalan
+function scheduleConsultation(counselor) {
   if (!counselor.isAvailable) {
-    alert(`Maaf, ${counselor.name} sedang sibuk. Silakan pilih konselor lain.`);
+    alert(`Maaf, ${counselor.name} sedang penuh jadwal. Silakan pilih konselor lain atau coba besok.`);
     return;
   }
 
-  // Asumsi data siswa sudah ada di state (misalnya, nama dan kelas)
-  const studentName = "Nama Siswa"; // Ganti dengan data siswa yang sebenarnya
-  const studentInfo = "Kelas XI IPA 2"; // Ganti dengan data siswa yang sebenarnya
+  // Menggunakan navigateTo dan mengirimkan data konselor yang dipilih
+  // Kita bisa menggunakan query params atau menyimpan data di state management (seperti Pinia)
+  
+  navigateTo({
+    path: '/chats/schedule/form',
+    query: {
+        counselorId: counselor.id,
+        counselorName: counselor.name,
+        // Kirim data penting lainnya yang dibutuhkan di halaman form jadwal
+    }
+  });
 
-  const initialMessage = `Halo Bapak/Ibu ${counselor.name}, saya ${studentName} (${studentInfo}). Saya ingin memulai sesi konseling. Apakah Bapak/Ibu bersedia menerima sesi saya sekarang?`;
-
-  const encodedMessage = encodeURIComponent(initialMessage);
-  const waUrl = `https://wa.me/${counselor.phoneNumber}?text=${encodedMessage}`;
-
-  // Membuka tab baru atau aplikasi WhatsApp
-  window.open(waUrl, '_blank');
-
-  console.log(`Mengarahkan ${studentName} ke chat dengan ${counselor.name}.`);
+  console.log(`Mengarahkan ke halaman jadwal untuk ${counselor.name}.`);
 }
 </script>
