@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-8">
-    
+
     <AppHeader size="xl" />
 
     <!-- <div class="space-y-2 pt-2">
@@ -35,35 +35,66 @@
       </NuxtLink>
     </div> -->
 
-    <div class="pt-4">
-      <h2 class="text-xl font-bold mb-4 text-gray-800">Bacaan untukmu Hari Ini</h2>
-      
+    <div class="pt-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+        <Icon name="tabler:notebook" class="w-6 h-6 text-secondary-600" />
+        Bacaan Buat Kamu
+      </h2>
+
       <div class="space-y-4">
-        <div class="flex gap-4 p-3 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer">
-          <img src="https://via.placeholder.com/80x80?text=Artikel+1" alt="Thumbnail Artikel" class="w-20 h-20 object-cover rounded-md shrink-0">
-          <div>
-            <p class="text-xs font-semibold text-primary-600 mb-1">Kesehatan Mental</p>
-            <h3 class="text-sm font-bold text-gray-800 line-clamp-2">5 Cara Efektif Mengelola Rasa Cemas Saat Ujian</h3>
-            <p class="text-xs text-gray-500 mt-1">oleh Dr. Rina, 5 menit baca</p>
+        <NuxtLink to="/articles/mengelola-kecemasan-ujian"
+          class="flex gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition duration-200 cursor-pointer group">
+
+          <img src="/static/images/kesmen.png" alt="Thumbnail Artikel"
+            class="w-20 h-20 object-cover rounded-lg shrink-0 border border-gray-200 group-hover:border-primary-300 transition duration-200">
+
+          <div class="flex flex-col justify-center">
+            <p class="text-xs font-bold text-secondary-600 mb-1 uppercase tracking-wider">Kesehatan Mental</p>
+
+            <h3
+              class="text-base font-extrabold text-gray-900 line-clamp-2 group-hover:text-primary-700 transition duration-200">
+              5 Cara Efektif Mengelola Rasa Cemas Saat Ujian
+            </h3>
+
+            <div class="flex items-center text-xs text-gray-500 mt-1 space-x-2">
+              <p class="font-medium">oleh Dr. Rina</p>
+              <span class="text-gray-300">•</span>
+              <p>5 menit baca</p>
+            </div>
           </div>
-        </div>
-        
-        <div class="flex gap-4 p-3 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer">
-          <img src="https://via.placeholder.com/80x80?text=Artikel+2" alt="Thumbnail Artikel" class="w-20 h-20 object-cover rounded-md shrink-0">
-          <div>
-            <p class="text-xs font-semibold text-primary-600 mb-1">Kesejahteraan Diri</p>
-            <h3 class="text-sm font-bold text-gray-800 line-clamp-2">Pentingnya Batasan Digital untuk Pelajar</h3>
-            <p class="text-xs text-gray-500 mt-1">oleh Tim Teman Konseling, 7 menit baca</p>
+        </NuxtLink>
+
+        <NuxtLink to="/articles/slug-artikel-2"
+          class="flex gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition duration-200 cursor-pointer group">
+
+          <img src="/static/images/kesmen.png" alt="Thumbnail Artikel"
+            class="w-20 h-20 object-cover rounded-lg shrink-0 border border-gray-200 group-hover:border-primary-300 transition duration-200">
+
+          <div class="flex flex-col justify-center">
+            <p class="text-xs font-bold text-secondary-600 mb-1 uppercase tracking-wider">Kesejahteraan Diri</p>
+
+            <h3
+              class="text-base font-extrabold text-gray-900 line-clamp-2 group-hover:text-primary-700 transition duration-200">
+              Pentingnya Batasan Digital untuk Pelajar
+            </h3>
+
+            <div class="flex items-center text-xs text-gray-500 mt-1 space-x-2">
+              <p class="font-medium">oleh Tim Teman Konseling</p>
+              <span class="text-gray-300">•</span>
+              <p>7 menit baca</p>
+            </div>
           </div>
-        </div>
-        
+        </NuxtLink>
+
         <div class="text-center pt-2">
-          <NuxtLink to="/articles" class="text-sm font-medium text-primary-600 hover:text-primary-700">
-            Lihat Semua Artikel &rarr;
+          <NuxtLink to="/articles"
+            class="text-sm font-bold text-primary-600 hover:text-primary-700 inline-flex items-center gap-1">
+            Lihat Semua Artikel
+            <Icon name="tabler:arrow-right" class="w-4 h-4" />
           </NuxtLink>
         </div>
       </div>
     </div>
-    
-    </div>
+
+  </div>
 </template>
