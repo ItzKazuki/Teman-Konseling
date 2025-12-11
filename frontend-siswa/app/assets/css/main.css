@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 @theme {
   /* font section */
@@ -21,6 +22,16 @@
   --color-primary-300: #9DC1FB;
   --color-primary-200: #BED5FC;
   --color-primary-100: #DEEAFE;
+
+  --color-secondary-900: #7D3A0A;
+  --color-secondary-800: #9B490C;
+  --color-secondary-700: #C36214;
+  --color-secondary-600: #EA8A28; /* Warna Aksi Sekunder */
+  --color-secondary-500: #F5A047;
+  --color-secondary-400: #F9B66F;
+  --color-secondary-300: #FBCF97;
+  --color-secondary-200: #FDE7C0;
+  --color-secondary-100: #FFF3E0;
   
   --color-success-bold: #10B981;
   --color-success-light: #D1FAE5;
