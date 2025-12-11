@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-   // DON'T CHANGE THIS VALUE, CHANGE USING .env
+  // DON'T CHANGE THIS VALUE, CHANGE USING .env
   devServer: {
     host: process.env.NUXT_APP_HOST ?? 'localhost',
     port: process.env.NUXT_APP_PORT ? Number(process.env.NUXT_APP_PORT) : 3000,
@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     mode: "css",
     cssLayer: "base",
 
+    // for custom icon with custom prefix
     customCollections: [
       {
         prefix: 'tk', 
