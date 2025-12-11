@@ -48,8 +48,8 @@ const allVariantClasses: Record<VariantKey, { container: string, closeButtonHove
     icon: 'mdi:information-outline',
   },
   info: {
-    container: 'bg-blue-100 text-blue-800',
-    closeButtonHover: 'hover:bg-blue-200',
+    container: 'bg-primary-100 text-primary-800',
+    closeButtonHover: 'hover:bg-primary-200',
     icon: 'mdi:information',
   },
   success: {

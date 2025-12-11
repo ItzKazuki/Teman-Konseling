@@ -21,7 +21,7 @@
             <Icon name="mdi:alert-circle-outline" class="text-yellow-500 w-6 h-6" />
           </template>
           <template v-else>
-            <Icon name="mdi:information-outline" class="text-blue-500 w-6 h-6" />
+            <Icon name="mdi:information-outline" class="text-primary-500 w-6 h-6" />
           </template>
 
           <span class="font-semibold capitalize text-lg text-slate-800">{{ modal.type }}</span>
@@ -36,7 +36,7 @@
             'px-4 py-2 rounded-lg font-semibold transition-base cursor-pointer',
             action.color
               ? action.color // Jika action.color diset (misalnya 'bg-red-500 text-white')
-              : 'bg-blue-800 hover:bg-blue-900 text-white' // Default Confirm/Primary
+              : 'bg-primary-800 hover:bg-primary-900 text-white' // Default Confirm/Primary
           ]">
             {{ action.label }}
           </button>
