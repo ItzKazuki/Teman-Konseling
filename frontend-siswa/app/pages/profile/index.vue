@@ -68,10 +68,23 @@ const detailAppMenu: MenuButtonItem[] = [
   }
 ];
 
-function handleLogout() {
-  useAlert().success('Berhasil Logout')
+async function handleLogout() {
+  try {
+    const confirmed = await useAlert().confirm('Apakah kamu yakin mau kelar?');
 
-  navigateTo('/auth/login')
+    if (!confirmed) return;
+
+    // await auth.logout();
+
+    useToast().success('Logout Berhasil, Selamat tinggal!')
+
+    navigateTo('/auth/login')
+  } catch (err: any) {
+    if (err?.data?.message) {
+      useToast().error(err.data.message);
+    } else {
+      useToast().error('Terjadi kesalahan. Silakan coba lagi.')
+    }
+  }
 }
-
 </script>
