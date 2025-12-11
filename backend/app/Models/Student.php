@@ -57,4 +57,9 @@ class Student extends Model
 
         return asset('static/profile.png');
     }
+
+    public function classroom()
+    {
+        return $this->belongsTo(ClassRoom::class, 'class_room_id');
+    }
 }

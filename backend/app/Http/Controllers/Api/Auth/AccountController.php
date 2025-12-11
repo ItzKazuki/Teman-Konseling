@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StudentResource;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Dedoc\Scramble\Attributes\Group;
@@ -17,7 +18,7 @@ class AccountController extends Controller
      */
     public function student(Request $request)
     {
-        $student = Auth::guard('student')->user();
+        $student = Auth::guard('student')->user()->load('classroom');
 
         return ApiResponse::success(new StudentResource($student));
     }
@@ -29,6 +30,6 @@ class AccountController extends Controller
     {
         $user = Auth::guard('user')->user();
 
-        return ApiResponse::success(new StudentResource($user));
+        return ApiResponse::success(new UserResource($user));
     }
 }
