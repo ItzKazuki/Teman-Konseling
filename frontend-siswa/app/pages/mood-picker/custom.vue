@@ -67,7 +67,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+definePageMeta({
+  layout: 'custom'
+});
 
 const customEmotionName = ref('');
 const emotionMagnitude = ref<number | null>(null);

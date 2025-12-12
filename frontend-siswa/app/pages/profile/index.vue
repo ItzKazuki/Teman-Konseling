@@ -2,19 +2,32 @@
   <div class="space-y-8">
     <AppHeader />
 
-    <div class="pt-4 pb-6 border-b border-gray-100 flex items-center flex-col gap-3">
+    <ClientOnly>
+      <template #fallback>
+        <div class="pt-4 pb-6 border-b border-gray-200 flex items-center flex-col gap-3">
+          <div class="w-28 h-28 bg-gray-300 rounded-full"></div>
 
-      <div class="relative w-28 h-28">
-        <img src="/static/images/profile.png" alt="Profile"
-          class="w-full h-full object-cover rounded-full border-4 border-white shadow-lg" />
+          <div class="text-center space-y-1.5">
+            <div class="h-6 w-32 bg-gray-300 rounded-md mx-auto"></div>
+            <div class="h-4 w-16 bg-primary-200 rounded-md mx-auto"></div>
+          </div>
+        </div>
+      </template>
+
+      <div class="pt-4 pb-6 border-b border-gray-100 flex items-center flex-col gap-3">
+
+        <div class="relative w-28 h-28">
+          <img :src="auth.user?.avatar_url" alt="Profile"
+            class="w-full h-full object-cover rounded-full border-4 border-white shadow-lg" />
+        </div>
+
+        <div class="text-center space-y-0.5">
+          <h3 class="text-xl font-extrabold text-gray-900">{{ auth.user?.name }}</h3>
+          <p class="text-sm text-primary-600 font-semibold">Student</p>
+        </div>
+
       </div>
-
-      <div class="text-center space-y-0.5">
-        <h3 class="text-xl font-extrabold text-gray-900">Chaeza Ibnu Akbar</h3>
-        <p class="text-sm text-primary-600 font-semibold">Student</p>
-      </div>
-
-    </div>
+    </ClientOnly>
 
     <div class="space-y-4">
       <div class="space-y-2">
@@ -46,6 +59,8 @@ interface MenuButtonItem {
   variant?: 'default' | 'danger'
 }
 
+const auth = useAuthStore();
+
 const myAccountMenu: MenuButtonItem[] = [
   {
     label: 'Edit Akun',
@@ -74,7 +89,7 @@ async function handleLogout() {
 
     if (!confirmed) return;
 
-    // await auth.logout();
+    await auth.logout();
 
     useToast().success('Logout Berhasil, Selamat tinggal!')
 

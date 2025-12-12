@@ -73,7 +73,8 @@
         Kirim
       </button>
 
-      <NuxtLink to="/mood-picker/custom" class="text-center text-sm font-medium text-gray-600 hover:text-black underline">
+      <NuxtLink to="/mood-picker/custom"
+        class="text-center text-sm font-medium text-gray-600 hover:text-black underline">
         Pilihan saya tidak ada di sini
       </NuxtLink>
     </div>
@@ -95,6 +96,10 @@
 </style>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: 'custom'
+});
+
 // State untuk menyimpan emosi yang dipilih
 const selectedEmotion = ref<string | null>(null);
 // State baru untuk besaran emosi (Skala 1-4)

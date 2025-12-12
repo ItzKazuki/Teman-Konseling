@@ -1,26 +1,14 @@
-type UserRoleType = 'admin' | 'guru' | 'siswa';
-
 interface User {
   id?: string;
-  nip: string;
-  name: string;
-  role?: UserRoleType;
-  avatar_url?: string;
-  avatar_file_id?: string;
-  email: string;
-  password?: string;
-  password_confirmation?: string;
-}
-
-interface Student {
-  id?: string;
-  nisn: string;
   nis: string;
+  nisn: string;
   name: string;
-  role?: UserRoleType;
   avatar_url?: string;
-  avatar_file_id?: string;
   email: string;
   password?: string;
+  classroom_id: string;
+  classroom_name?: string;
   password_confirmation?: string;
+  created_at?: string;
+  updated_at?: string;
 }

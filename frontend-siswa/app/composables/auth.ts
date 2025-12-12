@@ -6,13 +6,12 @@ export const useAuthStore = defineStore("auth", {
 
   getters: {
     isAuthenticated: (state) => !!state.token,
-    userRole: (state) => state.user?.role,
   },
 
   actions: {
     async login(body: LoginRequest) {
       try {
-        const res = await useApi(false).post<Login>("/auth/login", body);
+        const res = await useApi(false).post<Login>("/auth/student/login", body);
 
         if (res.status) {
           this.setToken(res.data.token);

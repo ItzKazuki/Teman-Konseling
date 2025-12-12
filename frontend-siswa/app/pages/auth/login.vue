@@ -11,14 +11,14 @@
 
       <div>
         <label for="email" class="font-normal text-base block mb-1">Email address</label>
-        <input id="email" type="email"
+        <input id="email" type="email" v-model="form.email"
           class="w-full border border-gray-300 p-3 rounded-lg focus:border-gray-500 focus:ring-0 focus:outline-none placeholder-gray-400"
           placeholder="Your email">
       </div>
 
       <div class="relative">
         <label for="password" class="font-normal text-base block mb-1">Password</label>
-        <input id="password" :type="passwordFieldType"
+        <input id="password" :type="passwordFieldType" v-model="form.password"
           class="w-full border border-gray-300 p-3 pr-10 rounded-lg focus:border-gray-500 focus:ring-0 focus:outline-none placeholder-gray-400"
           placeholder="Password">
         <button type="button" @click="togglePasswordVisibility"
@@ -42,7 +42,7 @@
 
       <div class="flex justify-between items-center text-sm">
         <div class="flex items-center">
-          <input id="remember-me" name="remember-me" type="checkbox"
+          <input id="remember-me" name="remember-me" type="checkbox" v-model="form.remember_me"
             class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
           <label for="remember-me" class="ml-2 block text-gray-700">Remember me</label>
         </div>
@@ -84,28 +84,43 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: 'auth'
 })
 
-// State untuk tipe input password (untuk fungsi show/hide)
+const loading = ref<boolean>(false);
+const auth = useAuthStore();
+
+const form = ref<LoginRequest>({
+  email: '',
+  password: '',
+  remember_me: false
+});
+
 const passwordFieldType = ref('password');
 
-// Fungsi untuk mengganti tipe input password
 const togglePasswordVisibility = () => {
   passwordFieldType.value = passwordFieldType.value === 'password' ? 'text' : 'password';
 };
 
-// Fungsi untuk menangani proses login
-const handleLogin = () => {
-  // Logika login di sini (misalnya: memanggil API, validasi)
+const handleLogin = async () => {
+  loading.value = true;
+  try {
+    await auth.login(form.value);
+    useToast().success(`Login berhasil, Selamat datang ${auth.user?.name}!`)
+    return navigateTo('/home');
+  } catch (err: any) {
+    if (err?.data?.errors) {
+      // setErrors(err.data.errors);
+    } else if (err?.data?.message) {
+      useToast().error(err.data.message);
+    } else {
+      useToast().error('Terjadi kesalahan. Silakan coba lagi.')
+    }
+  } finally {
+    loading.value = false;
+  }
 
-  // Contoh Navigasi (Gunakan navigateTo di Nuxt 3)
-  return navigateTo('/home');
 };
 </script>
-
-<style scoped>
-/* Anda bisa menambahkan styling kustom di sini jika diperlukan */
-</style>

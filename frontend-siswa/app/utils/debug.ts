@@ -2,7 +2,7 @@ export default function (
   message: string,
   type: "info" | "warn" | "error" | "log" = "info"
 ): void {
-  if(useRuntimeConfig().debug === false || useRuntimeConfig().appEnv === "production") return;
+  if(useRuntimeConfig().public.debug == false || useRuntimeConfig().public.appEnv === "production") return;
   
   const timestamp = new Date().toISOString();
 
