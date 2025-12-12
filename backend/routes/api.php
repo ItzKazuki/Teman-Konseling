@@ -7,24 +7,25 @@ use App\Http\Controllers\Api\Admin\ClassroomController as AdminClassroomControll
 use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Auth\AccountController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Common\ClassroomController;
 use App\Http\Controllers\Api\Common\FileController;
+use App\Http\Controllers\Api\MasterDataController;
 use App\Http\Middleware\CheckRoleIsBk;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     /**
      * App Details
-     * 
+     *
      * @unauthenticated
      */
     Route::get('/', function () {
         return ApiResponse::success([
             'app_name' => config('app.name'),
             'version' => config('app.version'),
-            'maintainer' => 'ItzKazuki (Cha)'
+            'maintainer' => 'ItzKazuki (Cha)',
         ]);
     });
 
@@ -40,7 +41,7 @@ Route::prefix('v1')->group(function () {
         // Route::post('password/reset', [ResetPasswordController::class, 'change']);
     });
 
-     Route::middleware(['auth:sanctum'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::apiResource('files', FileController::class);
         Route::get('/files/{id}/blob', [FileController::class, 'blob']);
 
@@ -52,12 +53,17 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('users', UserController::class);
         Route::apiResource('students', StudentController::class);
         Route::apiResource('articles', ArticleController::class);
-    });
-    
-    // master data
-    Route::group(['middleware' => ['auth:user', CheckRoleIsBk::class], 'prefix' => 'master-data', 'as' => 'master-data.'], function () {
-        Route::apiResource('classrooms', AdminClassroomController::class);
-        Route::apiResource('article-categories', ArticleCategoryController::class);
+
+        // master data admin
+        Route::group(['prefix' => 'master-data', 'as' => 'master-data.'], function () {
+            Route::apiResource('classrooms', AdminClassroomController::class);
+            Route::apiResource('article-categories', ArticleCategoryController::class);
+        });
     });
 
+    Route::group(['prefix' => 'master-data', 'as' => 'master-data.'], function () {
+        Route::get('classrooms', [MasterDataController::class, 'classrooms']);
+        Route::get('article-categories', [MasterDataController::class, 'articleCategory']);
+        Route::get('teachers', [MasterDataController::class, 'teachers']);
+    });
 });

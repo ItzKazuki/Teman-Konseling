@@ -12,3 +12,8 @@ interface User {
   password?: string;
   password_confirmation?: string;
 }
+
+interface Teacher {
+  id: string;
+  name: string;
+}

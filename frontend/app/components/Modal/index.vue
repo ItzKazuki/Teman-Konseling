@@ -6,7 +6,7 @@
     <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" aria-modal="true"
       role="dialog">
 
-      <div class="relative bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-hidden" :class="maxWidthClass"
+      <div class="relative bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-hidden w-full" :class="maxWidthClass"
         @click.stop>
 
         <div class="p-5 border-b flex justify-between items-center">

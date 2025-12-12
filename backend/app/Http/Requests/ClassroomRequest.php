@@ -32,15 +32,14 @@ class ClassroomRequest extends FormRequest
                 'required',
                 'string',
                 'max:100',
-                // Pastikan nama kelas unik, kecuali untuk kelas yang sedang diupdate
                 Rule::unique('class_rooms', 'name')->ignore($classRoomId, 'id'),
             ],
+
             'description' => 'nullable|string|max:255',
 
-            // homeroom_teacher_id (FK ke users) harus ada dan harus ber-role 'guru'
             'homeroom_teacher' => [
                 'nullable',
-                'uuid', // Asumsi ID di users adalah UUID (atau ubah ke 'exists:users,id' jika ID integer)
+                'uuid',
                 Rule::exists('users', 'id')->where(function ($query) {
                     return $query->where('role', 'guru');
                 }),

@@ -9,7 +9,7 @@ use App\Http\Resources\ArticleCategoryResource;
 use App\Models\ArticleCategory;
 use Dedoc\Scramble\Attributes\Group;
 
-#[Group('Master Data: Kategori Artikel', weight: 10)]
+#[Group('Admin Master Data: Kategori Artikel', weight: 10)]
 class ArticleCategoryController extends Controller
 {
     /**

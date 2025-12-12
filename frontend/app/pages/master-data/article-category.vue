@@ -220,7 +220,7 @@ async function fetchCategoryData(id: string) {
   isSubmitting.value = true;
   try {
     // Asumsi useApi().get mengembalikan { status: boolean, data: T }
-    const response = await useApi().get<ArticleCategory>(`/master-data/article-categories/${id}`);
+    const response = await useApi().get<ArticleCategory>(`/admin/master-data/article-categories/${id}`);
     if (response.status && response.data) {
       // Isi form dengan data yang diambil
       Object.assign(form, {
@@ -263,11 +263,11 @@ const submitForm = async () => {
     
     if (isEditMode.value && currentEditId.value) {
       // MODE UPDATE (Menggunakan PUT)
-      response = await useApi().put(`/master-data/article-categories/${currentEditId.value}`, form);
+      response = await useApi().put(`/admin/article-categories/${currentEditId.value}`, form);
       successMessage = 'Kategori artikel berhasil diperbarui!';
     } else {
       // MODE CREATE (Menggunakan POST)
-      response = await useApi().post(`/master-data/article-categories`, form);
+      response = await useApi().post(`/admin/master-data/article-categories`, form);
       successMessage = 'Kategori artikel berhasil dibuat!';
     }
     
@@ -317,7 +317,7 @@ const handleDelete = async (id: string, name: string) => {
     if (!confirmed) return;
 
     // Asumsi useApi().destroy mengembalikan { status: boolean, message: string }
-    const message = await useApi().destroy(`/master-data/article-categories/${id}`);
+    const message = await useApi().destroy(`/admin/master-data/article-categories/${id}`);
 
     if (message.status) {
       useToast().success(`Kategori Artikel "${name}" berhasil dihapus.`);
@@ -338,7 +338,7 @@ const handleDelete = async (id: string, name: string) => {
 async function getAllCategories() {
   isLoading.value = true;
   // Asumsi useApi().get mengembalikan { status: boolean, data: T }
-  const resArticleCategories = await useApi().get<ArticleCategory[]>('/master-data/article-categories');
+  const resArticleCategories = await useApi().get<ArticleCategory[]>('/admin/master-data/article-categories');
   if (resArticleCategories.status && resArticleCategories.data) {
     rawArticleCategories.value = resArticleCategories.data;
   } else {

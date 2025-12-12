@@ -81,15 +81,15 @@
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ classItem.homeroom_teacher || '-' }}
+              {{ classItem.homeroom_teacher_name || '-' }}
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
-              <button @click="handleEdit(classItem.id)"
+              <button @click="handleEdit(classItem.id ?? '')"
                 class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
                 <Icon name="tabler:edit" class="w-4 h-4" />
               </button>
-              <button @click="handleDelete(classItem.id, classItem.name)"
+              <button @click="handleDelete(classItem.id ?? '', classItem.name)"
                 class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
                 <Icon name="tabler:trash" class="w-4 h-4" />
               </button>
@@ -114,28 +114,56 @@
     </div>
 
   </div>
+
+  <Modal :show="showModal" :title="modalTitle" max-width="xl" @close="closeModal">
+    <form @submit.prevent="submitForm" class="space-y-6">
+
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Kelas <span
+            class="text-red-500">*</span></label>
+        <input type="text" id="name" v-model="form.name"
+          class="form-input rounded-lg text-sm border-gray-300 shadow-sm w-full focus:ring-primary-500 focus:border-primary-500"
+          required :disabled="isSubmitting" />
+        <p v-if="errors.name" class="mt-1 text-xs text-red-500">{{ errors.name }}</p>
+      </div>
+
+      <FormSelect name="homeroom_teacher" label="Wali Kelas" v-model="form.homeroom_teacher"
+        :options="teachers.map(teacher => ({ label: teacher.name, value: teacher.id }))" placeholder="Pilih Wali Kelas"
+        :disabled="isSubmitting || !teachers.length" required />
+
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+        <textarea id="description" v-model="form.description" rows="3"
+          class="form-input rounded-lg text-sm border-gray-300 shadow-sm w-full focus:ring-primary-500 focus:border-primary-500"
+          :disabled="isSubmitting"></textarea>
+        <p v-if="errors.description" class="mt-1 text-xs text-red-500">{{ errors.description }}</p>
+      </div>
+
+      <div class="pt-4 border-t flex justify-end">
+        <button type="button" @click="closeModal" :disabled="isSubmitting"
+          class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 mr-3">
+          Batal
+        </button>
+
+        <button type="submit" :disabled="isSubmitting"
+          class="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md disabled:bg-primary-400">
+          <Icon v-if="isSubmitting" name="tabler:loader-2" class="w-4 h-4 mr-1 animate-spin" />
+          {{ isEditMode ? 'Simpan Perubahan' : 'Buat Kelas' }}
+        </button>
+      </div>
+    </form>
+  </Modal>
 </template>
 
-<script setup>
-// ==============================================
-// 1. DATA SIMULASI (Diganti dengan fetch API sesungguhnya)
-// ==============================================
-const rawClassData = ref([
-  { "id": "0f1babaf-5f23-4ad8-aa0c-de3981c38326", "name": "XII DKV 1", "description": "Kelas XII Jurusan DKV Rombel 1", "homeroom_teacher": 'Siti Rahmawati', "created_at": "2025-12-06T14:45:31.000000Z", "updated_at": "2025-12-06T14:45:31.000000Z" },
-  { "id": "19004ebe-fcb0-4e91-8a95-f03720bc86b9", "name": "XI ANM 1", "description": "Kelas XI Jurusan ANM Rombel 1", "homeroom_teacher": 'Budi Santoso', "created_at": "2025-12-06T14:45:31.000000Z", "updated_at": "2025-12-06T14:45:31.000000Z" },
-  { "id": "22475df6-aeab-4a2e-86fd-cadd382d1613", "name": "X RPL 1", "description": "Kelas X Jurusan RPL Rombel 1", "homeroom_teacher": null, "created_at": "2025-12-06T14:45:31.000000Z", "updated_at": "2025-12-06T14:45:31.000000Z" },
-  { "id": "4ceb0b56-d2c0-44f4-a543-94d333ca9708", "name": "X DKV 1", "description": "Kelas X Jurusan DKV Rombel 1", "homeroom_teacher": 'Joko Widodo', "created_at": "2025-12-06T14:45:31.000000Z", "updated_at": "2025-12-06T14:45:31.000000Z" },
-  { "id": "59e70af0-95ee-4e26-90a7-ebd34afda339", "name": "XII RPL 2", "description": "Kelas XII Jurusan RPL Rombel 2", "homeroom_teacher": null, "created_at": "2025-12-06T14:45:31.000000Z", "updated_at": "2025-12-06T14:45:31.000000Z" },
-]);
-
-// ==============================================
-// 2. LOGIKA FILTER
-// ==============================================
-const isFilterVisible = ref(false);
+<script setup lang="ts">
+const rawClassData = ref<Classroom[]>([]);
+const teachers = ref<Teacher[]>([]);
+const isFilterVisible = ref<boolean>(false);
+const isLoading = ref<boolean>(true);
 
 const filterForm = reactive({
   search: '',
-  level: '', // X, XI, atau XII
+  level: '',
 });
 
 const handleFilterToggle = () => {
@@ -143,8 +171,6 @@ const handleFilterToggle = () => {
 };
 
 const applyFilter = () => {
-  console.log(`Menerapkan filter: Cari='${filterForm.search}', Level='${filterForm.level}'`);
-  // Di sini Anda akan melakukan pemanggilan API untuk mengambil data berdasarkan filterForm.value
   alert('Filter diterapkan! (Cek console log untuk detail filter)');
 };
 
@@ -167,23 +193,182 @@ const filteredClasses = computed(() => {
   return data;
 });
 
-// ==============================================
-// 3. LOGIKA AKSI (CRUD)
-// ==============================================
+// ==========================================================
+// 3. STATE DAN LOGIKA MODAL FORM
+// ==========================================================
+
+const showModal = ref<boolean>(false);
+const initialForm: Classroom = { name: '', homeroom_teacher: '', description: '' };
+const form = reactive<Classroom>({ ...initialForm });
+const errors = reactive<{ [key: string]: string | undefined }>({});
+const isSubmitting = ref(false);
+const currentEditId = ref<string | null>(null); // Menyimpan ID saat ini yang diedit
+
+// Computed Properties untuk Modal
+const isEditMode = computed(() => !!currentEditId.value);
+const modalTitle = computed(() => isEditMode.value ? 'Ubah Kelas' : 'Tambah Kelas');
+
+/**
+ * Menutup modal dan me-reset state
+ */
+const closeModal = () => {
+  showModal.value = false;
+  // Clear error dan reset form
+  Object.keys(errors).forEach(key => errors[key] = undefined);
+  Object.assign(form, initialForm);
+  currentEditId.value = null;
+};
+
+/**
+ * Membuka modal dalam mode Create
+ */
 const handleCreate = () => {
-  alert('Navigasi ke halaman Tambah Data Kelas');
-  // Contoh: navigateTo('/classes/create');
+  currentEditId.value = null;
+  Object.assign(form, initialForm); // Pastikan form bersih
+  showModal.value = true;
 };
 
-const handleEdit = (id) => {
-  alert(`Navigasi ke halaman Edit Kelas ID: ${id}`);
-  // Contoh: navigateTo(`/classes/${id}/edit`);
+/**
+ * Membuka modal dalam mode Edit
+ */
+const handleEdit = (id: string) => {
+  currentEditId.value = id; // Set ID yang akan diedit
+  showModal.value = true;
 };
 
-const handleDelete = (id, name) => {
-  if (confirm(`Apakah Anda yakin ingin menghapus kelas: ${name}?`)) {
-    alert(`Permintaan HAPUS berhasil dikirim untuk ID: ${id}`);
-    // Di dunia nyata: Panggil API delete dan muat ulang data.
+/**
+ * Mengisi form dengan data dari server
+ */
+async function fetchCategoryData(id: string) {
+  isSubmitting.value = true;
+  try {
+    // Asumsi useApi().get mengembalikan { status: boolean, data: T }
+    const response = await useApi().get<Classroom>(`/admin/master-data/classrooms/${id}`);
+    if (response.status && response.data) {
+      // Isi form dengan data yang diambil
+      Object.assign(form, {
+        name: response.data.name,
+        homeroom_teacher: response.data.homeroom_teacher || '',
+        description: response.data.description || '',
+      });
+    } else {
+      useToast().error('Gagal memuat data kategori.');
+      closeModal();
+    }
+  } catch (err: any) {
+    useToast().error('Terjadi kesalahan saat memuat data.');
+    closeModal();
+  } finally {
+    isSubmitting.value = false;
+  }
+}
+
+const handleDelete = async (id: string, name: string) => {
+  try {
+    const confirmed = await useAlert().confirm(`Apakah Anda yakin ingin menghapus Kelas "${name}"?`);
+
+    if (!confirmed) return;
+
+    // Asumsi useApi().destroy mengembalikan { status: boolean, message: string }
+    const message = await useApi().destroy(`/admin/master-data/classrooms/${id}`);
+
+    if (message.status) {
+      useToast().success(`Kelas "${name}" berhasil dihapus.`);
+      await getAllClassrooms(); // Refresh data setelah penghapusan
+    } else {
+      useToast().error('Gagal menghapus Kelas. Silakan coba lagi.');
+    }
+  } catch (err: any) {
+    // ... (Error handling)
+    if (err?.data?.message) {
+      useToast().error(err.data.message);
+    } else {
+      useToast().error('Terjadi kesalahan. Silakan coba lagi.')
+    }
   }
 };
+
+/**
+ * Mengirim formulir untuk Create atau Update
+ */
+const submitForm = async () => {
+  isSubmitting.value = true;
+  Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
+
+  try {
+    let response;
+    let successMessage: string;
+
+    if (isEditMode.value && currentEditId.value) {
+      // MODE UPDATE (Menggunakan PUT)
+      response = await useApi().put(`/admin/master-data/classrooms/${currentEditId.value}`, form);
+      successMessage = 'Kelas berhasil diperbarui!';
+    } else {
+      // MODE CREATE (Menggunakan POST)
+      response = await useApi().post(`/admin/master-data/classrooms`, form);
+      successMessage = 'Kelas berhasil dibuat!';
+    }
+
+    if (response.status) {
+      useToast().success(successMessage);
+      await getAllClassrooms(); // Refresh data tabel
+      closeModal();
+    } else {
+      // Handle server validation errors yang non-422
+      if (response.errors) {
+        Object.assign(errors, response.errors);
+      } else {
+        useToast().error(response.message || 'Gagal menyimpan data. Silakan cek form.');
+      }
+    }
+
+  } catch (err: any) {
+    if (err?.data?.errors) {
+      // Handle Laravel's validation error response structure (422)
+      Object.assign(errors, err.data.errors);
+    } else {
+      useToast().error(err.data?.message || 'Terjadi kesalahan jaringan.');
+    }
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+// 💡 Watcher yang diperbaiki: Panggil fetchCategoryData hanya saat modal dibuka dalam mode Edit
+watch(showModal, (newVal) => {
+  if (newVal && currentEditId.value) {
+    // Modal dibuka dalam mode Edit
+    fetchCategoryData(currentEditId.value);
+  }
+  // Jika newVal adalah true TAPI currentEditId adalah null,
+  // maka itu mode Create, dan form sudah direset di handleCreate.
+});
+
+async function getAllClassrooms() {
+  isLoading.value = true;
+  const resClassrooms = await useApi().get<Classroom[]>('/admin/master-data/classrooms');
+  if (resClassrooms.status && resClassrooms.data) {
+    rawClassData.value = resClassrooms.data;
+  } else {
+    // console.error('Gagal mengambil data kategori', resClassrooms); // Gunakan console.error/log
+    rawClassData.value = [];
+  }
+  isLoading.value = false;
+}
+
+async function getAllTeachers() {
+  isLoading.value = true;
+  const resTeachers = await useApi().get<Teacher[]>('/master-data/teachers');
+  if (resTeachers.status && resTeachers.data) {
+    teachers.value = resTeachers.data;
+  } else {
+    teachers.value = [];
+  }
+  isLoading.value = false;
+}
+
+onMounted(() => {
+  getAllClassrooms();
+  getAllTeachers();
+})
 </script>

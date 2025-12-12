@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Models\ClassRoom;
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ClassroomRequest;
 use App\Http\Resources\ClassRoomResource;
+use App\Models\ClassRoom;
 use Dedoc\Scramble\Attributes\Group;
 
-#[Group('Master Data: Kelas', weight: 10)]
+#[Group('Admin Master Data: Kelas', weight: 10)]
 class ClassroomController extends Controller
 {
     /**
@@ -25,9 +25,13 @@ class ClassroomController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ClassroomRequest $request)
     {
-        //
+        $validatedData = $request->validated();
+
+        $classroom = Classroom::create($validatedData);
+
+        return ApiResponse::success(null, 'Berhasil membuat kelas baru');
     }
 
     /**
@@ -37,7 +41,7 @@ class ClassroomController extends Controller
     {
         $classroom = ClassRoom::find($id);
 
-        if(!$classroom) {
+        if (! $classroom) {
             return ApiResponse::error('Kelas tidak ditemukan', 404);
         }
 
@@ -47,13 +51,19 @@ class ClassroomController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ClassroomRequest $request, string $id)
     {
         $classroom = ClassRoom::find($id);
 
-        if(!$classroom) {
+        if (! $classroom) {
             return ApiResponse::error('Kelas tidak ditemukan', 404);
         }
+
+        $validatedData = $request->validated();
+
+        $classroom->update($validatedData);
+
+        return ApiResponse::success(null, 'Berhasil mengubah detail kelas');
     }
 
     /**
@@ -63,7 +73,7 @@ class ClassroomController extends Controller
     {
         $classroom = ClassRoom::find($id);
 
-        if(!$classroom) {
+        if (! $classroom) {
             return ApiResponse::error('Kelas tidak ditemukan', 404);
         }
 

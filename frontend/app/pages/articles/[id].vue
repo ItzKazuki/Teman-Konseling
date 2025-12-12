@@ -120,8 +120,6 @@ if (!articleId) {
   router.replace('/admin/articles');
 }
 
-// --- 1. Definisi Tipe dan State Form ---
-
 interface ArticlePayload {
   author_id: string;
   article_category_id: string;
@@ -154,7 +152,6 @@ const isLoading = ref(true); // Status loading saat mengambil data awal
 
 // State Data Master
 const categories = ref<{ id: string, name: string }[]>([]);
-const currentUser = ref<{ id: string, name: string } | null>(null); // Untuk menampilkan nama penulis
 
 // --- 2. Logika Frontend (Slugify) ---
 
@@ -206,10 +203,6 @@ function formatDateTimeForInput(isoDate: string | null): string | null {
 
 async function fetchInitialData() {
   isLoading.value = true;
-
-  // 1. Ambil Kategori dan User (sama seperti halaman Create)
-  currentUser.value = { id: '123', name: 'Admin Utama' }; // Simulasi user
-
   try {
     const resCat = await useApi().get<{ id: string, name: string }[]>('/master-data/article-categories');
     if (resCat.status && resCat.data) {
@@ -231,9 +224,6 @@ async function fetchInitialData() {
         // Pastikan author_id terisi (meskipun field ini read-only)
         author_id: data.author_id,
       });
-      // 💡 Perbarui nama penulis jika API mengembalikan objek user terlampir
-      // currentUser.value.name = resArticle.data.author.name; // Contoh jika relasi dimuat
-
     } else {
       useToast().error('Data artikel tidak ditemukan atau gagal dimuat.');
       router.replace('/articles'); // Redirect jika artikel tidak ada
@@ -246,8 +236,6 @@ async function fetchInitialData() {
     isLoading.value = false;
   }
 }
-
-// --- 4. Submit Form Update ke API Laravel ---
 
 const submitArticleUpdate = async () => {
   isSubmitting.value = true;
