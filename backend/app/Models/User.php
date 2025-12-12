@@ -75,4 +75,8 @@ class User extends Authenticatable
         return $this->belongsTo(File::class, 'avatar_file_id');
     }
 
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
 }

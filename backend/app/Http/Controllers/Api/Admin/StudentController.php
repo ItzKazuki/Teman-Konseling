@@ -11,7 +11,7 @@ use App\Http\Requests\StudentRequest;
 use App\Http\Resources\StudentResource;
 use Dedoc\Scramble\Attributes\Group;
 
-#[Group('Admin: Data Siswa')]
+#[Group('Admin: Data Siswa', weight: 3)]
 class StudentController extends Controller
 {
     /**

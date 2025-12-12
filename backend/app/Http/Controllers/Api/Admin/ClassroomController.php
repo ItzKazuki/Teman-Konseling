@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ClassRoomResource;
 use Dedoc\Scramble\Attributes\Group;
 
-#[Group('Admin: Master Data Kelas')]
+#[Group('Master Data: Kelas', weight: 10)]
 class ClassroomController extends Controller
 {
     /**

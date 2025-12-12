@@ -1,6 +1,8 @@
 <?php
 
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\Api\Admin\ArticleCategoryController;
+use App\Http\Controllers\Api\Admin\ArticleController;
 use App\Http\Controllers\Api\Admin\ClassroomController as AdminClassroomController;
 use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\UserController;
@@ -47,10 +49,15 @@ Route::prefix('v1')->group(function () {
 
     // untuk bk
     Route::group(['middleware' => ['auth:user', CheckRoleIsBk::class], 'prefix' => 'admin', 'as' => 'admin.'], function () {
-
         Route::apiResource('users', UserController::class);
-        Route::apiResource('classrooms', AdminClassroomController::class);
         Route::apiResource('students', StudentController::class);
+        Route::apiResource('articles', ArticleController::class);
+    });
+    
+    // master data
+    Route::group(['middleware' => ['auth:user', CheckRoleIsBk::class], 'prefix' => 'master-data', 'as' => 'master-data.'], function () {
+        Route::apiResource('classrooms', AdminClassroomController::class);
+        Route::apiResource('article-categories', ArticleCategoryController::class);
     });
 
 });

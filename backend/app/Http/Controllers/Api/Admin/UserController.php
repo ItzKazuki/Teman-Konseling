@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Dedoc\Scramble\Attributes\Group;
 
-#[Group('Admin: Data Pengguna')]
+#[Group('Admin: Data Pengguna', weight: 3)]
 class UserController extends Controller
 {
     /**

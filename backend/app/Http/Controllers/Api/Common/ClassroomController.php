@@ -9,7 +9,7 @@ use App\Models\ClassRoom;
 use Illuminate\Http\Request;
 use Dedoc\Scramble\Attributes\Group;
 
-#[Group('Master Data')]
+#[Group('Public: Data Kelas', weight: 5)]
 class ClassroomController extends Controller
 {
     /**

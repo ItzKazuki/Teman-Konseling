@@ -14,7 +14,7 @@ use Illuminate\Validation\Rules\Enum;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Dedoc\Scramble\Attributes\Group;
 
-#[Group('Guru File: Manajemen File upload')]
+#[Group('Guru File: Manajemen File upload', weight: 1)]
 class FileController
 {
     /**

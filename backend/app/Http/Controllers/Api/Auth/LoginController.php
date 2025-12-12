@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 
-#[Group('Auth')]
+#[Group('Auth', weight: 0)]
 class LoginController extends Controller
 {
     /**
