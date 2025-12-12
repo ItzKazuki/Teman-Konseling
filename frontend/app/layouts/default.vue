@@ -32,7 +32,7 @@
           <button @click="toggleDropdown"
             class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
             :aria-expanded="isProfileDropdownOpen" aria-controls="profile-menu">
-            <img src="http://api.sistem-kinerja.test/static/profile.png" alt="User Avatar"
+            <img :src="auth.user?.avatar_url" alt="User Avatar"
               class="w-10 h-10 rounded-full">
             <div class="text-sm hidden sm:block text-left">
               <div class="font-medium text-gray-800">{{ auth.user?.name }}</div>
@@ -46,11 +46,11 @@
             class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-10 border border-gray-100 origin-top-right animate-fade-in">
             <div class="py-1">
 
-              <button @click="handleEditProfile"
+              <NuxtLink to="/profile" @click="isProfileDropdownOpen = false"
                 class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                 <Icon name="tabler:user-circle" class="w-5 h-5 mr-3 text-primary-500" />
                 Edit Profile
-              </button>
+              </NuxtLink>
 
               <div class="border-t border-gray-100 my-1"></div>
 
@@ -134,12 +134,6 @@ const isProfileDropdownOpen = ref(false);
 
 const toggleDropdown = () => {
   isProfileDropdownOpen.value = !isProfileDropdownOpen.value;
-};
-
-// Logika Aksi
-const handleEditProfile = () => {
-  alert('Navigasi ke halaman Edit Profile');
-  isProfileDropdownOpen.value = false;
 };
 
 const handleLogout = async () => {
