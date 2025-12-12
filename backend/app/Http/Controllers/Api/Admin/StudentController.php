@@ -19,7 +19,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::all();
+        $students = Student::with('classroom')->get();
 
         return ApiResponse::success(StudentResource::collection($students), 'Berhasil mengambil data siswa');
     }

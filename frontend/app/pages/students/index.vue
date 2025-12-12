@@ -13,11 +13,11 @@
           Filter Data
         </button>
 
-        <button @click="handleCreate"
+        <NuxtLink to="/students/create"
           class="flex items-center px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md">
           <Icon name="tabler:plus" class="w-5 h-5 mr-1" />
           Tambah Siswa
-        </button>
+        </NuxtLink>
       </div>
     </div>
 
@@ -27,13 +27,10 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <input type="text" v-model="filterForm.search" placeholder="Cari Nama, NIS, atau NISN"
           class="form-input rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500" />
-        <select v-model="filterForm.classId"
-          class="form-select rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500">
-          <option value="">Semua Kelas</option>
-          <option v-for="c in classRooms" :key="c.id" :value="c.id">
-            {{ c.name }}
-          </option>
-        </select>
+        <FormSelect name="filter-class" v-model="filterForm.classId" :options="[
+          { value: '', label: 'Semua Kelas' },
+          ...classRooms.map(c => ({ value: c.id, label: c.name }))
+        ]" />
 
         <button @click="applyFilter"
           class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 w-full">
@@ -81,7 +78,7 @@
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ getClassName(student.class_room_id) }}
+              {{ student.classroom_name ?? '-' }}
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap">
@@ -94,11 +91,11 @@
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
-              <button @click="handleEdit(student.id)"
+              <NuxtLink :to="`/students/${student.id}`"
                 class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
                 <Icon name="tabler:edit" class="w-4 h-4" />
-              </button>
-              <button @click="handleDelete(student.id, student.name)"
+              </NuxtLink>
+              <button @click="handleDelete(student.id ?? '', student.name)"
                 class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
                 <Icon name="tabler:trash" class="w-4 h-4" />
               </button>
@@ -125,68 +122,21 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, reactive } from 'vue';
+<script setup lang="ts">
+const classRooms = ref<MasterDataClassroom[]>([]);
 
-// ==============================================
-// 1. DATA SIMULASI (Diganti dengan fetch API sesungguhnya)
-// ==============================================
+const rawStudentData = ref<Student[]>([]);
 
-// Data Dummy untuk Mapping Class ID ke Nama Kelas
-const classRooms = ref([
-  { id: "88a02e4d-d310-403d-8e20-6e81a0fe8e2e", name: "XI RPL 2" },
-  { id: "22475df6-aeab-4a2e-86fd-cadd382d1613", name: "X RPL 1" },
-  { id: "5ea17ea0-f7ae-429f-8858-331ad1c63983", name: "XI DKV 1" },
-  // Tambahkan data kelas lain yang relevan di sini
-]);
-
-const rawStudentData = ref([
-  {
-    "id": "019af42d-9860-712a-8f85-d0e91a24d123",
-    "nis": "0793",
-    "nisn": "0077902757",
-    "name": "Chaeza Ibnu Akbar",
-    "class_room_id": "88a02e4d-d310-403d-8e20-6e81a0fe8e2e",
-    "email": "cha@example.com",
-    "created_at": "2025-12-06T15:00:20.000000Z",
-    "updated_at": "2025-12-06T15:00:20.000000Z"
-  },
-  {
-    "id": "019af42d-9860-712a-8f85-d0e91a24d124",
-    "nis": "0801",
-    "nisn": "0088123456",
-    "name": "Budi Santoso",
-    "class_room_id": "22475df6-aeab-4a2e-86fd-cadd382d1613",
-    "email": "budi@example.com",
-    "created_at": "2025-12-06T15:00:20.000000Z",
-    "updated_at": "2025-12-06T15:00:20.000000Z"
-  },
-  {
-    "id": "019af42d-9860-712a-8f85-d0e91a24d125",
-    "nis": "0810",
-    "nisn": "0089876543",
-    "name": "Siti Aminah",
-    "class_room_id": "5ea17ea0-f7ae-429f-8858-331ad1c63983",
-    "email": "siti@example.com",
-    "created_at": "2025-12-06T15:00:20.000000Z",
-    "updated_at": "2025-12-06T15:00:20.000000Z"
-  }
-]);
-
-// Fungsi untuk mendapatkan nama kelas dari ID
-const getClassName = (classId) => {
+const getClassName = (classId: string) => {
   const classItem = classRooms.value.find(c => c.id === classId);
   return classItem ? classItem.name : 'Kelas Tidak Ditemukan';
 };
 
-// ==============================================
-// 2. LOGIKA FILTER
-// ==============================================
 const isFilterVisible = ref(false);
 
 const filterForm = reactive({
   search: '',
-  classId: '', // ID Kelas untuk filter
+  classId: '',
 });
 
 const handleFilterToggle = () => {
@@ -194,11 +144,9 @@ const handleFilterToggle = () => {
 };
 
 const applyFilter = () => {
-  console.log(`Menerapkan filter: Cari='${filterForm.search}', Class ID='${filterForm.classId}'`);
   alert('Filter diterapkan! (Cek console log untuk detail filter)');
 };
 
-// Computed property untuk menampilkan data setelah filter di frontend (untuk simulasi)
 const filteredStudents = computed(() => {
   let data = rawStudentData.value;
 
@@ -219,23 +167,57 @@ const filteredStudents = computed(() => {
   return data;
 });
 
-// ==============================================
-// 3. LOGIKA AKSI (CRUD)
-// ==============================================
-const handleCreate = () => {
-  alert('Navigasi ke halaman Tambah Data Siswa Baru');
-  // Contoh: navigateTo('/students/create');
-};
+const handleDelete = async (id: string, name: string) => {
+  try {
+    const confirmed = await useAlert().confirm(`Apakah Anda yakin ingin menghapus siswa "${name}"?`);
 
-const handleEdit = (id) => {
-  alert(`Navigasi ke halaman Edit Siswa ID: ${id}`);
-  // Contoh: navigateTo(`/students/${id}/edit`);
-};
+    if (!confirmed) return;
 
-const handleDelete = (id, name) => {
-  if (confirm(`Apakah Anda yakin ingin menghapus data siswa: ${name}?`)) {
-    alert(`Permintaan HAPUS berhasil dikirim untuk ID: ${id}`);
-    // Di dunia nyata: Panggil API delete dan muat ulang data.
+    const message = await useApi().destroy(`/admin/students/${id}`);
+
+    if (message.status) {
+      useToast().success(`Data siswa "${name}" berhasil dihapus.`);
+      await fecthAllStudents();
+    } else {
+      useToast().error('Gagal menghapus data siswa. Silakan coba lagi.');
+    }
+  } catch (err: any) {
+    if (err?.data?.message) {
+      useToast().error(err.data.message);
+    } else {
+      useToast().error('Terjadi kesalahan. Silakan coba lagi.')
+    }
   }
 };
+
+async function fetchClassRooms() {
+  try {
+    const res = await useApi().get<MasterDataClassroom[]>('/master-data/classrooms');
+    if (res.status && res.data) {
+      classRooms.value = res.data;
+    } else {
+      useToast().error('Gagal memuat daftar ruang kelas.');
+    }
+  } catch (e) {
+    useToast().error('Error saat mengambil data kelas.');
+  }
+}
+
+async function fecthAllStudents() {
+  try {
+    const res = await useApi().get<Student[]>('/admin/students');
+    if (res.status && res.data) {
+      rawStudentData.value = res.data;
+    } else {
+      useToast().error('Gagal memuat daftar siswa.');
+    }
+  } catch (e) {
+    useToast().error('Error saat mengambil data siswa.');
+  }
+}
+
+onMounted(() => {
+  fetchClassRooms();
+  fecthAllStudents();
+});
 </script>

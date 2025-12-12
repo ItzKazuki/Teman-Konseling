@@ -7,3 +7,8 @@ interface Classroom {
   created_at?: string;
   updated_at?: string;
 }
+
+interface MasterDataClassroom {
+  id: string;
+  name: string;
+}
