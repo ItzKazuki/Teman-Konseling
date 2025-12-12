@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Models\User;
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Models\User;
 use Dedoc\Scramble\Attributes\Group;
 
 #[Group('Admin: Data Pengguna', weight: 3)]
@@ -25,9 +25,13 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        //
+        $validatedData = $request->validated();
+
+        User::create($validatedData);
+
+        return ApiResponse::success(null, 'Berhasil menambahkan pengguna baru');
     }
 
     /**
@@ -37,7 +41,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if(!$user) {
+        if (! $user) {
             return ApiResponse::error('Pengguna tidak ditemukan', 404);
         }
 
@@ -47,9 +51,19 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, string $id)
     {
-        //
+        $user = User::find($id);
+
+        if (! $user) {
+            return ApiResponse::error('Pengguna tidak ditemukan', 404);
+        }
+
+        $validatedData = $request->validated();
+
+        $user->update($validatedData);
+
+        return ApiResponse::success(null, 'Berhasil mengubah detail pengguna');
     }
 
     /**
@@ -59,7 +73,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if(!$user) {
+        if (! $user) {
             return ApiResponse::error('Pengguna tidak ditemukan', 404);
         }
 
