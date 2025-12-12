@@ -41,5 +41,5 @@ export default defineNuxtConfig({
     cssLayer: "base",
   },
 
-  modules: ["@pinia/nuxt", "@nuxt/icon"],
+  modules: ["@pinia/nuxt", "@nuxt/icon", "nuxt-tiptap-editor"],
 });

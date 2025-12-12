@@ -5,6 +5,7 @@ interface User {
   nip: string;
   name: string;
   role?: UserRoleType;
+  jabatan?: string;
   avatar_url?: string;
   avatar_file_id?: string;
   email: string;

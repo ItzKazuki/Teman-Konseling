@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 @theme {
   /* font section */
@@ -45,19 +46,19 @@
 }
 
 @layer components {
-  .input-field {
+  .form-input {
     @apply w-full bg-white placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease-in focus:outline-none focus:border-primary-500 hover:border-primary-300 shadow-sm focus:shadow disabled:cursor-not-allowed disabled:bg-gray-100 disabled:border-gray-300;
   }
 
   /* Jika Anda ingin border merah tetap ada saat fokus */
-  .input-field.input-error:focus {
+  .form-input.input-error:focus {
     /* Override focus:border-primary-500 */
     @apply border-red-500 ring-red-200 focus:ring-1;
     /* Tambahkan ring (cincin) merah untuk visual fokus yang lebih jelas */
   }
 
   /* Jika Anda ingin menghilangkan efek hover biru saat error */
-  .input-field.input-error:hover {
+  .form-input.input-error:hover {
     /* Override hover:border-primary-300 */
     @apply border-red-500;
   }
@@ -124,6 +125,11 @@
   .btn-ghost.btn-danger {
     /* Menggunakan base utilitas yang sama, hanya override warna */
     @apply text-red-600 hover:bg-red-50 focus:ring-red-300;
+  }
+
+  .prose {
+    /* Contoh override dasar jika diperlukan */
+    font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
   }
 }
 

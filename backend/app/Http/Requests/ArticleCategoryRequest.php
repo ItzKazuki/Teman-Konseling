@@ -31,14 +31,6 @@ class ArticleCategoryRequest extends FormRequest
             // Field Nama Kategori (harus diisi, string, dan maksimal 255 karakter)
             'name' => ['required', 'string', 'max:255'],
 
-            // Field Slug (harus diisi, string, dan unik, kecuali untuk kategori yang sedang di-update)
-            // 'slug' => [
-            //     'required', 
-            //     'string', 
-            //     'max:255',
-            //     Rule::unique('article_categories', 'slug')->ignore($categoryId)
-            // ],
-
             // Field Deskripsi (optional, string)
             'description' => ['nullable', 'string'],
         ];

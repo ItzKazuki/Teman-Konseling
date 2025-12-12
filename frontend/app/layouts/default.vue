@@ -35,8 +35,8 @@
             <img src="http://api.sistem-kinerja.test/static/profile.png" alt="User Avatar"
               class="w-10 h-10 rounded-full">
             <div class="text-sm hidden sm:block text-left">
-              <div class="font-medium text-gray-800">Robert Pattinson</div>
-              <div class="text-xs text-gray-500">Super Admin</div>
+              <div class="font-medium text-gray-800">{{ auth.user?.name }}</div>
+              <div class="text-xs text-gray-500">{{ auth.user?.jabatan }}</div>
             </div>
             <Icon name="tabler:chevron-down" :class="{ 'rotate-180': isProfileDropdownOpen }"
               class="w-4 h-4 text-gray-600 transition-transform hidden sm:block" />
@@ -72,6 +72,8 @@
 
 <script setup lang="ts">
 const route = useRoute()
+
+const auth = useAuthStore();
 
 const navItems = [
   {
@@ -146,7 +148,7 @@ const handleLogout = async () => {
 
     if (!confirmed) return;
 
-    // await auth.logout();
+    await auth.logout();
 
     useToast().success('Logout Berhasil, Selamat tinggal!')
 

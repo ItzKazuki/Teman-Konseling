@@ -30,22 +30,13 @@ class ArticleRequest extends FormRequest
         $articleId = $this->route('article');
 
         return [
-            'author_id' => ['required', 'integer', Rule::exists('users', 'id')],
-
-            'article_category_id' => ['required', 'integer', Rule::exists('article_categories', 'id')],
+            'article_category_id' => ['required', 'string', Rule::exists('article_categories', 'id')],
 
             'title' => ['required', 'string', 'max:255'],
 
-            // 'slug' => [
-            //     'required',
-            //     'string',
-            //     'max:255',
-            //     Rule::unique('articles', 'slug')->ignore($articleId),
-            // ],
-
             'excerpt' => ['nullable', 'string'],
 
-            'thumbnail_file_id' => ['nullable', 'integer', Rule::exists('files', 'id')],
+            'thumbnail_file_id' => ['nullable', 'string', Rule::exists('files', 'id')],
 
             'content' => ['required', 'string'],
 

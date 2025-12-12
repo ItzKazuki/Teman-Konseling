@@ -15,10 +15,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('author_id')->constrained('users')->onDelete('cascade');
             $table->foreignUuid('article_category_id')->constrained('article_categories')->onDelete('cascade');
+            $table->foreignUuid('thumbnail_file_id')->nullable()->constrained('files')->onDelete('cascade');
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('excerpt');
-            $table->foreignUuid('thumbnail_file_id')->constrained('files')->onDelete('cascade');
             $table->longText('content');
             $table->enum('status', ['draft', 'published', 'archived']);
             $table->integer('views')->default(0);

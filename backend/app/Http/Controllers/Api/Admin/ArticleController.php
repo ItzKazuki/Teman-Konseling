@@ -17,7 +17,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::all();
+        $articles = Article::with(['author', 'category'])->get();
 
         return ApiResponse::success(ArticleResource::collection($articles));
     }
@@ -28,6 +28,8 @@ class ArticleController extends Controller
     public function store(ArticleRequest $request)
     {
         $validatedData = $request->validated();
+
+        $validatedData['author_id'] = $request->user('user')->id;
 
         $article = Article::create($validatedData);
 
@@ -45,7 +47,7 @@ class ArticleController extends Controller
             return ApiResponse::error('Artikel tidak ditemukan', 404);
         }
 
-        return ApiResponse::success(new ArticleResource($article));
+        return ApiResponse::success(new ArticleResource($article->load(['author', 'category'])));
     }
 
     /**
