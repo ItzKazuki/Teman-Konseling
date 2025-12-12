@@ -149,14 +149,6 @@ const isLoading = ref(true);
 
 const categories = ref<{ id: string, name: string }[]>([]);
 
-const slugify = (text: string): string => {
-  let slug = text.toLowerCase();
-  slug = slug.replace(/[^a-z0-9\s-]/g, '');
-  slug = slug.replace(/[\s-]+/g, '-');
-  slug = slug.replace(/^-+|-+$/g, '');
-  return slug;
-};
-
 const generateSlug = () => {
   form.slug = slugify(form.title);
 };

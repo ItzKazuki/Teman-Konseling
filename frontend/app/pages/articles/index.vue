@@ -150,7 +150,6 @@ const applyFilter = () => {
   alert('Filter diterapkan! (Cek console log untuk detail filter)');
 };
 
-// Computed property untuk menampilkan data setelah filter di frontend (untuk simulasi)
 const filteredArticles = computed(() => {
   let data = rawArticleData.value;
 
@@ -168,12 +167,6 @@ const filteredArticles = computed(() => {
   return data;
 });
 
-const handleEdit = (id?: string) => {
-  if (!id) return;
-  alert(`Navigasi ke halaman Edit Artikel ID: ${id}`);
-  // Contoh: navigateTo(`/users/${id}/edit`);
-};
-
 const handleDelete = async (id?: string, name?: string) => {
   try {
     const confirmed = await useAlert().confirm(`Apakah Anda yakin ingin menghapus artikel "${name}"?`);
@@ -184,7 +177,7 @@ const handleDelete = async (id?: string, name?: string) => {
 
     if (message.status) {
       useToast().success(`Kategori Artikel "${name}" berhasil dihapus.`);
-      await getAllArticle(); // Refresh data setelah penghapusan
+      await getAllArticle();
     } else {
       useToast().error('Gagal menghapus kategori artikel. Silakan coba lagi.');
     }

@@ -96,26 +96,21 @@ interface PasswordPayload {
   password_confirmation: string;
 }
 
-// State Form Profil
 const profileForm = reactive<UserProfile>({
   name: auth.user?.name ?? '',
   email: auth.user?.email ?? '',
 });
 
-// State Form Kata Sandi
 const passwordForm = reactive<PasswordPayload>({
   current_password: '',
   password: '',
   password_confirmation: '',
 });
 
-// State Loading & Error
 const errors = reactive<{ [key: string]: string[] | undefined }>({});
 const passwordErrors = reactive<{ [key: string]: string[] | undefined }>({});
 const isSubmittingProfile = ref(false);
 const isSubmittingPassword = ref(false);
-
-// --- 3. Logika Update Profil ---
 
 const updateProfile = async () => {
   isSubmittingProfile.value = true;
@@ -126,7 +121,6 @@ const updateProfile = async () => {
 
     if (response.status) {
       useToast().success(response.message);
-      // Optional: Refresh data user di store Pinia jika Anda menggunakannya
     } else {
       useToast().error(response.message || 'Gagal menyimpan profil.');
     }
@@ -143,13 +137,10 @@ const updateProfile = async () => {
   }
 };
 
-// --- 4. Logika Update Kata Sandi ---
-
 const updatePassword = async () => {
   isSubmittingPassword.value = true;
   Object.keys(passwordErrors).forEach(key => passwordErrors[key] = undefined); // Reset errors
 
-  // Validasi sederhana sisi klien (konfirmasi kata sandi)
   if (passwordForm.password !== passwordForm.password_confirmation) {
     passwordErrors.password_confirmation = ['Konfirmasi kata sandi tidak cocok.'];
     useToast().error('Konfirmasi kata sandi tidak cocok.');
@@ -158,12 +149,10 @@ const updatePassword = async () => {
   }
 
   try {
-    // --- Simulasi API Berhasil ---
     const response = { status: true, message: 'Kata sandi berhasil diubah!' };
 
     if (response.status) {
       useToast().success(response.message);
-      // Reset form kata sandi setelah sukses
       Object.assign(passwordForm, { current_password: '', password: '', password_confirmation: '' });
     } else {
       useToast().error(response.message || 'Gagal mengubah kata sandi.');

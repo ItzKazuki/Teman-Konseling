@@ -59,7 +59,6 @@ definePageMeta({
 
 const auth = useAuthStore();
 
-// Data properties
 const form = ref < LoginRequest > ({
   email: '',
   password: '',
@@ -68,7 +67,6 @@ const form = ref < LoginRequest > ({
 const passwordFieldType = ref('password')
 const loading = ref(false)
 
-// Methods
 const togglePasswordVisibility = () => {
   passwordFieldType.value = passwordFieldType.value === 'password' ? 'text' : 'password'
 }

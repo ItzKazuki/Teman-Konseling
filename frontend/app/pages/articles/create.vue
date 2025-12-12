@@ -107,9 +107,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-
 const router = useRouter();
 
 interface ArticlePayload {
@@ -123,7 +120,6 @@ interface ArticlePayload {
   published_at: string | null;
 }
 
-// State Awal
 const initialForm: ArticlePayload = {
   article_category_id: '',
   title: '',
@@ -141,9 +137,6 @@ const isSubmitting = ref(false);
 
 const categories = ref<{ id: string, name: string }[]>([]);
 
-/**
- * Menghasilkan slug secara real-time dari Judul
- */
 const generateSlug = () => {
   if (form.title && form.slug === slugify(form.slug)) {
     form.slug = slugify(form.title);
@@ -168,7 +161,6 @@ const submitArticle = async () => {
   Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
 
   try {
-    // API endpoint untuk store artikel
     const response = await useApi().post('/admin/articles', form);
 
     if (response.status) {

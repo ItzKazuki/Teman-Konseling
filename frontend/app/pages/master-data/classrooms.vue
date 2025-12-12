@@ -176,7 +176,6 @@ const applyFilter = () => {
   alert('Filter diterapkan! (Cek console log untuk detail filter)');
 };
 
-// Computed property untuk menampilkan data setelah filter di frontend (untuk simulasi)
 const filteredClasses = computed(() => {
   let data = rawClassData.value;
 
@@ -195,10 +194,6 @@ const filteredClasses = computed(() => {
   return data;
 });
 
-// ==========================================================
-// 3. STATE DAN LOGIKA MODAL FORM
-// ==========================================================
-
 const showModal = ref<boolean>(false);
 const initialForm: Classroom = { name: '', homeroom_teacher: '', description: '' };
 const form = reactive<Classroom>({ ...initialForm });
@@ -206,48 +201,32 @@ const errors = reactive<{ [key: string]: string | undefined }>({});
 const isSubmitting = ref(false);
 const currentEditId = ref<string | null>(null); // Menyimpan ID saat ini yang diedit
 
-// Computed Properties untuk Modal
 const isEditMode = computed(() => !!currentEditId.value);
 const modalTitle = computed(() => isEditMode.value ? 'Ubah Kelas' : 'Tambah Kelas');
 
-/**
- * Menutup modal dan me-reset state
- */
 const closeModal = () => {
   showModal.value = false;
-  // Clear error dan reset form
   Object.keys(errors).forEach(key => errors[key] = undefined);
   Object.assign(form, initialForm);
   currentEditId.value = null;
 };
 
-/**
- * Membuka modal dalam mode Create
- */
 const handleCreate = () => {
   currentEditId.value = null;
   Object.assign(form, initialForm); // Pastikan form bersih
   showModal.value = true;
 };
 
-/**
- * Membuka modal dalam mode Edit
- */
 const handleEdit = (id: string) => {
   currentEditId.value = id; // Set ID yang akan diedit
   showModal.value = true;
 };
 
-/**
- * Mengisi form dengan data dari server
- */
 async function fetchCategoryData(id: string) {
   isSubmitting.value = true;
   try {
-    // Asumsi useApi().get mengembalikan { status: boolean, data: T }
     const response = await useApi().get<Classroom>(`/admin/master-data/classrooms/${id}`);
     if (response.status && response.data) {
-      // Isi form dengan data yang diambil
       Object.assign(form, {
         name: response.data.name,
         homeroom_teacher: response.data.homeroom_teacher || '',
@@ -271,7 +250,6 @@ const handleDelete = async (id: string, name: string) => {
 
     if (!confirmed) return;
 
-    // Asumsi useApi().destroy mengembalikan { status: boolean, message: string }
     const message = await useApi().destroy(`/admin/master-data/classrooms/${id}`);
 
     if (message.status) {
@@ -281,7 +259,6 @@ const handleDelete = async (id: string, name: string) => {
       useToast().error('Gagal menghapus Kelas. Silakan coba lagi.');
     }
   } catch (err: any) {
-    // ... (Error handling)
     if (err?.data?.message) {
       useToast().error(err.data.message);
     } else {
@@ -290,9 +267,6 @@ const handleDelete = async (id: string, name: string) => {
   }
 };
 
-/**
- * Mengirim formulir untuk Create atau Update
- */
 const submitForm = async () => {
   isSubmitting.value = true;
   Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
@@ -302,11 +276,9 @@ const submitForm = async () => {
     let successMessage: string;
 
     if (isEditMode.value && currentEditId.value) {
-      // MODE UPDATE (Menggunakan PUT)
       response = await useApi().put(`/admin/master-data/classrooms/${currentEditId.value}`, form);
       successMessage = 'Kelas berhasil diperbarui!';
     } else {
-      // MODE CREATE (Menggunakan POST)
       response = await useApi().post(`/admin/master-data/classrooms`, form);
       successMessage = 'Kelas berhasil dibuat!';
     }
@@ -316,7 +288,6 @@ const submitForm = async () => {
       await getAllClassrooms(); // Refresh data tabel
       closeModal();
     } else {
-      // Handle server validation errors yang non-422
       if (response.errors) {
         Object.assign(errors, response.errors);
       } else {
@@ -326,7 +297,6 @@ const submitForm = async () => {
 
   } catch (err: any) {
     if (err?.data?.errors) {
-      // Handle Laravel's validation error response structure (422)
       Object.assign(errors, err.data.errors);
     } else {
       useToast().error(err.data?.message || 'Terjadi kesalahan jaringan.');
@@ -336,14 +306,10 @@ const submitForm = async () => {
   }
 };
 
-// 💡 Watcher yang diperbaiki: Panggil fetchCategoryData hanya saat modal dibuka dalam mode Edit
 watch(showModal, (newVal) => {
   if (newVal && currentEditId.value) {
-    // Modal dibuka dalam mode Edit
     fetchCategoryData(currentEditId.value);
   }
-  // Jika newVal adalah true TAPI currentEditId adalah null,
-  // maka itu mode Create, dan form sudah direset di handleCreate.
 });
 
 async function getAllClassrooms() {
@@ -352,7 +318,6 @@ async function getAllClassrooms() {
   if (resClassrooms.status && resClassrooms.data) {
     rawClassData.value = resClassrooms.data;
   } else {
-    // console.error('Gagal mengambil data kategori', resClassrooms); // Gunakan console.error/log
     rawClassData.value = [];
   }
   isLoading.value = false;

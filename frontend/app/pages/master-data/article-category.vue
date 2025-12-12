@@ -140,9 +140,6 @@
 </template>
 
 <script setup lang="ts">
-// ==========================================================
-// 1. STATE UNTUK TABLE DAN FILTER
-// ==========================================================
 const rawArticleCategories = ref<ArticleCategory[]>([]);
 const isFilterVisible = ref<boolean>(false);
 const isLoading = ref<boolean>(true);
@@ -153,8 +150,6 @@ const handleFilterToggle = () => {
 };
 
 const applyFilter = () => {
-  // Lakukan aksi filter di sini jika ada API filtering
-  // Saat ini hanya menggunakan filtering computed property
   useToast().info('Filter data diterapkan.');
 };
 
@@ -170,59 +165,39 @@ const filteredCategories = computed(() => {
   return data;
 });
 
-// ==========================================================
-// 3. STATE DAN LOGIKA MODAL FORM
-// ==========================================================
-
 const showModal = ref<boolean>(false);
 const initialForm: ArticleCategory = { name: '', slug: '', description: '' };
 const form = reactive<ArticleCategory>({ ...initialForm });
 const errors = reactive<{ [key: string]: string | undefined }>({});
 const isSubmitting = ref(false);
-const currentEditId = ref<string | null>(null); // Menyimpan ID saat ini yang diedit
+const currentEditId = ref<string | null>(null);
 
-// Computed Properties untuk Modal
 const isEditMode = computed(() => !!currentEditId.value);
 const modalTitle = computed(() => isEditMode.value ? 'Ubah Kategori Artikel' : 'Tambah Kategori Artikel');
 
-/**
- * Menutup modal dan me-reset state
- */
 const closeModal = () => {
   showModal.value = false;
-  // Clear error dan reset form
   Object.keys(errors).forEach(key => errors[key] = undefined);
   Object.assign(form, initialForm);
   currentEditId.value = null;
 };
 
-/**
- * Membuka modal dalam mode Create
- */
 const handleCreate = () => {
   currentEditId.value = null;
-  Object.assign(form, initialForm); // Pastikan form bersih
+  Object.assign(form, initialForm);
   showModal.value = true;
 };
 
-/**
- * Membuka modal dalam mode Edit
- */
 const handleEdit = (id: string) => {
-  currentEditId.value = id; // Set ID yang akan diedit
+  currentEditId.value = id;
   showModal.value = true;
 };
 
-/**
- * Mengisi form dengan data dari server
- */
 async function fetchCategoryData(id: string) {
   isSubmitting.value = true;
   try {
-    // Asumsi useApi().get mengembalikan { status: boolean, data: T }
     const response = await useApi().get<ArticleCategory>(`/admin/master-data/article-categories/${id}`);
     if (response.status && response.data) {
-      // Isi form dengan data yang diambil
       Object.assign(form, {
         name: response.data.name,
         slug: response.data.slug || '',
@@ -240,19 +215,12 @@ async function fetchCategoryData(id: string) {
   }
 }
 
-/**
- * Menghasilkan slug secara real-time dari Nama Kategori
- */
 const generateSlug = () => {
   if (!isEditMode.value) {
-    // Hanya generate otomatis saat mode Create
     form.slug = slugify(form.name); 
   }
 };
 
-/**
- * Mengirim formulir untuk Create atau Update
- */
 const submitForm = async () => {
   isSubmitting.value = true;
   Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
@@ -262,11 +230,9 @@ const submitForm = async () => {
     let successMessage: string;
     
     if (isEditMode.value && currentEditId.value) {
-      // MODE UPDATE (Menggunakan PUT)
       response = await useApi().put(`/admin/article-categories/${currentEditId.value}`, form);
       successMessage = 'Kategori artikel berhasil diperbarui!';
     } else {
-      // MODE CREATE (Menggunakan POST)
       response = await useApi().post(`/admin/master-data/article-categories`, form);
       successMessage = 'Kategori artikel berhasil dibuat!';
     }
@@ -276,7 +242,6 @@ const submitForm = async () => {
       await getAllCategories(); // Refresh data tabel
       closeModal();
     } else {
-      // Handle server validation errors yang non-422
       if (response.errors) {
         Object.assign(errors, response.errors);
       } else {
@@ -286,7 +251,6 @@ const submitForm = async () => {
 
   } catch (err: any) {
     if (err?.data?.errors) {
-      // Handle Laravel's validation error response structure (422)
       Object.assign(errors, err.data.errors);
     } else {
       useToast().error(err.data?.message || 'Terjadi kesalahan jaringan.');
@@ -296,19 +260,11 @@ const submitForm = async () => {
   }
 };
 
-// 💡 Watcher yang diperbaiki: Panggil fetchCategoryData hanya saat modal dibuka dalam mode Edit
 watch(showModal, (newVal) => {
   if (newVal && currentEditId.value) {
-    // Modal dibuka dalam mode Edit
     fetchCategoryData(currentEditId.value);
   } 
-  // Jika newVal adalah true TAPI currentEditId adalah null,
-  // maka itu mode Create, dan form sudah direset di handleCreate.
 });
-
-// ==========================================================
-// 4. LOGIKA PENGHAPUSAN DAN PENGAMBILAN DATA
-// ==========================================================
 
 const handleDelete = async (id: string, name: string) => {
   try {
@@ -316,7 +272,6 @@ const handleDelete = async (id: string, name: string) => {
 
     if (!confirmed) return;
 
-    // Asumsi useApi().destroy mengembalikan { status: boolean, message: string }
     const message = await useApi().destroy(`/admin/master-data/article-categories/${id}`);
 
     if (message.status) {
@@ -337,12 +292,10 @@ const handleDelete = async (id: string, name: string) => {
 
 async function getAllCategories() {
   isLoading.value = true;
-  // Asumsi useApi().get mengembalikan { status: boolean, data: T }
   const resArticleCategories = await useApi().get<ArticleCategory[]>('/admin/master-data/article-categories');
   if (resArticleCategories.status && resArticleCategories.data) {
     rawArticleCategories.value = resArticleCategories.data;
   } else {
-    // console.error('Gagal mengambil data kategori', resArticleCategories); // Gunakan console.error/log
     rawArticleCategories.value = [];
   }
   isLoading.value = false;
