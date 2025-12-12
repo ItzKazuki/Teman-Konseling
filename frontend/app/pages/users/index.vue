@@ -157,9 +157,26 @@ const filteredUsers = computed(() => {
   return data;
 });
 
-const handleDelete = (id: string, name: string) => {
-  if (confirm(`Apakah Anda yakin ingin menghapus pengguna: ${name}?`)) {
-    alert(`Permintaan HAPUS berhasil dikirim untuk ID: ${id}`);
+const handleDelete = async (id: string, name: string) => {
+  try {
+    const confirmed = await useAlert().confirm(`Apakah Anda yakin ingin menghapus pengguna "${name}"?`);
+
+    if (!confirmed) return;
+
+    const message = await useApi().destroy(`/admin/users/${id}`);
+
+    if (message.status) {
+      useToast().success(`Data pengguna "${name}" berhasil dihapus.`);
+      await fetchUsers();
+    } else {
+      useToast().error('Gagal menghapus data pengguna. Silakan coba lagi.');
+    }
+  } catch (err: any) {
+    if (err?.data?.message) {
+      useToast().error(err.data.message);
+    } else {
+      useToast().error('Terjadi kesalahan. Silakan coba lagi.')
+    }
   }
 };
 
