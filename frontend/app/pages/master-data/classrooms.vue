@@ -64,8 +64,10 @@
 
           <tr v-if="filteredClasses.length === 0">
             <td colspan="4" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
-              <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
-              Tidak ada data kelas yang ditemukan.
+              <div class="flex justify-center items-center">
+                <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
+                <p>Tidak ada data kelas yang ditemukan.</p>
+              </div>
             </td>
           </tr>
 

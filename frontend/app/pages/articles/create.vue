@@ -109,22 +109,18 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-// Import jika Anda menggunakan composable khusus untuk API/User
-// Asumsi: useApi, useToast, useAuth sudah didefinisikan di proyek Anda
 
 const router = useRouter();
-
-// --- 1. Definisi Tipe dan State Form ---
 
 interface ArticlePayload {
   article_category_id: string;
   title: string;
-  slug: string; // Tambahkan slug untuk kemudahan di frontend
+  slug: string;
   excerpt: string;
   thumbnail_file_id: string;
   content: string;
   status: 'draft' | 'published' | 'archived';
-  published_at: string | null; // Format ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)
+  published_at: string | null;
 }
 
 // State Awal
@@ -143,34 +139,16 @@ const form = reactive<ArticlePayload>({ ...initialForm });
 const errors = reactive<{ [key: string]: string[] | undefined }>({});
 const isSubmitting = ref(false);
 
-// State Data Master
 const categories = ref<{ id: string, name: string }[]>([]);
-const currentUser = ref<{ id: string, name: string } | null>(null);
-
-// --- 2. Logika Frontend ---
-
-/**
- * Fungsi Native JS untuk membuat slug (kebab-case)
- */
-const slugify = (text: string): string => {
-  let slug = text.toLowerCase();
-  slug = slug.replace(/[^a-z0-9\s-]/g, '');
-  slug = slug.replace(/[\s-]+/g, '-');
-  slug = slug.replace(/^-+|-+$/g, '');
-  return slug;
-};
 
 /**
  * Menghasilkan slug secara real-time dari Judul
  */
 const generateSlug = () => {
-  // Hanya generate slug jika user belum pernah mengeditnya
   if (form.title && form.slug === slugify(form.slug)) {
     form.slug = slugify(form.title);
   }
 };
-
-// --- 3. Pengambilan Data Master ---
 
 async function fetchMasterData() {
   try {
@@ -185,8 +163,6 @@ async function fetchMasterData() {
   }
 }
 
-// --- 4. Submit Form ke API Laravel ---
-
 const submitArticle = async () => {
   isSubmitting.value = true;
   Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
@@ -197,16 +173,13 @@ const submitArticle = async () => {
 
     if (response.status) {
       useToast().success('Artikel berhasil dibuat dan disimpan!');
-      // Navigasi ke halaman daftar atau halaman edit
       router.push('/articles');
     } else {
-      // Handle server validation errors (non-422)
       useToast().error(response.message || 'Gagal menyimpan artikel.');
     }
 
   } catch (err: any) {
     if (err?.data?.errors) {
-      // Handle Laravel's validation error response structure (422)
       Object.assign(errors, err.data.errors);
       useToast().error('Validasi gagal. Silakan periksa kembali isian Anda.');
     } else {

@@ -113,11 +113,9 @@
 const route = useRoute();
 const router = useRouter();
 
-// Pastikan ID Artikel tersedia
 const articleId = route.params.id as string;
 if (!articleId) {
-  // Redirect jika ID tidak ditemukan (misalnya, jika URL diakses tanpa ID)
-  router.replace('/admin/articles');
+  router.replace('/articles');
 }
 
 interface ArticlePayload {
@@ -132,7 +130,6 @@ interface ArticlePayload {
   published_at: string | null;
 }
 
-// State Awal (Dapat berupa nilai kosong atau default yang aman)
 const initialForm: ArticlePayload = {
   author_id: '',
   article_category_id: '',
@@ -148,16 +145,10 @@ const initialForm: ArticlePayload = {
 const form = reactive<ArticlePayload>({ ...initialForm });
 const errors = reactive<{ [key: string]: string[] | undefined }>({});
 const isSubmitting = ref(false);
-const isLoading = ref(true); // Status loading saat mengambil data awal
+const isLoading = ref(true);
 
-// State Data Master
 const categories = ref<{ id: string, name: string }[]>([]);
 
-// --- 2. Logika Frontend (Slugify) ---
-
-/**
- * Fungsi Native JS untuk membuat slug (kebab-case)
- */
 const slugify = (text: string): string => {
   let slug = text.toLowerCase();
   slug = slug.replace(/[^a-z0-9\s-]/g, '');
@@ -166,35 +157,21 @@ const slugify = (text: string): string => {
   return slug;
 };
 
-/**
- * Menghasilkan slug secara real-time dari Judul
- */
 const generateSlug = () => {
-  // Di mode edit, kita hanya meng-generate slug jika field slug belum pernah diedit secara manual
-  // Namun, seringkali di edit mode, slug diizinkan untuk diubah secara bebas oleh user.
-  // Kita bisa menerapkan logika sederhana: jika title berubah dan slug sama dengan versi slugify dari title lama, update slug.
-
-  // Untuk sementara, kita biarkan user edit slug secara manual.
-  // Tapi tetap gunakan slugify saat title diinput
   form.slug = slugify(form.title);
 };
 
-// --- 3. Pengambilan Data Master dan Data Artikel ---
-
-// Mengonversi format tanggal-waktu dari API ke format input datetime-local
 function formatDateTimeForInput(isoDate: string | null): string | null {
   if (!isoDate) return null;
 
   try {
     const date = new Date(isoDate);
-    // Format: YYYY-MM-DDTHH:MM
     const yyyy = date.getFullYear();
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     const dd = String(date.getDate()).padStart(2, '0');
     const hh = String(date.getHours()).padStart(2, '0');
     const min = String(date.getMinutes()).padStart(2, '0');
 
-    // Kita abaikan detik/timezone untuk input local datetime
     return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
   } catch (e) {
     return null;
@@ -211,22 +188,18 @@ async function fetchInitialData() {
       useToast().error('Gagal memuat daftar kategori.');
     }
 
-    // 2. Ambil Data Artikel berdasarkan ID
     const resArticle = await useApi().get<ArticlePayload>(`/admin/articles/${articleId}`);
     if (resArticle.status && resArticle.data) {
       const data = resArticle.data;
 
-      // Isi formulir dengan data yang ada
       Object.assign(form, {
         ...data,
-        // Format ulang published_at agar sesuai dengan input 'datetime-local'
         published_at: formatDateTimeForInput(data.published_at),
-        // Pastikan author_id terisi (meskipun field ini read-only)
         author_id: data.author_id,
       });
     } else {
       useToast().error('Data artikel tidak ditemukan atau gagal dimuat.');
-      router.replace('/articles'); // Redirect jika artikel tidak ada
+      router.replace('/articles');
     }
 
   } catch (e) {
@@ -239,24 +212,20 @@ async function fetchInitialData() {
 
 const submitArticleUpdate = async () => {
   isSubmitting.value = true;
-  Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
+  Object.keys(errors).forEach(key => errors[key] = undefined);
 
   try {
-    // 💡 Gunakan metode PUT (atau PATCH) untuk update ke endpoint dengan ID
     const response = await useApi().put(`/admin/articles/${articleId}`, form);
 
     if (response.status) {
       useToast().success('Artikel berhasil diperbarui!');
-      // Navigasi ke halaman detail artikel atau daftar
       router.push('/articles');
     } else {
-      // Handle server validation errors
       useToast().error(response.message || 'Gagal menyimpan perubahan.');
     }
 
   } catch (err: any) {
     if (err?.data?.errors) {
-      // Handle Laravel's validation error response structure (422)
       Object.assign(errors, err.data.errors);
       useToast().error('Validasi gagal. Silakan periksa kembali isian Anda.');
     } else {
