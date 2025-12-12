@@ -37,7 +37,7 @@
             class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500" />
           <label for="remember_me" class="ml-2 block text-sm text-gray-900">Ingat Saya</label>
         </div>
-        <NuxtLink to="/forgot-password" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+        <NuxtLink to="/auth/password/forgot" class="text-sm font-medium text-primary-600 hover:text-primary-500">
           Lupa Password?
         </NuxtLink>
       </div>

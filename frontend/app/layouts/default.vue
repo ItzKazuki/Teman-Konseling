@@ -32,8 +32,7 @@
           <button @click="toggleDropdown"
             class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
             :aria-expanded="isProfileDropdownOpen" aria-controls="profile-menu">
-            <img :src="auth.user?.avatar_url" alt="User Avatar"
-              class="w-10 h-10 rounded-full">
+            <img :src="auth.user?.avatar_url" alt="User Avatar" class="w-10 h-10 rounded-full">
             <div class="text-sm hidden sm:block text-left">
               <div class="font-medium text-gray-800">{{ auth.user?.name }}</div>
               <div class="text-xs text-gray-500">{{ auth.user?.jabatan }}</div>
@@ -72,7 +71,6 @@
 
 <script setup lang="ts">
 const route = useRoute()
-
 const auth = useAuthStore();
 
 const navItems = [
@@ -84,12 +82,12 @@ const navItems = [
   {
     name: 'Artikel',
     to: '/articles',
-    icon: 'tabler:layout-dashboard',
+    icon: 'tabler:article',
   },
   {
     name: 'Mood Siswa',
     to: '/moods',
-    icon: 'tabler:layout-dashboard',
+    icon: 'tabler:mood-smile',
   },
   {
     name: 'User',
@@ -99,7 +97,7 @@ const navItems = [
   {
     name: 'Siswa',
     to: '/students',
-    icon: 'tabler:adjustments',
+    icon: 'tabler:users-group',
   },
 ]
 
@@ -107,12 +105,12 @@ const masterData = [
   {
     name: 'Kelas',
     to: '/master-data/classrooms',
-    icon: 'tabler:bell'
+    icon: 'tabler:door',
   },
   {
     name: 'Kategori Artikel',
     to: '/master-data/article-category',
-    icon: 'tabler:bell'
+    icon: 'tabler:list-details',
   },
 ]
 
@@ -129,7 +127,6 @@ const getLinkClass = (itemPath: string) => {
   }
 }
 
-// State untuk mengontrol visibilitas dropdown
 const isProfileDropdownOpen = ref(false);
 
 const toggleDropdown = () => {
