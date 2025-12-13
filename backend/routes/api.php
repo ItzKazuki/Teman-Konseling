@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Auth\AccountController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Common\ClassroomController;
 use App\Http\Controllers\Api\Common\FileController;
 use App\Http\Controllers\Api\MasterDataController;
@@ -36,9 +37,9 @@ Route::prefix('v1')->group(function () {
         Route::get('student/me', [AccountController::class, 'student'])->middleware('auth:student');
         Route::get('user/me', [AccountController::class, 'user'])->middleware('auth:user');
 
-        // Route::post('password/forgot', [ResetPasswordController::class, 'reset']);
-        // Route::post('password/validate-otp', [ResetPasswordController::class, 'validateOtp']);
-        // Route::post('password/reset', [ResetPasswordController::class, 'change']);
+        Route::post('password/forgot', [ResetPasswordController::class, 'reset']);
+        Route::post('password/validate-otp', [ResetPasswordController::class, 'validateOtp']);
+        Route::post('password/reset', [ResetPasswordController::class, 'change']);
     });
 
     Route::middleware(['auth:sanctum'])->group(function () {

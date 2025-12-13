@@ -1,65 +1,198 @@
 <template>
-  <div class="bg-white p-7 rounded-xl shadow-lg w-full max-w-sm mx-auto">
+  <div class="bg-white p-7 rounded-xl shadow-lg w-full max-w-sm mx-auto text-center">
 
     <div class="text-center mb-8">
       <Icon name="tabler:lock-question" class="w-12 h-12 text-primary-600 mx-auto mb-2" />
-      <h2 class="text-xl font-bold text-gray-900">Lupa Kata Sandi</h2>
-      <p class="text-sm text-gray-600">Masukkan email Anda. Kami akan mengirimkan kode untuk mengatur ulang
-        kata sandi Anda.</p>
+      
+      <template v-if="page === 'forgot'">
+        <h2 class="text-xl font-bold text-gray-900">Lupa Kata Sandi?</h2>
+        <p class="text-sm text-gray-600">Masukkan email Anda untuk menerima kode reset.</p>
+      </template>
+
+      <template v-else>
+        <h2 class="text-xl font-bold text-gray-900">Konfirmasi Identitas</h2>
+        <p class="text-sm text-gray-600">Masukkan 6-digit kode yang telah dikirim ke **{{ userEmail }}**.</p>
+      </template>
     </div>
 
-    <form @submit.prevent="handleForgotPassword">
-      <div class="mb-5">
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-        <div class="relative">
-          <Icon name="tabler:mail" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input type="email" id="email" v-model="form.email" placeholder="Masukkan email terdaftar Anda"
-            class="pl-9 pr-4 py-2 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 text-sm text-gray-900"
-            required />
+    <template v-if="page === 'forgot'">
+      <form @submit.prevent="onRequestForgotPassword" class="space-y-5">
+        <label class="block">
+          <span class="block text-sm font-medium text-gray-700 mb-2 text-left">Email</span>
+          <input v-model="formForgot.email" type="email" required placeholder="Email terdaftar"
+            class="pl-4 pr-4 py-2 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 text-sm text-gray-900"
+            :class="{ 'border-red-500': first('email') }" />
+          <p v-if="first('email')" class="text-red-600 text-xs mt-1 text-left">{{ first('email') }}</p>
+        </label>
+
+        <button type="submit" :disabled="loading"
+          class="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-lg transition
+          disabled:cursor-not-allowed disabled:bg-primary-400">
+          <Icon v-if="loading" name="tabler:loader-2" class="size-4 animate-spin text-white" />
+          {{ loading ? "Mengirim Permintaan..." : "Kirim Kode Reset" }}
+        </button>
+      </form>
+    </template>
+
+    <template v-else>
+      <form @submit.prevent="onSubmitOtp" class="space-y-5">
+        <label class="block">
+          <span class="text-gray-700 text-sm mb-2 block text-center">Kode OTP</span>
+
+          <div class="flex justify-center gap-2 md:gap-3">
+            <input v-for="(digit, index) in otpDigits" :key="index"
+              :ref="(el) => otpInput(el as (HTMLInputElement | null), index)" v-model="otpDigits[index]" type="text"
+              inputmode="numeric" pattern="[0-9]" maxlength="1" required @input="handleOtpInput(index, $event)"
+              @keydown="handleOtpKeydown(index, $event)"
+              class="size-10 md:size-12 text-xl font-bold text-center rounded-lg border border-gray-300 shadow-sm transition
+              disabled:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary-500"
+              :class="{ 'border-red-500 ring-red-200': has('otp') }" />
+          </div>
+
+          <p v-if="first('otp')" class="text-red-600 text-xs mt-2 block text-center">{{ first('otp') }}</p>
+        </label>
+
+        <div class="flex justify-end mb-3">
+          <p class="text-sm text-gray-500">
+            <span class="mr-1">Tidak menerima kode?</span>
+            <button type="button" @click="onResendOtp"
+              class="text-primary-600 hover:underline disabled:text-gray-400 disabled:no-underline font-medium"
+              :disabled="loadingResend">
+              Kirim Ulang OTP
+              <Icon v-if="loadingResend" name="tabler:loader-2" class="size-3 ml-1 inline-block animate-spin" />
+            </button>
+          </p>
         </div>
-        <p v-if="errors.email" class="mt-1 text-xs text-red-500">{{ errors.email[0] }}</p>
-      </div>
 
-      <button type="submit"
-        class="w-full bg-primary-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
-        :disabled="loading">
-        <span v-if="!loading">Kirim Tautan Reset</span>
-        <Icon v-else name="mdi:loading" class="animate-spin w-5 h-5 mx-auto" />
-      </button>
-    </form>
+        <button type="submit" :disabled="loading || isOtpIncomplete"
+          class="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-lg transition
+          disabled:cursor-not-allowed disabled:bg-primary-400">
+          <Icon v-if="loading" name="tabler:loader-2" class="size-4 animate-spin text-white" />
+          {{ loading ? "Memverifikasi..." : "Verifikasi Kode" }}
+        </button>
+      </form>
+    </template>
 
-    <div class="mt-6 text-center">
-      <NuxtLink to="/login" class="text-sm font-medium text-gray-600 hover:text-primary-600">
-        Kembali ke Login
+    <p class="mt-6 text-center text-gray-600 text-sm">
+      Sudah ingat kata sandi Anda?
+      <NuxtLink to="/auth/login" class="text-primary-600 hover:underline font-medium">
+        Login sekarang
       </NuxtLink>
-    </div>
+    </p>
+
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'auth'
+  layout: "auth",
 });
 
-const form = ref({
+const route = useRoute();
+const router = useRouter();
+
+// Tipe halaman ditentukan oleh query parameter 'page'
+const page = ref<'otp' | 'forgot'>('forgot');
+
+// Ambil email dari query parameter setelah berhasil mengirim permintaan
+const userEmail = computed(() => route.query.email as string | undefined || formForgot.value.email);
+
+// State Loading dan Error
+const { setErrors, has, first } = useFormErrors();
+const loading = ref<boolean>(false);
+const loadingResend = ref<boolean>(false);
+
+// --- State Formulir ---
+const formForgot = ref({
   email: '',
 });
 
-const errors = reactive<{ [key: string]: string[] | undefined }>({});
-const loading = ref(false);
+// State OTP
+const otpDigits = ref<Array<string>>(['', '', '', '', '', '']);
+const inputRefs = ref<Array<HTMLInputElement | null>>([]); // Referensi elemen DOM untuk fokus
 
-const handleForgotPassword = async () => {
+const otpInput = (el: Element | null, index: number) => {
+  // Simpan elemen DOM input
+  inputRefs.value[index] = el as (HTMLInputElement | null);
+};
+
+const formOtp = computed(() => {
+  return {
+    otp: otpDigits.value.join(''),
+    email: userEmail.value, // Gunakan email yang sudah ada di query atau formForgot
+  }
+});
+
+const isOtpIncomplete = computed(() => {
+  return otpDigits.value.some(digit => digit === '' || digit === null || digit.length !== 1);
+});
+
+
+function handleOtpInput(index: number, event: Event) {
+  const inputElement = event.target as HTMLInputElement;
+  let value = inputElement.value;
+  
+  // Ambil digit pertama (untuk jaga-jaga jika paste atau input cepat)
+  if (value.length > 1) {
+    value = value.charAt(0);
+    // Jika paste, kita tidak auto-focus. Biarkan pengguna input satu per satu.
+  }
+
+  // Update state
+  otpDigits.value[index] = value;
+
+  // Pindah fokus ke kotak berikutnya
+  if (value && index < otpDigits.value.length - 1) {
+    (inputRefs.value[index + 1] as HTMLInputElement)?.focus();
+  }
+  
+  // Bersihkan error validasi OTP saat mulai mengetik
+  if (has('otp')) {
+      setErrors({});
+  }
+}
+
+function handleOtpKeydown(index: number, event: KeyboardEvent) {
+  if (event.key === 'Backspace') {
+    if (!otpDigits.value[index] && index > 0) {
+      // Jika kotak kosong dan tekan Backspace, pindah ke kotak sebelumnya
+      (inputRefs.value[index - 1] as HTMLInputElement)?.focus();
+      // Hapus digit di kotak sebelumnya
+      otpDigits.value[index - 1] = '';
+    }
+    // Jika kotak tidak kosong, Backspace akan menghapus konten kotak saat ini
+  } else if (event.key === 'ArrowRight' && index < otpDigits.value.length - 1) {
+    event.preventDefault(); // Cegah default cursor move
+    (inputRefs.value[index + 1] as HTMLInputElement)?.focus();
+  } else if (event.key === 'ArrowLeft' && index > 0) {
+    event.preventDefault(); // Cegah default cursor move
+    (inputRefs.value[index - 1] as HTMLInputElement)?.focus();
+  }
+}
+
+const onRequestForgotPassword = async () => {
   loading.value = true;
-  Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
+  loadingResend.value = true;
+  setErrors({}); // Reset error sebelum request
 
   try {
-    const response = await useApi().post('/forgot-password', { email: form.value.email });
-
-    useToast().success(response.message || 'Tautan reset telah dikirim ke email Anda!');
+    const res = await useApi(false).post('/auth/password/forgot', formForgot.value);
+    
+    if (res.status) {
+      useToast().success(res.message || 'Kode verifikasi telah dikirim.');
+      
+      return navigateTo({
+        path: route.path,
+        query: {
+          email: formForgot.value.email,
+          page: 'otp'
+        }
+      });
+    }
 
   } catch (err: any) {
     if (err?.data?.errors) {
-      Object.assign(errors, err.data.errors);
+      setErrors(err.data.errors);
     } else if (err?.data?.message) {
       useToast().error(err.data.message);
     } else {
@@ -67,6 +200,80 @@ const handleForgotPassword = async () => {
     }
   } finally {
     loading.value = false;
+    loadingResend.value = false;
   }
-};
+}
+
+const onResendOtp = async () => {
+  loadingResend.value = true;
+  // Pastikan email terisi dari query atau state
+  formForgot.value.email = userEmail.value || ''; 
+  otpDigits.value = ['', '', '', '', '', '']; // Clear OTP fields
+  
+  await onRequestForgotPassword(); 
+  
+  loadingResend.value = false;
+}
+
+const onSubmitOtp = async () => {
+  loading.value = true;
+  setErrors({});
+
+  if (isOtpIncomplete.value) {
+    setErrors({ otp: ['Kode OTP harus 6 digit lengkap.'] });
+    loading.value = false;
+    return;
+  }
+
+  try {
+    const res = await useApi(false).post('/auth/password/validate-otp', formOtp.value);
+
+    if (res.status) {
+      useToast().success(res.message || 'Kode terverifikasi!');
+
+      // Navigasi ke halaman reset password dengan token
+      return navigateTo({
+        path: '/auth/password/reset',
+        query: {
+          email: userEmail.value,
+          token: res.data.resetToken // Asumsi backend memberikan resetToken
+        }
+      });
+    }
+
+  } catch (err: any) {
+    if (err?.data?.errors) {
+      setErrors(err.data.errors);
+    } else if (err?.data?.message) {
+      useToast().error(err.data.message);
+      setErrors({ otp: [err.data.message] }); // Opsional: tampilkan error API di bawah kotak OTP
+    } else {
+      useToast().error('Terjadi kesalahan. Silakan coba lagi.')
+    }
+  } finally {
+    loading.value = false;
+  }
+}
+
+watch(
+  () => route.query.page,
+  (curr) => {
+    if (curr === 'otp' && route.query.email) {
+      page.value = 'otp';
+    } else {
+      page.value = 'forgot';
+    }
+  },
+  { immediate: true }
+);
+
+// Jika pengguna datang langsung ke /forgot?page=otp tanpa email, paksa kembali ke forgot.
+if (page.value === 'otp' && !route.query.email) {
+    router.replace({ query: { page: 'forgot' } });
+}
+
+// Inisialisasi formForgot.email jika sudah ada di query (misal: navigasi balik)
+if (route.query.email && typeof route.query.email === 'string') {
+    formForgot.value.email = route.query.email;
+}
 </script>

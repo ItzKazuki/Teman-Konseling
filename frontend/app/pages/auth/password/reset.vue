@@ -10,7 +10,7 @@
     <form @submit.prevent="handleResetPassword">
 
       <input type="hidden" v-model="form.email" />
-      <input type="hidden" v-model="form.token" />
+      <input type="hidden" v-model="form.reset_token" />
 
       <div class="mb-2">
         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Kata Sandi Baru</label>
