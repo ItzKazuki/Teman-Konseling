@@ -3,7 +3,7 @@
 
     <div class="text-center mb-8">
       <Icon name="tabler:lock-question" class="w-12 h-12 text-primary-600 mx-auto mb-2" />
-      
+
       <template v-if="page === 'forgot'">
         <h2 class="text-xl font-bold text-gray-900">Lupa Kata Sandi?</h2>
         <p class="text-sm text-gray-600">Masukkan email Anda untuk menerima kode reset.</p>
@@ -11,7 +11,7 @@
 
       <template v-else>
         <h2 class="text-xl font-bold text-gray-900">Konfirmasi Identitas</h2>
-        <p class="text-sm text-gray-600">Masukkan 6-digit kode yang telah dikirim ke **{{ userEmail }}**.</p>
+        <p class="text-sm text-gray-600">Masukkan 6-digit kode yang telah dikirim ke email anda.</p>
       </template>
     </div>
 
@@ -25,8 +25,7 @@
           <p v-if="first('email')" class="text-red-600 text-xs mt-1 text-left">{{ first('email') }}</p>
         </label>
 
-        <button type="submit" :disabled="loading"
-          class="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-lg transition
+        <button type="submit" :disabled="loading" class="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-lg transition
           disabled:cursor-not-allowed disabled:bg-primary-400">
           <Icon v-if="loading" name="tabler:loader-2" class="size-4 animate-spin text-white" />
           {{ loading ? "Mengirim Permintaan..." : "Kirim Kode Reset" }}
@@ -43,8 +42,7 @@
             <input v-for="(digit, index) in otpDigits" :key="index"
               :ref="(el) => otpInput(el as (HTMLInputElement | null), index)" v-model="otpDigits[index]" type="text"
               inputmode="numeric" pattern="[0-9]" maxlength="1" required @input="handleOtpInput(index, $event)"
-              @keydown="handleOtpKeydown(index, $event)"
-              class="size-10 md:size-12 text-xl font-bold text-center rounded-lg border border-gray-300 shadow-sm transition
+              @keydown="handleOtpKeydown(index, $event)" class="size-10 md:size-12 text-xl font-bold text-center rounded-lg border border-gray-300 shadow-sm transition
               disabled:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-primary-500"
               :class="{ 'border-red-500 ring-red-200': has('otp') }" />
           </div>
@@ -64,8 +62,7 @@
           </p>
         </div>
 
-        <button type="submit" :disabled="loading || isOtpIncomplete"
-          class="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-lg transition
+        <button type="submit" :disabled="loading || isOtpIncomplete" class="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-lg transition
           disabled:cursor-not-allowed disabled:bg-primary-400">
           <Icon v-if="loading" name="tabler:loader-2" class="size-4 animate-spin text-white" />
           {{ loading ? "Memverifikasi..." : "Verifikasi Kode" }}
@@ -84,196 +81,160 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: "auth",
-});
+definePageMeta({ layout: "auth" })
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
+const toast = useToast()
+const { setErrors, has, first } = useFormErrors()
 
-// Tipe halaman ditentukan oleh query parameter 'page'
-const page = ref<'otp' | 'forgot'>('forgot');
+/* ---------------- STATE ---------------- */
+const page = ref<'forgot' | 'otp'>('forgot')
+const loading = ref(false)
+const loadingResend = ref(false)
 
-// Ambil email dari query parameter setelah berhasil mengirim permintaan
-const userEmail = computed(() => route.query.email as string | undefined || formForgot.value.email);
+/* ---------------- RID ---------------- */
+const rid = ref<string | null>(
+  typeof route.query.rid === 'string' ? route.query.rid : null
+)
 
-// State Loading dan Error
-const { setErrors, has, first } = useFormErrors();
-const loading = ref<boolean>(false);
-const loadingResend = ref<boolean>(false);
-
-// --- State Formulir ---
+/* ---------------- FORGOT FORM ---------------- */
 const formForgot = ref({
-  email: '',
-});
+  email: ''
+})
 
-// State OTP
-const otpDigits = ref<Array<string>>(['', '', '', '', '', '']);
-const inputRefs = ref<Array<HTMLInputElement | null>>([]); // Referensi elemen DOM untuk fokus
+/* ---------------- OTP ---------------- */
+const otpDigits = ref(['', '', '', '', '', ''])
+const inputRefs = ref<(HTMLInputElement | null)[]>([])
 
-const otpInput = (el: Element | null, index: number) => {
-  // Simpan elemen DOM input
-  inputRefs.value[index] = el as (HTMLInputElement | null);
-};
+const isOtpIncomplete = computed(() =>
+  otpDigits.value.some(d => d.length !== 1)
+)
 
-const formOtp = computed(() => {
-  return {
-    otp: otpDigits.value.join(''),
-    email: userEmail.value, // Gunakan email yang sudah ada di query atau formForgot
-  }
-});
+const otpInput = (el: HTMLInputElement | null, index: number) => {
+  inputRefs.value[index] = el
+}
 
-const isOtpIncomplete = computed(() => {
-  return otpDigits.value.some(digit => digit === '' || digit === null || digit.length !== 1);
-});
+/* ---------------- OTP INPUT ---------------- */
+const handleOtpInput = (index: number, e: Event) => {
+  const el = e.target as HTMLInputElement
+  const digit = el.value.replace(/\D/g, '').slice(0, 1)
+  otpDigits.value[index] = digit
 
-
-function handleOtpInput(index: number, event: Event) {
-  const inputElement = event.target as HTMLInputElement;
-  let value = inputElement.value;
-  
-  // Ambil digit pertama (untuk jaga-jaga jika paste atau input cepat)
-  if (value.length > 1) {
-    value = value.charAt(0);
-    // Jika paste, kita tidak auto-focus. Biarkan pengguna input satu per satu.
+  if (digit && index < 5) {
+    inputRefs.value[index + 1]?.focus()
   }
 
-  // Update state
-  otpDigits.value[index] = value;
+  setErrors({})
+}
 
-  // Pindah fokus ke kotak berikutnya
-  if (value && index < otpDigits.value.length - 1) {
-    (inputRefs.value[index + 1] as HTMLInputElement)?.focus();
-  }
-  
-  // Bersihkan error validasi OTP saat mulai mengetik
-  if (has('otp')) {
-      setErrors({});
+const handleOtpKeydown = (index: number, e: KeyboardEvent) => {
+  if (e.key === 'Backspace' && !otpDigits.value[index] && index > 0) {
+    inputRefs.value[index - 1]?.focus()
+    otpDigits.value[index - 1] = ''
   }
 }
 
-function handleOtpKeydown(index: number, event: KeyboardEvent) {
-  if (event.key === 'Backspace') {
-    if (!otpDigits.value[index] && index > 0) {
-      // Jika kotak kosong dan tekan Backspace, pindah ke kotak sebelumnya
-      (inputRefs.value[index - 1] as HTMLInputElement)?.focus();
-      // Hapus digit di kotak sebelumnya
-      otpDigits.value[index - 1] = '';
-    }
-    // Jika kotak tidak kosong, Backspace akan menghapus konten kotak saat ini
-  } else if (event.key === 'ArrowRight' && index < otpDigits.value.length - 1) {
-    event.preventDefault(); // Cegah default cursor move
-    (inputRefs.value[index + 1] as HTMLInputElement)?.focus();
-  } else if (event.key === 'ArrowLeft' && index > 0) {
-    event.preventDefault(); // Cegah default cursor move
-    (inputRefs.value[index - 1] as HTMLInputElement)?.focus();
-  }
-}
-
+/* ================= FORGOT ================= */
 const onRequestForgotPassword = async () => {
-  loading.value = true;
-  loadingResend.value = true;
-  setErrors({}); // Reset error sebelum request
+  loading.value = true
+  setErrors({})
 
   try {
-    const res = await useApi(false).post('/auth/password/forgot', formForgot.value);
-    
+    const res = await useApi(false).post(
+      '/auth/password/forgot',
+      formForgot.value
+    )
+
     if (res.status) {
-      useToast().success(res.message || 'Kode verifikasi telah dikirim.');
-      
-      return navigateTo({
-        path: route.path,
-        query: {
-          email: formForgot.value.email,
-          page: 'otp'
-        }
-      });
+      rid.value = res.data.request_id
+      page.value = 'otp' // LANGSUNG UBAH STATE LOKAL
+      toast.success(res.message || 'Kode OTP dikirim')
+
+      nextTick(() => inputRefs.value[0]?.focus()) // Fokuskan input OTP pertama
+
+      return // Akhiri fungsi
     }
 
   } catch (err: any) {
-    if (err?.data?.errors) {
-      setErrors(err.data.errors);
-    } else if (err?.data?.message) {
-      useToast().error(err.data.message);
-    } else {
-      useToast().error('Terjadi kesalahan. Silakan coba lagi.')
-    }
+    if (err?.data?.errors) setErrors(err.data.errors)
+    else toast.error(err?.data?.message || 'Gagal mengirim OTP')
   } finally {
-    loading.value = false;
-    loadingResend.value = false;
+    loading.value = false
   }
 }
 
-const onResendOtp = async () => {
-  loadingResend.value = true;
-  // Pastikan email terisi dari query atau state
-  formForgot.value.email = userEmail.value || ''; 
-  otpDigits.value = ['', '', '', '', '', '']; // Clear OTP fields
-  
-  await onRequestForgotPassword(); 
-  
-  loadingResend.value = false;
-}
-
+/* ================= OTP ================= */
 const onSubmitOtp = async () => {
-  loading.value = true;
-  setErrors({});
-
-  if (isOtpIncomplete.value) {
-    setErrors({ otp: ['Kode OTP harus 6 digit lengkap.'] });
-    loading.value = false;
-    return;
+  if (!rid.value || isOtpIncomplete.value) {
+    setErrors({ otp: ['Kode OTP tidak lengkap'] })
+    return
   }
 
+  loading.value = true
+  setErrors({})
+
   try {
-    const res = await useApi(false).post('/auth/password/validate-otp', formOtp.value);
+    const res = await useApi(false).post(
+      '/auth/password/validate-otp',
+      {
+        request_id: rid.value,
+        otp: otpDigits.value.join('')
+      }
+    )
 
     if (res.status) {
-      useToast().success(res.message || 'Kode terverifikasi!');
+      toast.success(res.message || 'OTP valid')
 
-      // Navigasi ke halaman reset password dengan token
-      return navigateTo({
+      await navigateTo({ // TAMBAHKAN 'await'
         path: '/auth/password/reset',
-        query: {
-          email: userEmail.value,
-          token: res.data.resetToken // Asumsi backend memberikan resetToken
-        }
-      });
+        query: { rid: res.data.request_id }
+      })
+
+      return
     }
 
   } catch (err: any) {
-    if (err?.data?.errors) {
-      setErrors(err.data.errors);
-    } else if (err?.data?.message) {
-      useToast().error(err.data.message);
-      setErrors({ otp: [err.data.message] }); // Opsional: tampilkan error API di bawah kotak OTP
-    } else {
-      useToast().error('Terjadi kesalahan. Silakan coba lagi.')
-    }
+    setErrors({
+      otp: [err?.data?.message || 'OTP tidak valid']
+    })
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
+/* ================= RESEND ================= */
+const onResendOtp = async () => {
+  if (!rid.value) return
+
+  loadingResend.value = true
+  otpDigits.value = ['', '', '', '', '', '']
+
+  try {
+    await useApi(false).post('/auth/password/resend-otp', {
+      rid: rid.value
+    })
+
+    toast.info('OTP baru telah dikirim')
+  } catch {
+    toast.error('Gagal mengirim ulang OTP')
+  } finally {
+    loadingResend.value = false
+  }
+}
+
+/* ================= ROUTE WATCH ================= */
 watch(
-  () => route.query.page,
-  (curr) => {
-    if (curr === 'otp' && route.query.email) {
-      page.value = 'otp';
+  () => route.query.rid,
+  (v) => {
+    if (typeof v === 'string') {
+      rid.value = v
+      page.value = 'otp'
+      nextTick(() => inputRefs.value[0]?.focus())
     } else {
-      page.value = 'forgot';
+      page.value = 'forgot'
     }
   },
   { immediate: true }
-);
-
-// Jika pengguna datang langsung ke /forgot?page=otp tanpa email, paksa kembali ke forgot.
-if (page.value === 'otp' && !route.query.email) {
-    router.replace({ query: { page: 'forgot' } });
-}
-
-// Inisialisasi formForgot.email jika sudah ada di query (misal: navigasi balik)
-if (route.query.email && typeof route.query.email === 'string') {
-    formForgot.value.email = route.query.email;
-}
+)
 </script>

@@ -4,14 +4,10 @@
     <div class="text-center mb-8">
       <Icon name="tabler:lock-access" class="w-12 h-12 text-primary-600 mx-auto mb-2" />
       <h2 class="text-xl font-bold text-gray-900">Atur Ulang Kata Sandi</h2>
-      <p class="text-sm text-gray-600">Masukkan kata sandi baru untuk akun {{ form.email }}.</p>
+      <p class="text-sm text-gray-600">Masukkan kata sandi baru.</p>
     </div>
 
     <form @submit.prevent="handleResetPassword">
-
-      <input type="hidden" v-model="form.email" />
-      <input type="hidden" v-model="form.reset_token" />
-
       <div class="mb-2">
         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Kata Sandi Baru</label>
         <div class="relative">
@@ -59,59 +55,59 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: 'auth'
-});
+definePageMeta({ layout: 'auth' })
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
+const toast = useToast()
 
-const email = route.query.email as string || '';
-const token = route.query.token as string || '';
+const rid = typeof route.query.rid === 'string'
+  ? route.query.rid
+  : null
 
-if (!email || !token) {
-  useToast().error('Tautan reset tidak valid atau kedaluwarsa.');
-  router.replace('/forgot-password');
+if (!rid) {
+  toast.error('Tautan reset tidak valid atau kedaluwarsa')
+  router.replace('/auth/password/forgot')
 }
 
 const form = ref({
-  email: email,
-  reset_token: token,
+  request_id: rid,
   password: '',
   password_confirmation: '',
-});
+})
 
-const passwordFieldType = ref('password')
-const errors = reactive<{ [key: string]: string[] | undefined }>({});
-const loading = ref(false);
+const errors = reactive<Record<string, string[]>>({})
+const loading = ref(false)
+const passwordFieldType = ref<'password' | 'text'>('password')
 
 const togglePasswordVisibility = () => {
-  passwordFieldType.value = passwordFieldType.value === 'password' ? 'text' : 'password'
+  passwordFieldType.value =
+    passwordFieldType.value === 'password' ? 'text' : 'password'
 }
 
+/* ================= SUBMIT ================= */
 const handleResetPassword = async () => {
-  loading.value = true;
-  Object.keys(errors).forEach(key => errors[key] = undefined);
+  loading.value = true
+  Object.keys(errors).forEach(k => delete errors[k])
 
   try {
-    // 💡 Asumsi: Endpoint untuk reset password adalah POST /api/v1/reset-password
-    const response = await useApi().post('/auth/password/reset', form.value);
+    const res = await useApi(false).post(
+      '/auth/password/reset',
+      form.value
+    )
 
-    useToast().success(response.message || 'Kata sandi berhasil diatur ulang! Silakan login.');
+    toast.success(res.message || 'Kata sandi berhasil diubah')
 
-    // Arahkan ke halaman login setelah sukses
-    return navigateTo('/login');
+    return navigateTo('/auth/login')
 
   } catch (err: any) {
     if (err?.data?.errors) {
-      Object.assign(errors, err.data.errors);
-    } else if (err?.data?.message) {
-      useToast().error(err.data.message);
+      Object.assign(errors, err.data.errors)
     } else {
-      useToast().error('Reset kata sandi gagal. Coba lagi.')
+      toast.error(err?.data?.message || 'Gagal reset password')
     }
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 </script>
