@@ -3,7 +3,7 @@
     
     <AppHeader title="Pilih Konselor Anda" icon="tk:chat-bold" />
     
-    <p class="text-gray-600">Pilih Guru BK yang tersedia di bawah ini untuk **membuat jadwal sesi konseling**.</p>
+    <p class="text-gray-600">Pilih Guru BK yang tersedia di bawah ini untuk membuat jadwal sesi konseling.</p>
 
     <div class="space-y-4">
       <div v-for="counselor in availableCounselors" :key="counselor.id"

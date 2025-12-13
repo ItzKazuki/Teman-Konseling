@@ -85,47 +85,37 @@
           Bacaan Buat Kamu
         </h2>
 
-        <div class="space-y-4">
-          <NuxtLink to="/articles/mengelola-kecemasan-ujian"
-            class="flex gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition duration-200 cursor-pointer group">
+        <div v-if="pending" class="text-center py-10 text-gray-500">
+          <p>Memuat artikel...</p>
+        </div>
+        <div v-else-if="error" class="text-center py-10 text-red-500">
+          <p>Gagal memuat artikel. Silakan coba lagi.</p>
+        </div>
+        <div v-else-if="!articles || articles.length === 0" class="text-center py-10 text-gray-500">
+          <p>Saat ini belum ada artikel yang tersedia.</p>
+        </div>
 
-            <img src="/static/images/kesmen.png" alt="Thumbnail Artikel"
+        <div v-else class="space-y-4">
+          <NuxtLink v-for="article in articles" :key="article.slug" :to="`/articles/${article.slug}`"
+            class="flex gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition duration-200 cursor-pointer group">
+            <img :src="article.thumbnail_url || '/static/images/default-article.png'"
+              :alt="`Thumbnail ${article.title}`"
               class="w-20 h-20 object-cover rounded-lg shrink-0 border border-gray-200 group-hover:border-primary-300 transition duration-200">
 
             <div class="flex flex-col justify-center">
-              <p class="text-xs font-bold text-secondary-600 mb-1 uppercase tracking-wider">Kesehatan Mental</p>
+              <p class="text-xs font-bold text-secondary-600 mb-1 uppercase tracking-wider">
+                {{ article.category_name || 'Umum' }}
+              </p>
 
               <h3
                 class="text-base font-extrabold text-gray-900 line-clamp-2 group-hover:text-primary-700 transition duration-200">
-                5 Cara Efektif Mengelola Rasa Cemas Saat Ujian
+                {{ article.title }}
               </h3>
 
               <div class="flex items-center text-xs text-gray-500 mt-1 space-x-2">
-                <p class="font-medium">oleh Dr. Rina</p>
-                <span class="text-gray-300">•</span>
-                <p>5 menit baca</p>
-              </div>
-            </div>
-          </NuxtLink>
-
-          <NuxtLink to="/articles/slug-artikel-2"
-            class="flex gap-4 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition duration-200 cursor-pointer group">
-
-            <img src="/static/images/kesmen.png" alt="Thumbnail Artikel"
-              class="w-20 h-20 object-cover rounded-lg shrink-0 border border-gray-200 group-hover:border-primary-300 transition duration-200">
-
-            <div class="flex flex-col justify-center">
-              <p class="text-xs font-bold text-secondary-600 mb-1 uppercase tracking-wider">Kesejahteraan Diri</p>
-
-              <h3
-                class="text-base font-extrabold text-gray-900 line-clamp-2 group-hover:text-primary-700 transition duration-200">
-                Pentingnya Batasan Digital untuk Pelajar
-              </h3>
-
-              <div class="flex items-center text-xs text-gray-500 mt-1 space-x-2">
-                <p class="font-medium">oleh Dr. Rina</p>
-                <span class="text-gray-300">•</span>
-                <p>10 menit baca</p>
+                <p class="font-medium">oleh {{ article.author_name || 'Admin BK' }}</p>
+                <!-- <span class="text-gray-300">•</span> -->
+                <!-- <p>{{ article.read_time || '?' }} menit baca</p> -->
               </div>
             </div>
           </NuxtLink>
@@ -143,3 +133,20 @@
     </div>
   </ClientOnly>
 </template>
+
+<script setup lang="ts">
+const { data: articles, pending, error } = await useAsyncData(
+  'latest-articles',
+  async () => {
+    // Ganti '/student/articles' dengan endpoint API Anda yang benar
+    // Asumsi useApi().get mengembalikan { status: boolean, data: Article[] }
+    const res = await useApi().get<{ status: boolean, data: Article[] }>('/student/articles'); 
+
+    if (res.status && Array.isArray(res.data)) {
+      // Kita hanya ingin menampilkan 3 artikel terbaru di sini (misalnya)
+      return res.data.slice(0, 3);
+    }
+    return []; // Kembalikan array kosong jika gagal atau tidak ada data
+  }
+);
+</script>

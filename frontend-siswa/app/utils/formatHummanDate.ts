@@ -1,12 +1,12 @@
 export default function (
-  timestamp: string | number | Date,
+  timestamp: string | number | Date | undefined | null,
   options?: { showTime?: boolean }
 ): string {
+  if(!timestamp) return '-';
+
   const date = new Date(timestamp);
 
-  if (isNaN(date.getTime())) {
-    return "-";
-  }
+  if (isNaN(date.getTime())) return "-";
 
   const formattedDate = date.toLocaleDateString(
     useRuntimeConfig().public.appLocale,

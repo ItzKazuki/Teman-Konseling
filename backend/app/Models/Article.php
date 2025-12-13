@@ -85,7 +85,7 @@ class Article extends Model
             return Storage::url($this->thumbnail->file_path);
         }
 
-        return asset('static/profile.png');
+        return asset('static/kesmen.png');
     }
 
     public function thumbnail(): BelongsTo

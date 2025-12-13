@@ -10,9 +10,9 @@ use App\Http\Controllers\Api\Auth\AccountController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
-use App\Http\Controllers\Api\Common\ClassroomController;
 use App\Http\Controllers\Api\Common\FileController;
 use App\Http\Controllers\Api\MasterDataController;
+use App\Http\Controllers\Api\Student\ArticleController as StudentArticleController;
 use App\Http\Middleware\CheckRoleIsBk;
 use Illuminate\Support\Facades\Route;
 
@@ -42,11 +42,14 @@ Route::prefix('v1')->group(function () {
         Route::post('password/reset', [ResetPasswordController::class, 'change']);
     });
 
+    Route::group(['middleware' => ['auth:student'], 'prefix' => 'student', 'as' => 'student.'], function () {
+        Route::get('articles', [StudentArticleController::class, 'index']);
+        Route::get('articles/{slug}', [StudentArticleController::class, 'show']);
+    });
+
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::apiResource('files', FileController::class);
         Route::get('/files/{id}/blob', [FileController::class, 'blob']);
-
-        Route::get('master-data/classrooms', [ClassroomController::class, 'index']);
     });
 
     // untuk bk
