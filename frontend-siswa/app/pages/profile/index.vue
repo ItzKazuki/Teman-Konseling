@@ -45,7 +45,7 @@
           <AppMenuButton :items="detailAppMenu" />
         </div>
       </div>
-      <p class="text-center text-gray-500 text-xs">v1.0.0-dev</p>
+      <p class="text-center text-gray-500 text-xs">{{ config.public.buildVersion }}</p>
     </div>
   </div>
 </template>
@@ -60,6 +60,7 @@ interface MenuButtonItem {
 }
 
 const auth = useAuthStore();
+const config = useRuntimeConfig()
 
 const myAccountMenu: MenuButtonItem[] = [
   {
