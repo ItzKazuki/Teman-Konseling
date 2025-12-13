@@ -68,7 +68,7 @@
       <AppHeader size="xl" />
 
       <div class="space-y-2 pt-2">
-        <h1 class="text-2xl font-bold text-gray-800">Halo, Chaeza!</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Halo, {{ auth.user?.name }}!</h1>
       </div>
 
       <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg shadow-sm">
@@ -76,7 +76,7 @@
         <p class="italic text-yellow-800 text-base">
           "Kekuatan terbesar kita adalah keberanian untuk bangkit setelah kita jatuh."
         </p>
-        <p class="text-right text-xs text-yellow-600 mt-2">— Anonymous</p>
+        <p class="text-right text-xs text-yellow-600 mt-2">— Teman Konseling</p>
       </div>
 
       <div class="pt-2">
@@ -135,6 +135,7 @@
 </template>
 
 <script setup lang="ts">
+const auth = useAuthStore();
 const { data: articles, pending, error } = await useAsyncData(
   'latest-articles',
   async () => {
