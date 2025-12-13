@@ -1,11 +1,12 @@
 {
   "name": "frontend",
   "type": "module",
+  "version": "v1.0.0",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "cross-env BUILD_VERSION=$(node scripts/build-version.cjs) nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "generate": "cross-env BUILD_VERSION=$(node scripts/build-version.cjs) nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@iconify-json/mdi": "^1.2.3",
     "@tailwindcss/typography": "^0.5.19",
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "cross-env": "^10.1.0"
   }
 }
