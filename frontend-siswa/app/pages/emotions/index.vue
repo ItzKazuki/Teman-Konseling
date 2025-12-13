@@ -34,9 +34,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
-// Definisi data emosi (disarankan pindah ke /composables atau /data)
 const emotions = [
   { title: 'Senang', iconName: 'happy', description: 'Perasaan gembira dan puas yang timbul dari hal positif atau pencapaian. Biasanya ditandai dengan energi yang meningkat dan senyum.' },
   { title: 'Sedih', iconName: 'sad', description: 'Respons alami terhadap kehilangan, kekecewaan, atau kesendirian. Penting untuk mengakui dan memproses perasaan ini.' },
@@ -46,11 +43,9 @@ const emotions = [
   { title: 'Biasa Aja', iconName: 'biasa-aja', description: 'Keadaan netral, tidak terlalu gembira, tidak terlalu sedih. Ini bisa menjadi tanda stabilitas atau kelelahan mental.' },
 ];
 
-// State untuk menyimpan emosi yang dipilih
 const selectedEmotion = ref(null);
 
 function selectEmotion(emotion) {
-  // Jika emosi yang sama diklik lagi, tutup sheet.
   if (selectedEmotion.value && selectedEmotion.value.title === emotion.title) {
     clearEmotion();
   } else {

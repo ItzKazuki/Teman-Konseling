@@ -37,17 +37,15 @@
   </Transition>
 </template>
 
-<script setup>
-const props = defineProps({
-  show: {
-    type: Boolean,
-    required: true,
-  },
-  emotion: {
-    type: Object,
-    default: null,
-  },
-});
+<script setup lang="ts">
+defineProps<{
+  show: boolean;
+  emotion?: {
+    title: string;
+    iconName: string;
+    description: string;
+  }
+}>();
 
 defineEmits(['close']);
 </script>
