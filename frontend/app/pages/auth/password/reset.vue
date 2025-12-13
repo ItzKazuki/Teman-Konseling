@@ -4,7 +4,7 @@
     <div class="text-center mb-8">
       <Icon name="tabler:lock-access" class="w-12 h-12 text-primary-600 mx-auto mb-2" />
       <h2 class="text-xl font-bold text-gray-900">Atur Ulang Kata Sandi</h2>
-      <p class="text-sm text-gray-600">Masukkan kata sandi baru untuk akun **{{ form.email }}**.</p>
+      <p class="text-sm text-gray-600">Masukkan kata sandi baru untuk akun {{ form.email }}.</p>
     </div>
 
     <form @submit.prevent="handleResetPassword">
@@ -76,7 +76,7 @@ if (!email || !token) {
 
 const form = ref({
   email: email,
-  token: token,
+  reset_token: token,
   password: '',
   password_confirmation: '',
 });
@@ -95,7 +95,7 @@ const handleResetPassword = async () => {
 
   try {
     // 💡 Asumsi: Endpoint untuk reset password adalah POST /api/v1/reset-password
-    const response = await useApi().post('/reset-password', form.value);
+    const response = await useApi().post('/auth/password/reset', form.value);
 
     useToast().success(response.message || 'Kata sandi berhasil diatur ulang! Silakan login.');
 
