@@ -46,7 +46,7 @@
             class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
           <label for="remember-me" class="ml-2 block text-gray-700">Remember me</label>
         </div>
-        <NuxtLink to="/auth/forgot-password" class="font-medium text-primary-600 hover:text-primary-700">
+        <NuxtLink to="/auth/password/forgot" class="font-medium text-primary-600 hover:text-primary-700">
           Forgot password?
         </NuxtLink>
       </div>
