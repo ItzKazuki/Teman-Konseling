@@ -28,7 +28,7 @@ export default defineNuxtConfig({
       appLocale: process.env.NUXT_APP_LOCALE ?? "id-ID",
       appTimezone: process.env.NUXT_APP_TIMEZONE ?? "Asia/Jakarta",
 
-      buildVersion: process.env.BUILD_VERSION || 'dev'
+      buildVersion: process.env.BUILD_VERSION || 'development'
     },
   },
 
