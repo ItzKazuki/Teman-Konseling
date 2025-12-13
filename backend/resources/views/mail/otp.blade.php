@@ -1,14 +1,32 @@
 <x-mail::message>
 # Halo {{ $name }},
 
-Kode OTP untuk reset password Anda adalah:
+Kami menerima permintaan **reset password** untuk akun Anda.
 
-# {{ $otp }}
+## Kode OTP Anda
+<x-mail::panel>
+{{ $otp }}
+</x-mail::panel>
 
-Berlaku selama **5 menit**.
+Kode ini berlaku selama **5 menit**  
+⚠️ **Jangan bagikan kode ini kepada siapa pun**
 
-Jika Anda tidak meminta reset password, abaikan email ini.
+@if (!empty($callback_url))
+---
 
-Terima kasih,<br>
+<x-mail::button :url="$callback_url">
+Reset Password
+</x-mail::button>
+
+Jika tombol di atas tidak berfungsi, salin dan buka tautan berikut di browser Anda:
+
+{{ $callback_url }}
+@endif
+
+---
+
+Jika Anda **tidak merasa** meminta reset password, abaikan email ini.
+
+Terima kasih,  
 {{ config('app.name') }}
 </x-mail::message>

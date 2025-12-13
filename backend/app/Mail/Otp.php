@@ -16,10 +16,13 @@ class Otp extends Mailable
 
     public $otp;
 
-    public function __construct($name, $otp)
+    public $callback_url;
+
+    public function __construct($name, $otp, $callback_url = null)
     {
         $this->name = $name;
         $this->otp = $otp;
+        $this->callback_url = $callback_url;
     }
 
     /**

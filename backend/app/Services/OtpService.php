@@ -5,25 +5,28 @@ namespace App\Services;
 use App\Mail\Otp;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\Whatsapp\WhatsappNotificationInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\App;
-use App\Services\Whatsapp\WhatsappNotificationInterface;
 use Throwable;
 
 class OtpService
 {
     /**
      * Generate OTP baru untuk user/student dan mengirimkannya.
+     *
      * * @param User|Student $recipient Model user/student
-     * @param string $deliveryMethod 'email' atau 'whatsapp'
+     * @param  string  $deliveryMethod  'email' atau 'whatsapp'
      * @return array|int Hasil OTP atau array error
      */
-    public static function generate(User|Student $recipient, string $deliveryMethod = 'email')
+    public static function generate(User|Student $recipient, array $options = [], string $deliveryMethod = 'email')
     {
         $otpKey = self::getCacheKey($recipient->id);
         $cooldownKey = self::getCooldownKey($recipient->id);
+
+        $callbackUrl = $options['callback_url'] ?? null;
 
         if (Cache::has($cooldownKey)) {
             return [
@@ -37,45 +40,49 @@ class OtpService
         Cache::put($otpKey, [
             'otp' => $otp,
             'expired_at' => Carbon::now()->addMinutes(5),
+            'callback_url' => $callbackUrl,
         ], now()->addMinutes(5));
 
         try {
+            $message = self::buildMessage($otp, $callbackUrl);
+
             if ($deliveryMethod === 'whatsapp') {
-                // Pastikan kolom 'phone_number' ada di model recipient Anda
-                if (empty($recipient->phone_number)) { 
-                    throw new \Exception("Nomor telepon pengguna tidak tersedia.");
+                if (empty($recipient->phone_number)) {
+                    throw new \Exception('Nomor telepon pengguna tidak tersedia.');
                 }
 
                 $waService = App::make(WhatsappNotificationInterface::class);
-                
-                $message = "Kode OTP Teman Konseling Anda adalah *{$otp}*. Kode ini berlaku selama 5 menit. Jangan berikan kode ini kepada siapapun.";
-                
-                $result = $waService->sendWhatsAppMessage($recipient->phone_number, $message);
 
-                if (!$result['status']) {
+                $result = $waService->sendWhatsAppMessage(
+                    $recipient->phone_number,
+                    $message
+                );
+
+                if (! ($result['status'] ?? false)) {
                     throw new \Exception($result['message'] ?? 'Gagal mengirim OTP via WhatsApp.');
                 }
-                
+
             } else {
-                if (empty($recipient->email)) { 
-                    throw new \Exception("Alamat email pengguna tidak tersedia.");
+                if (empty($recipient->email)) {
+                    throw new \Exception('Alamat email pengguna tidak tersedia.');
                 }
-                
-                Mail::to($recipient->email)->send(new Otp($recipient->name, $otp));
+
+                Mail::to($recipient->email)
+                ->send(new Otp($recipient->name, $otp, $callbackUrl));
             }
 
         } catch (Throwable $e) {
-            Cache::forget($otpKey); 
-            
+            Cache::forget($otpKey);
+
             return [
                 'error' => true,
-                'message' => 'Gagal mengirim OTP via ' . $deliveryMethod . ': '.$e->getMessage(),
+                'message' => 'Gagal mengirim OTP via '.$deliveryMethod.': '.$e->getMessage(),
             ];
         }
 
         Cache::put($cooldownKey, true, now()->addSeconds(60));
 
-        return $otp; 
+        return $otp;
     }
 
     /**
@@ -92,6 +99,7 @@ class OtpService
 
         if (Carbon::now()->greaterThan($cached['expired_at'])) {
             Cache::forget($otpKey);
+
             return false;
         }
 
@@ -129,5 +137,18 @@ class OtpService
     private static function getCooldownKey(string $userId): string
     {
         return "otp:cooldown:user:{$userId}";
+    }
+
+    private static function buildMessage(int $otp, ?string $callbackUrl): string
+    {
+        $message = "Kode OTP Teman Konseling Anda adalah *{$otp}*.\n";
+        $message .= "Berlaku selama 5 menit.\n";
+        $message .= 'Jangan berikan kode ini kepada siapapun.';
+
+        if ($callbackUrl) {
+            $message .= "\n\nReset password di:\n{$callbackUrl}";
+        }
+
+        return $message;
     }
 }
