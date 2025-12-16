@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <AppHeader title="Daftar Konseling Saya" icon="tk:chat-bold" class="mb-0" />
 
-      <NuxtLink to="/chats/new-request"
+      <NuxtLink to="/chats/new-request" v-if="counselingList.length > 0"
         class="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition duration-200 shadow-md shadow-primary-200">
         <Icon name="heroicons:plus-circle-solid" class="w-5 h-5" />
         Tambah Konseling
@@ -96,7 +96,7 @@
         </div>
       </div>
 
-      <div v-else class="text-center py-12 px-6 bg-white rounded-2xl border-2 border-dashed border-gray-200">
+      <div v-else class="text-center py-12 px-6 bg-white rounded-2xl border-gray-200">
         <div class="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
           <Icon name="heroicons:chat-bubble-bottom-center-text" class="w-8 h-8 text-gray-400" />
         </div>
