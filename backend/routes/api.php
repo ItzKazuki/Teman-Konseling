@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Common\FileController;
 use App\Http\Controllers\Api\MasterDataController;
 use App\Http\Controllers\Api\Student\ArticleController as StudentArticleController;
+use App\Http\Controllers\Api\Student\CounselingController as StudentCounselingController;
 use App\Http\Middleware\CheckRoleIsBk;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +46,11 @@ Route::prefix('v1')->group(function () {
     Route::group(['middleware' => ['auth:student'], 'prefix' => 'student', 'as' => 'student.'], function () {
         Route::get('articles', [StudentArticleController::class, 'index']);
         Route::get('articles/{slug}', [StudentArticleController::class, 'show']);
+
+        Route::get('counseling', [StudentCounselingController::class, 'index']);
+        Route::get('counseling/{id}', [StudentCounselingController::class, 'show']);
+        Route::post('counseling/new-request', [StudentCounselingController::class, 'store']);
+        Route::post('counseling/schedule/{request_id}', [StudentCounselingController::class, 'schedule']);
     });
 
     Route::middleware(['auth:sanctum'])->group(function () {
