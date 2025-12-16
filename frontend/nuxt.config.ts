@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -7,6 +8,12 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
 
   ssr: false,
+
+  nitro: {
+    output: {
+      dir: path.join(__dirname, '../builds/teman-konseling-dashboard')
+    }
+  },
 
   vite: {
     plugins: [tailwindcss()],
