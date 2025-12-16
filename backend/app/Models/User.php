@@ -58,6 +58,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'role' => Role::class,
             'password' => 'hashed',
+            'is_available' => 'bool'
         ];
     }
 

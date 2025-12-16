@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TeacherResource;
 use App\Http\Resources\ClassRoomResource;
 use App\Http\Resources\ArticleCategoryResource;
+use App\Http\Resources\CounselorResource;
 use Dedoc\Scramble\Attributes\Group;
 
 #[Group('Master Data', weight: 11)]
@@ -23,9 +24,21 @@ class MasterDataController extends Controller
      */
     public function teachers()
     {
-        $teachers = User::where('role', Role::GURU)->get();
+        $teachers = User::whereIn('role', [Role::GURU, Role::BK])->get();
 
         return ApiResponse::success(TeacherResource::collection($teachers));
+    }
+
+    /**
+     * Show All Counselor
+     *
+     * @unauthenticated
+     */
+    public function counselors()
+    {
+        $counselors = User::where('role', Role::BK)->get();
+
+        return ApiResponse::success(CounselorResource::collection($counselors));
     }
 
     /**
@@ -43,7 +56,7 @@ class MasterDataController extends Controller
     }
 
     /**
-     * Show all article category
+     * Show all Article Category
      *
      * @unauthenticated
      */

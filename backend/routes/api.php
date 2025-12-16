@@ -75,5 +75,6 @@ Route::prefix('v1')->group(function () {
         Route::get('classrooms', [MasterDataController::class, 'classrooms']);
         Route::get('article-categories', [MasterDataController::class, 'articleCategory']);
         Route::get('teachers', [MasterDataController::class, 'teachers']);
+        Route::get('counselors', [MasterDataController::class, 'counselors']);
     });
 });
