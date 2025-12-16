@@ -150,4 +150,22 @@ const { data: articles, pending, error } = await useAsyncData(
     return []; // Kembalikan array kosong jika gagal atau tidak ada data
   }
 );
+
+const checkDailyMood = async () => {
+  try {
+    const res = await useApi().get<{ has_filled_today: boolean }>('/student/daily-moods/check');
+    
+    // Jika BELUM mengisi (has_filled_today === false)
+    if (res.status && res.data && !res.data.has_filled_today) {
+      // Arahkan ke halaman pilih emosi
+      return navigateTo('/mood-picker');
+    }
+  } catch (error) {
+    console.error("Gagal mengecek status emosi harian:", error);
+  }
+};
+
+onMounted(() => {
+  checkDailyMood();
+});
 </script>

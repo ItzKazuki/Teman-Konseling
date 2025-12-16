@@ -66,4 +66,9 @@ class Student extends Authenticatable implements CanResetPasswordContract
     {
         return $this->belongsTo(ClassRoom::class, 'class_room_id');
     }
+
+    public function dailyMoods()
+    {
+        return $this->hasMany(DailyMood::class);
+    }
 }

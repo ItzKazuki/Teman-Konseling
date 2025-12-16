@@ -11,7 +11,7 @@
       <img src="/static/guru.svg" alt="Ilustrasi Guru atau Konselor" class="mx-auto w-3/4 max-w-xs" />
 
       <div class="space-y-3">
-        <h1 class="text-3xl font-extrabold text-primary-600">Terima kasih, Chaeza!</h1>
+        <h1 class="text-3xl font-extrabold text-primary-600">Terima kasih, {{ auth.user?.name}}!</h1>
         <p class="text-gray-600 max-w-sm mx-auto">Terima kasih karena telah terbuka hari ini. Kami tunggu emosi kamu
           esok hari! Kamu hebat!</p>
       </div>
@@ -31,4 +31,6 @@
 definePageMeta({
   layout: 'custom'
 });
+
+const auth= useAuthStore();
 </script>

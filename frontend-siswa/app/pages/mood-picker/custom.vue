@@ -54,13 +54,17 @@
     </div>
 
     <div class="flex flex-col gap-3 pt-4">
-      <button @click="proceedToConfirmation" :disabled="!isReadyToProceed" :class="[
+      <button @click="proceedToConfirmation" :disabled="!isReadyToProceed || isSubmitting" :class="[
         'w-full py-4 rounded-xl font-semibold transition-colors duration-200 text-center',
         isReadyToProceed
           ? 'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-2 focus:ring-secondary-400'
           : 'bg-gray-200 text-gray-500 cursor-not-allowed'
       ]">
-        Konfirmasi Emosi Kustom
+        <span v-if="isSubmitting" class="flex items-center gap-2">
+          <div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+          Mengirim...
+        </span>
+        <span v-else>Kirim</span>
       </button>
     </div>
   </div>
@@ -70,6 +74,8 @@
 definePageMeta({
   layout: 'custom'
 });
+
+const isSubmitting = ref(false);
 
 const customEmotionName = ref('');
 const emotionMagnitude = ref<number | null>(null);
@@ -84,25 +90,38 @@ const isReadyToProceed = computed(() => {
   );
 });
 
-function proceedToConfirmation() {
-  if (isReadyToProceed.value) {
-    // Logika untuk menyimpan atau mengirim data ke halaman konfirmasi
-    console.log({
-      emotion: customEmotionName.value,
-      magnitude: emotionMagnitude.value,
-      story: userStory.value,
-    });
+async function proceedToConfirmation() {
+  isSubmitting.value = true;
 
-    // Contoh navigasi ke halaman konfirmasi dengan data
-    navigateTo({
-      path: '/mood-picker/konfirmasi',
-      query: {
-        emotion: customEmotionName.value,
+  if (isReadyToProceed.value) {
+    try {
+      const res = await useApi().post('/student/daily-moods', {
+        emotion_name: customEmotionName.value,
         magnitude: emotionMagnitude.value,
         story: userStory.value,
-        isCustom: 'true' // Tambahkan flag custom
+        is_custom: true
+      });
+
+      if (res.status) {
+        navigateTo('/mood-picker/konfirmasi');
       }
-    });
+    } catch (error: any) {
+      alert(error.data?.message || "Gagal menyimpan emosi kustom");
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 }
+
+onMounted(async () => {
+  try {
+    const res = await useApi().get<{ has_filled_today: boolean }>('/student/daily-moods/check');
+    if (res.status && res.data.has_filled_today) {
+      useToast().info("Kamu sudah mengisi emosi hari ini!");
+      navigateTo('/home');
+    }
+  } catch (e) {
+    console.error("Gagal cek status mood");
+  }
+});
 </script>

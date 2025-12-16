@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Common\FileController;
 use App\Http\Controllers\Api\MasterDataController;
 use App\Http\Controllers\Api\Student\ArticleController as StudentArticleController;
 use App\Http\Controllers\Api\Student\CounselingController as StudentCounselingController;
+use App\Http\Controllers\Api\Student\MoodController as StudentMoodController;
 use App\Http\Middleware\CheckRoleIsBk;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,9 @@ Route::prefix('v1')->group(function () {
         Route::get('counseling/{id}', [StudentCounselingController::class, 'show']);
         Route::post('counseling/new-request', [StudentCounselingController::class, 'store']);
         Route::post('counseling/schedule/{request_id}', [StudentCounselingController::class, 'schedule']);
+
+        Route::post('daily-moods', [StudentMoodController::class, 'store']);
+        Route::get('daily-moods/check', [StudentMoodController::class, 'checkStatus']);
     });
 
     Route::middleware(['auth:sanctum'])->group(function () {

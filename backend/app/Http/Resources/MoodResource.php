@@ -14,6 +14,14 @@ class MoodResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id'           => $this->id,
+            'student_id'   => $this->student_id,
+            'emotion_name' => $this->emotion_name,
+            'magnitude'    => $this->magnitude,
+            'story'        => $this->story,
+            'is_custom'    => (bool) $this->is_custom,
+            'created_at'   => $this->created_at,
+        ];
     }
 }

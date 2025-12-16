@@ -64,13 +64,17 @@
 
 
     <div class="flex flex-col gap-3 pt-4">
-      <button @click="proceedToConfirmation" :disabled="!isReadyToProceed" :class="[
+      <button @click="proceedToConfirmation" :disabled="!isReadyToProceed || isSubmitting" :class="[
         'w-full py-4 rounded-xl font-semibold transition-colors duration-200 text-center',
         isReadyToProceed
           ? 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-primary-400'
           : 'bg-gray-200 text-gray-500 cursor-not-allowed'
       ]">
-        Kirim
+        <span v-if="isSubmitting" class="flex items-center gap-2">
+          <div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+          Mengirim...
+        </span>
+        <span v-else>Kirim</span>
       </button>
 
       <NuxtLink to="/mood-picker/custom"
@@ -81,24 +85,12 @@
   </div>
 </template>
 
-<style scoped>
-/* Transisi Sederhana untuk Bagian Baru */
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
-</style>
-
 <script setup lang="ts">
 definePageMeta({
   layout: 'custom'
 });
+
+const isSubmitting = ref(false);
 
 // State untuk menyimpan emosi yang dipilih
 const selectedEmotion = ref<string | null>(null);
@@ -135,19 +127,30 @@ function selectEmotion(emotionTitle: string) {
 
 // Fungsi untuk mengarahkan ke halaman konfirmasi dengan data (Opsional)
 // Karena ini adalah tombol akhir, kita bisa menggunakan router untuk mengirim data state
-function proceedToConfirmation() {
-  if (selectedEmotion.value && emotionMagnitude.value) {
-    // Contoh mengirim data melalui query params
-    // Pastikan halaman konfirmasi Anda siap menerima ini
-    // Atau gunakan state management (Pinia/Vuex) untuk data yang lebih kompleks
-    navigateTo({
-      path: '/mood-picker/konfirmasi',
-      query: {
-        emotion: selectedEmotion.value,
+async function proceedToConfirmation() {
+  isSubmitting.value = true;
+
+  if (isReadyToProceed.value) {
+    try {
+      const res = await useApi().post('/student/daily-moods', {
+        emotion_name: selectedEmotion.value,
         magnitude: emotionMagnitude.value,
         story: userStory.value,
+        is_custom: false // Karena memilih dari daftar yang ada
+      });
+
+      if (res.status) {
+        // Jika sukses, baru pindah ke halaman konfirmasi
+        navigateTo('/mood-picker/konfirmasi');
+      } else {
+        useToast().error(res.message || "Gagal mengirim data");
       }
-    });
+    } catch (error: any) {
+      // Menangani error validasi (Misal: Sudah isi hari ini)
+      useToast().error(error.data?.message || "Terjadi kesalahan pada server");
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 }
 
@@ -155,4 +158,30 @@ function proceedToConfirmation() {
 const isReadyToProceed = computed(() => {
   return selectedEmotion.value !== null && emotionMagnitude.value !== null;
 });
+
+onMounted(async () => {
+  try {
+    const res = await useApi().get<{ has_filled_today: boolean }>('/student/daily-moods/check');
+    if (res.status && res.data.has_filled_today) {
+      useToast().info("Kamu sudah mengisi emosi hari ini!");
+      navigateTo('/home');
+    }
+  } catch (e) {
+    console.error("Gagal cek status mood");
+  }
+});
 </script>
+
+<style scoped>
+/* Transisi Sederhana untuk Bagian Baru */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+</style>

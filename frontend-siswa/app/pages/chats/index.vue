@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-8">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <AppHeader title="Daftar Konseling Saya" icon="tk:chat-bold" class="!mb-0" />
+      <AppHeader title="Daftar Konseling Saya" icon="tk:chat-bold" class="mb-0" />
 
       <NuxtLink to="/chats/new-request"
         class="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition duration-200 shadow-md shadow-primary-200">
