@@ -33,7 +33,7 @@
           class="bg-white p-4 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition duration-200">
 
           <div class="flex items-start space-x-4">
-            <img :src="counselor.photoUrl" :alt="`Foto ${counselor.name}`"
+            <img :src="counselor.avatar_url" :alt="`Foto ${counselor.name}`"
               class="w-16 h-16 object-cover rounded-full border-2 border-primary-200 shrink-0" />
 
             <div class="grow">
@@ -42,16 +42,16 @@
 
               <div class="flex items-center mt-1">
                 <span
-                  :class="['w-2.5 h-2.5 rounded-full mr-2', counselor.isAvailable ? 'bg-green-500' : 'bg-red-500']"></span>
-                <p :class="['text-xs font-semibold', counselor.isAvailable ? 'text-green-600' : 'text-red-600']">
-                  {{ counselor.isAvailable ? 'Menerima Jadwal' : 'Penuh Hari Ini' }}
+                  :class="['w-2.5 h-2.5 rounded-full mr-2', counselor.is_available ? 'bg-green-500' : 'bg-red-500']"></span>
+                <p :class="['text-xs font-semibold', counselor.is_available ? 'text-green-600' : 'text-red-600']">
+                  {{ counselor.is_available ? 'Menerima Jadwal' : 'Penuh Hari Ini' }}
                 </p>
               </div>
 
               <div class="mt-3">
-                <button @click="scheduleConsultation(counselor)" :disabled="!counselor.isAvailable" :class="[
+                <button @click="scheduleConsultation(counselor)" :disabled="!counselor.is_available" :class="[
                   'py-2 px-4 rounded-lg font-semibold text-sm transition duration-150',
-                  counselor.isAvailable
+                  counselor.is_available
                     ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm'
                     : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                 ]">
@@ -72,49 +72,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
-
 const route = useRoute();
-
 const isLoading = ref(true);
 const availableCounselors = ref([]);
 const requestData = ref(null); // Data permintaan yang baru diajukan
-
-// Data Dummy / Simulasi
-const dummyRequestData = {
-  id: route.query.requestId || 'REQ-00123',
-  title: 'Kesulitan Tidur dan Belajar',
-  description: 'Saya cemas dengan nilai...',
-  urgency: 'high' // low, medium, or high
-};
-
-const dummyCounselors = [
-  {
-    id: 1,
-    name: "Bpk. Dwi Prasetyo, M.Pd",
-    title: "Guru BK Kelas X & XI",
-    phoneNumber: "6281234567890",
-    photoUrl: "/static/images/profile.png",
-    isAvailable: true,
-  },
-  {
-    id: 2,
-    name: "Ibu Rina Amalia, S.Psi",
-    title: "Guru BK Kelas XII",
-    phoneNumber: "6285098765432",
-    photoUrl: "/static/images/profile.png",
-    isAvailable: false,
-  },
-  {
-    id: 3,
-    name: "Bpk. Budi Santoso, S.Pd",
-    title: "Guru BK Umum",
-    phoneNumber: "6287112233445",
-    photoUrl: "/static/images/profile.png",
-    isAvailable: true,
-  },
-];
 
 // Computed untuk penyesuaian tampilan berdasarkan urgensi
 const urgencyClass = computed(() => {
@@ -147,27 +108,33 @@ const getUrgencyLabel = (urgency) => {
 };
 
 
-const fetchData = () => {
+const fetchData = async () => {
   isLoading.value = true;
-  // Simulasi fetch data permintaan baru (menggunakan requestId dari query) dan daftar konselor
-  setTimeout(() => {
-    // Simulasi pengambilan data permintaan
-    if (route.query.requestId) {
-      // Dalam aplikasi nyata, lakukan fetch({ id: route.query.requestId })
-      requestData.value = dummyRequestData;
+
+  try {
+    const requestId = route.query.requestId;
+    // Ambil detail permintaan konseling berdasarkan requestId
+    const requestRes = await useApi().get(`/student/counseling/${requestId}`);
+    if (requestRes.status && requestRes.data) {
+      requestData.value = requestRes.data;
     }
 
-    // Simulasi pengambilan daftar konselor
-    availableCounselors.value = dummyCounselors;
-
+    const listCounselors = await useApi().get('/master-data/counselors');
+    if (listCounselors.status && listCounselors.data) {
+      // availableCounselors.value = listCounselors.data.filter(c => c.is_available);
+      availableCounselors.value = listCounselors.data;
+    }
+  } catch (err) {
+    console.error('Error fetching counselors:', err);
+  } finally {
     isLoading.value = false;
-  }, 1000);
+  }
 };
 
 onMounted(() => {
   if (!route.query.requestId) {
     // Jika tidak ada requestId, pengguna mungkin langsung mengakses halaman ini
-    alert("Anda harus mengajukan permintaan konseling terlebih dahulu.");
+    useToast().error("Anda harus mengajukan permintaan konseling terlebih dahulu.");
     navigateTo('/chats/new-request');
     return;
   }
@@ -175,8 +142,8 @@ onMounted(() => {
 });
 
 function scheduleConsultation(counselor) {
-  if (!counselor.isAvailable) {
-    alert(`Maaf, ${counselor.name} sedang penuh jadwal.`);
+  if (!counselor.is_available) {
+    useToast().error(`Maaf, ${counselor.name} sedang penuh jadwal.`);
     return;
   }
 

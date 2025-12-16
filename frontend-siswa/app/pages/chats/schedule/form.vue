@@ -20,29 +20,27 @@
       <div class="space-y-3">
         <h2 class="text-lg font-bold text-gray-800">1. Pilih Metode Konseling</h2>
         <div class="grid grid-cols-2 gap-4">
-          
-          <div @click="form.method = 'Chat'"
-            :class="[
-              'p-4 rounded-xl border-2 transition duration-200 cursor-pointer',
-              form.method === 'Chat' 
-                ? 'border-primary-600 bg-primary-50 shadow-md' 
-                : 'border-gray-200 hover:border-gray-300'
-            ]">
-            <Icon name="tabler:message-circle-2" class="w-6 h-6 mb-1" 
-              :class="form.method === 'Chat' ? 'text-primary-600' : 'text-gray-500'" />
+
+          <div @click="form.method = 'chat'" :class="[
+            'p-4 rounded-xl border-2 transition duration-200 cursor-pointer',
+            form.method === 'chat'
+              ? 'border-primary-600 bg-primary-50 shadow-md'
+              : 'border-gray-200 hover:border-gray-300'
+          ]">
+            <Icon name="tabler:message-circle-2" class="w-6 h-6 mb-1"
+              :class="form.method === 'chat' ? 'text-primary-600' : 'text-gray-500'" />
             <p class="font-semibold text-gray-900">Chat (WhatsApp)</p>
             <p class="text-xs text-gray-500">Nyaman, cepat, dan fleksibel.</p>
           </div>
 
-          <div @click="form.method = 'Tatap Muka'"
-            :class="[
-              'p-4 rounded-xl border-2 transition duration-200 cursor-pointer',
-              form.method === 'Tatap Muka' 
-                ? 'border-primary-600 bg-primary-50 shadow-md' 
-                : 'border-gray-200 hover:border-gray-300'
-            ]">
-            <Icon name="tabler:users" class="w-6 h-6 mb-1" 
-              :class="form.method === 'Tatap Muka' ? 'text-primary-600' : 'text-gray-500'" />
+          <div @click="form.method = 'face-to-face'" :class="[
+            'p-4 rounded-xl border-2 transition duration-200 cursor-pointer',
+            form.method === 'face-to-face'
+              ? 'border-primary-600 bg-primary-50 shadow-md'
+              : 'border-gray-200 hover:border-gray-300'
+          ]">
+            <Icon name="tabler:users" class="w-6 h-6 mb-1"
+              :class="form.method === 'face-to-face' ? 'text-primary-600' : 'text-gray-500'" />
             <p class="font-semibold text-gray-900">Tatap Muka</p>
             <p class="text-xs text-gray-500">Konseling di ruang BK.</p>
           </div>
@@ -66,27 +64,18 @@
             </select>
           </div>
         </div>
-        <p v-if="form.method === 'Tatap Muka'" class="text-xs text-secondary-600 pt-1">
+        <p v-if="form.method === 'face-to-face'" class="text-xs text-secondary-600 pt-1">
           *Pastikan waktu ini tidak bentrok dengan jam pelajaran Anda.
         </p>
       </div>
 
-      <div class="space-y-2">
-        <h2 class="text-lg font-bold text-gray-800">3. Deskripsi Singkat Masalah (Rahasia)</h2>
-        <textarea id="problem-desc" v-model="form.description" rows="4" required
-          placeholder="Contoh: Saya kesulitan mengatur waktu belajar menjelang ujian..."
-          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 resize-none text-base"></textarea>
-        <p class="text-xs text-gray-500">Deskripsi ini bersifat rahasia dan hanya dilihat oleh Guru BK.</p>
-      </div>
-
       <div class="pt-4">
-        <button type="submit" :disabled="!isFormValid"
-          :class="[
-            'w-full py-4 rounded-xl font-semibold transition-colors duration-200 text-center',
-            isFormValid
-              ? 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-primary-400'
-              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-          ]">
+        <button type="submit" :disabled="!isFormValid" :class="[
+          'w-full py-4 rounded-xl font-semibold transition-colors duration-200 text-center',
+          isFormValid
+            ? 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-primary-400'
+            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+        ]">
           Ajukan Jadwal Konseling
         </button>
       </div>
@@ -95,66 +84,74 @@
 </template>
 
 <script setup>
-import { reactive, computed, ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-
 const route = useRoute();
 
-// State Form
+const requestId = route.query.requestId;
+
 const form = reactive({
-  counselorId: null,
-  method: 'Chat', // Default ke Chat
+  counselorId: "", // Default/Hardcoded sesuai contoh curl atau ambil dari query
+  method: 'chat', // Sesuaikan dengan enum API (huruf kecil)
   date: '',
   timeSlot: '',
-  description: '',
+  description: '', // Tetap ada di form untuk user, meski tidak dikirim di curl schedule
 });
 
-// Data Konselor dari Query Params
 const counselorName = ref('Guru BK');
+const isSubmitting = ref(false); // State untuk loading tombol
 
-// Slot Waktu Tersedia (Dummy)
 const availableTimeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00'];
 
 onMounted(() => {
-  // Ambil data konselor dari URL Query Params
+  // Ambil data dari query params yang dikirim halaman sebelumnya
   const id = route.query.counselorId;
   const name = route.query.counselorName;
 
-  if (id && name) {
-    form.counselorId = id;
-    counselorName.value = name;
-  } else {
-    // Jika tidak ada data, arahkan kembali atau tampilkan pesan error
-    // navigateTo('/counselors');
-    console.error("Data konselor tidak ditemukan!");
-  }
-  
-  // Set tanggal default ke hari ini
+  if (id) form.counselorId = id;
+  if (name) counselorName.value = name;
+
+  // Set tanggal default ke hari ini (format YYYY-MM-DD)
   form.date = new Date().toISOString().slice(0, 10);
 });
 
-// Computed untuk Validasi Form
 const isFormValid = computed(() => {
   return (
-    form.counselorId !== null &&
-    form.method !== '' &&
+    form.counselorId &&
     form.date !== '' &&
     form.timeSlot !== '' &&
-    form.description.trim().length >= 10 // Minimal deskripsi 10 karakter
+    !isSubmitting.value
   );
 });
 
-// Fungsi Submit
-function submitSchedule() {
+async function submitSchedule() {
   if (!isFormValid.value) return;
 
-  // Logika Pengiriman Data (Simulasi)
-  console.log('Jadwal diajukan:', form);
-  
-  // Di sini Anda akan mengirim data ke API backend
-  
-  // Setelah berhasil, arahkan ke halaman konfirmasi atau riwayat jadwal
-  alert(`Permintaan jadwal dengan ${counselorName.value} berhasil diajukan pada ${form.date} jam ${form.timeSlot} via ${form.method}. Menunggu konfirmasi Guru BK.`);
-  navigateTo('/schedule/history'); 
+  isSubmitting.value = true;
+
+  // Sesuaikan format data dengan CURL yang diminta
+  const payload = {
+    counselor_id: form.counselorId,
+    method: form.method, // Mapping ke format API
+    schedule_date: `${form.date}T${form.timeSlot}:00Z`, // Gabungkan jadi ISO string sederhana
+    time_slot: form.timeSlot
+  };
+
+  try {
+    // URL menggunakan requestId yang didapat dari query param
+    const res = await useApi().post(`/student/counseling/schedule/${requestId}`, payload);
+
+    if (res.status) {
+      useToast().success(`Jadwal berhasil diajukan!`);
+      // Arahkan ke daftar utama (yang sudah Anda buat sebelumnya)
+      // Di sana logic-nya otomatis akan berubah jadi "Mulai Chat" karena schedule sudah terisi
+      navigateTo('/chats');
+    } else {
+      useToast().error('Gagal mengajukan jadwal: ' + (res.message || 'Terjadi kesalahan'));
+    }
+  } catch (error) {
+    console.error('Error submitting schedule:', error);
+    useToast().error('Terjadi kesalahan koneksi ke server.');
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 </script>

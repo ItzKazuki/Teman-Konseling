@@ -1,58 +1,112 @@
 <template>
   <div class="space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <AppHeader title="Daftar Konseling Saya" icon="tk:chat-bold" class="!mb-0" />
 
-    <AppHeader title="Pilih Konselor Anda" icon="tk:chat-bold" />
+      <NuxtLink to="/chats/new-request"
+        class="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition duration-200 shadow-md shadow-primary-200">
+        <Icon name="heroicons:plus-circle-solid" class="w-5 h-5" />
+        Tambah Konseling
+      </NuxtLink>
+    </div>
 
     <div class="space-y-4">
-
       <div v-if="isLoading" class="text-center py-10">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-        <p class="mt-4 text-gray-500">Memuat daftar konselor...</p>
+        <p class="mt-4 text-gray-500">Memuat riwayat konseling...</p>
       </div>
 
-      <div v-else-if="availableCounselors.length > 0">
-        <div v-for="counselor in availableCounselors" :key="counselor.id"
-          class="bg-white p-4 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition duration-200">
+      <div v-else-if="counselingList.length > 0" class="space-y-4">
+        <div v-for="item in counselingList" :key="item.id"
+          class="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition duration-200">
 
-          <div class="flex items-start space-x-4">
-            <img :src="counselor.photoUrl" :alt="`Foto ${counselor.name}`"
-              class="w-16 h-16 object-cover rounded-full border-2 border-primary-200 shrink-0" />
-
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="grow">
-              <h3 class="text-lg font-bold text-gray-900">{{ counselor.name }}</h3>
-              <p class="text-sm text-gray-600">{{ counselor.title }}</p>
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="text-lg font-bold text-gray-900">{{ item.title }}</h3>
+                <span :class="[
+                  'text-[10px] px-2 py-0.5 rounded-full font-bold uppercase',
+                  item.urgency === 'high' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                ]">
+                  {{ item.urgency }}
+                </span>
+              </div>
 
-              <div class="flex items-center mt-1">
-                <span
-                  :class="['w-2.5 h-2.5 rounded-full mr-2', counselor.isAvailable ? 'bg-green-500' : 'bg-red-500']"></span>
-                <p :class="['text-xs font-semibold', counselor.isAvailable ? 'text-green-600' : 'text-red-600']">
-                  {{ counselor.isAvailable ? 'Menerima Jadwal' : 'Penuh Hari Ini' }}
+              <p class="text-sm text-gray-600 line-clamp-2 mb-3">{{ item.description }}</p>
+
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
+                <div class="flex items-center">
+                  <span :class="[
+                    'w-2.5 h-2.5 rounded-full mr-2',
+                    !item.schedule ? 'bg-amber-500' :
+                      (item.schedule.status === 'pending' ? 'bg-blue-500' : 'bg-green-500')
+                  ]"></span>
+
+                  <p class="text-xs font-semibold text-gray-500">
+                    <template v-if="!item.schedule">
+                      Menunggu Penjadwalan
+                    </template>
+                    <template v-else-if="item.schedule.status === 'pending'">
+                      Menunggu Persetujuan
+                    </template>
+                    <template v-else-if="item.schedule.status === 'confirmed'">
+                      Jadwal Terkonfirmasi
+                    </template>
+                    <template v-else>
+                      {{ item.schedule.status }}
+                    </template>
+                  </p>
+                </div>
+                <p class="text-xs text-gray-400">
+                  Dibuat: {{ new Date(item.created_at).toLocaleDateString('id-ID') }}
                 </p>
               </div>
+            </div>
 
-              <div class="mt-3">
-                <button @click="scheduleConsultation(counselor)" :disabled="!counselor.isAvailable" :class="[
-                  'py-2 px-4 rounded-lg font-semibold text-sm transition duration-150',
-                  counselor.isAvailable
+            <div class="shrink-0">
+              <button @click="handleAction(item)" :disabled="item.schedule && item.schedule.status === 'pending'"
+                :class="[
+                  'w-full md:w-auto py-2.5 px-6 rounded-lg font-bold text-sm transition duration-150 flex items-center justify-center gap-2',
+
+                  // Jika Belum ada jadwal (Warna Primary/Indigo)
+                  !item.schedule
                     ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm'
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    : '',
+
+                  // Jika Jadwal ada tapi Pending (Warna Abu-abu & Disabled)
+                  (item.schedule && item.schedule.status === 'pending')
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : '',
+
+                  // Jika Jadwal Terkonfirmasi (Warna Emerald/Hijau)
+                  (item.schedule && item.schedule.status === 'confirmed')
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
+                    : ''
                 ]">
-                  Buat Jadwal
-                </button>
-              </div>
+                <Icon v-if="!item.schedule" name="heroicons:calendar-days-solid" class="w-4 h-4" />
+                <Icon v-else-if="item.schedule.status === 'pending'" name="heroicons:clock-solid" class="w-4 h-4" />
+                <Icon v-else name="heroicons:chat-bubble-left-right-solid" class="w-4 h-4" />
+
+                <span v-if="!item.schedule">Pilih Jadwal</span>
+                <span v-else-if="item.schedule.status === 'pending'">Menunggu Persetujuan</span>
+                <span v-else>Mulai Chat</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div v-else class="text-center py-12 px-6">
-        <p class="text-lg font-semibold text-gray-700">Kamu belum mengajukan konseling.</p>
-        <p class="mt-2 text-gray-500">Ajukan konseling sekarang untuk melihat daftar konselor yang tersedia.</p>
+      <div v-else class="text-center py-12 px-6 bg-white rounded-2xl border-2 border-dashed border-gray-200">
+        <div class="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Icon name="heroicons:chat-bubble-bottom-center-text" class="w-8 h-8 text-gray-400" />
+        </div>
+        <p class="text-lg font-semibold text-gray-700">Belum ada riwayat konseling</p>
+        <p class="mt-2 text-gray-500 text-sm">Ceritakan apa yang kamu rasakan kepada Guru BK kami.</p>
 
         <div class="mt-6">
           <NuxtLink to="/chats/new-request"
-            class="inline-block py-3 px-6 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition duration-150">
-            Ajukan Konseling Sekarang
+            class="inline-block py-3 px-8 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition duration-150 shadow-lg shadow-primary-200">
+            Mulai Konseling Baru
           </NuxtLink>
         </div>
       </div>
@@ -61,69 +115,47 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { navigateTo } from '#app'; // Pastikan `MapsTo` diimport jika menggunakan Nuxt 3
+const counselingList = ref([]);
+const isLoading = ref(true);
 
-const availableCounselors = ref([]); // Data awal dikosongkan
-const isLoading = ref(true); // Status loading
-
-// Simulasikan pengambilan data dari API
-const fetchData = () => {
+const fetchData = async () => {
   isLoading.value = true;
-  setTimeout(() => {
-    // Kosongkan data secara default (untuk menampilkan placeholder)
-    // availableCounselors.value = []; 
-
-    // Jika ingin menampilkan data setelah loading (untuk testing):
-    // availableCounselors.value = [
-    //   {
-    //     id: 1,
-    //     name: "Bpk. Dwi Prasetyo, M.Pd",
-    //     title: "Guru BK Kelas X & XI",
-    //     phoneNumber: "6281234567890",
-    //     photoUrl: "/static/images/profile.png",
-    //     isAvailable: true,
-    //   },
-    //   {
-    //     id: 2,
-    //     name: "Ibu Rina Amalia, S.Psi",
-    //     title: "Guru BK Kelas XII",
-    //     phoneNumber: "6285098765432",
-    //     photoUrl: "/static/images/profile.png",
-    //     isAvailable: false,
-    //   },
-    //   {
-    //     id: 3,
-    //     name: "Bpk. Budi Santoso, S.Pd",
-    //     title: "Guru BK Umum",
-    //     phoneNumber: "6287112233445",
-    //     photoUrl: "/static/images/profile.png",
-    //     isAvailable: true,
-    //   },
-    // ];
-
+  try {
+    const res = await useApi().get('/student/counseling');
+    // Sesuai contoh JSON anda: res.data adalah array
+    if (res && res.data) {
+      counselingList.value = res.data;
+    }
+  } catch (error) {
+    console.error('Error fetching counseling list:', error);
+  } finally {
     isLoading.value = false;
-  }, 1000); // Simulasi delay 1 detik
+  }
 };
 
 onMounted(() => {
   fetchData();
 });
 
-function scheduleConsultation(counselor) {
-  if (!counselor.isAvailable) {
-    alert(`Maaf, ${counselor.name} sedang penuh jadwal. Silakan pilih konselor lain atau coba besok.`);
+function handleAction(item) {
+  if (!item.schedule) {
+    return navigateTo({
+      path: '/chats/counselors',
+      query: { requestId: item.id }
+    });
+  }
+
+  // 2. Jika sudah pilih jadwal tapi Guru BK belum menyetujui (Status Pending)
+  if (item.schedule.status === 'pending') {
+    useToast().error("Jadwal Anda sedang menunggu persetujuan Guru BK. Mohon cek kembali nanti.");
     return;
   }
 
-  navigateTo({
-    path: '/chats/schedule/form',
-    query: {
-      counselorId: counselor.id,
-      counselorName: counselor.name,
-    }
-  });
-
-  console.log(`Mengarahkan ke halaman jadwal untuk ${counselor.name}.`);
+  // 3. Jika sudah dikonfirmasi (Confirmed), baru boleh masuk ke chat
+  if (item.schedule.status === 'confirmed') {
+    return navigateTo({
+      path: `/chats/with/${item.id}`,
+    });
+  }
 }
 </script>
