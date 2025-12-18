@@ -4,6 +4,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Api\Admin\ArticleCategoryController;
 use App\Http\Controllers\Api\Admin\ArticleController;
 use App\Http\Controllers\Api\Admin\ClassroomController as AdminClassroomController;
+use App\Http\Controllers\Api\Admin\MoodController;
 use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Auth\AccountController;
@@ -65,8 +66,11 @@ Route::prefix('v1')->group(function () {
     // untuk bk
     Route::group(['middleware' => ['auth:user', CheckRoleIsBk::class], 'prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::apiResource('users', UserController::class);
+        Route::get('students/details/{id}', [StudentController::class, 'detail']);
         Route::apiResource('students', StudentController::class);
         Route::apiResource('articles', ArticleController::class);
+
+        Route::get('moods', [MoodController::class, 'index']);
 
         // master data admin
         Route::group(['prefix' => 'master-data', 'as' => 'master-data.'], function () {

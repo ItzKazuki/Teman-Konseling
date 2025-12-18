@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Models\Student;
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StudentRequest;
 use App\Http\Resources\StudentResource;
+use App\Models\Student;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 #[Group('Admin: Data Siswa', weight: 3)]
 class StudentController extends Controller
@@ -30,7 +30,7 @@ class StudentController extends Controller
     public function store(StudentRequest $request)
     {
         $validated = $request->validated();
-        
+
         // Hashing password hanya jika ada
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
@@ -48,11 +48,44 @@ class StudentController extends Controller
     {
         $student = Student::find($id);
 
-        if(!$student) {
+        if (! $student) {
             return ApiResponse::error('Data siswa tidak ditemukan', 404);
         }
 
         return ApiResponse::success(new StudentResource($student), 'berhasil mengambil data siswa');
+    }
+
+    /**
+     * Display detail student.
+     */
+    public function detail(string $id)
+    {
+        $student = Student::with(['dailyMoods' => function ($query) {
+            $query->latest()->take(30);
+        }])->find($id);
+
+        if (! $student) {
+            return ApiResponse::error('Data siswa tidak ditemukan', 404);
+        }
+
+        return ApiResponse::success([
+            'name' => $student->name,
+            'nisn' => $student->nisn,
+            'phone' => $student->phone,
+            'address' => $student->address,
+            'parent_name' => $student->parent_name,
+            'parent_phone' => $student->parent_phone,
+            'classroom' => $student->classroom->name,
+            'mood_history' => $student->dailyMoods->map(fn ($m) => [
+                'id' => $m->id,
+                'emotion_name' => $m->emotion_name,
+                'magnitude' => $m->magnitude,
+                'story' => $m->story,
+                'formatted_date' => $m->created_at->translatedFormat('d M Y'),
+            ]),
+            'chart_labels' => $student->dailyMoods->reverse()->pluck('created_at')->map(fn ($d) => $d->format('d M')),
+            'chart_data' => $student->dailyMoods->reverse()->pluck('magnitude'),
+        ]);
     }
 
     /**
@@ -62,7 +95,7 @@ class StudentController extends Controller
     {
         $student = Student::find($id);
 
-        if(!$student) {
+        if (! $student) {
             return ApiResponse::error('Data siswa tidak ditemukan', 404);
         }
 
@@ -88,7 +121,7 @@ class StudentController extends Controller
     {
         $student = Student::find($id);
 
-        if(!$student) {
+        if (! $student) {
             return ApiResponse::error('Data siswa tidak ditemukan', 404);
         }
 

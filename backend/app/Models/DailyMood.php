@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class DailyMood extends Model
 {
     use HasUuids;
-    
+
     protected $fillable = [
         'student_id',
         'emotion_name',
@@ -28,6 +28,11 @@ class DailyMood extends Model
         return [
             'is_custom' => 'bool',
         ];
+    }
+
+    public static function getNegativeEmotions()
+    {
+        return ['Sedih', 'Marah', 'Takut'];
     }
 
     /**

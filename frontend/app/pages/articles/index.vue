@@ -1,4 +1,54 @@
 <template>
+  <div class="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="p-3 bg-blue-100 rounded-full flex items-center text-blue-600">
+          <Icon name="tabler:users" class="w-6 h-6" />
+        </div>
+        <div>
+          <div class="text-2xl font-bold">{{ totalArticles }}</div>
+          <div class="text-xs text-gray-500">Total Artikel</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="p-3 bg-green-100 rounded-full flex items-center text-green-600">
+          <Icon name="tabler:user-check" class="w-6 h-6" />
+        </div>
+        <div>
+          <div class="text-2xl font-bold">{{ totalViews }}</div>
+          <div class="text-xs text-gray-500">Total Pembaca</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="p-3 bg-orange-100 rounded-full flex items-center text-orange-600">
+          <Icon name="tabler:activity" class="w-6 h-6" />
+        </div>
+        <div>
+          <div class="text-2xl font-bold">{{ avgViews }}</div>
+          <div class="text-xs text-gray-500">Rata-rata Pembaca</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="p-3 bg-red-100 rounded-full flex items-center text-red-600">
+          <Icon name="tabler:alert-triangle" class="w-6 h-6" />
+        </div>
+        <div>
+          <div class="text-2xl font-bold">{{ draftArticles }}</div>
+          <div class="text-xs text-gray-500">Artikel Draft</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="bg-white p-6 rounded-xl shadow-lg">
 
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
@@ -166,6 +216,21 @@ const filteredArticles = computed(() => {
 
   return data;
 });
+
+const draftArticles = computed(() =>
+  rawArticleData.value.filter(a => a.status === 'draft').length
+);
+
+const avgViews = computed(() => {
+  if (!rawArticleData.value.length) return 0;
+  return Math.round(totalViews.value / rawArticleData.value.length);
+});
+
+const totalViews = computed(() =>
+  rawArticleData.value.reduce((sum, a) => sum + (a.views || 0), 0)
+);
+
+const totalArticles = computed(() => rawArticleData.value.length);
 
 const handleDelete = async (id?: string, name?: string) => {
   try {

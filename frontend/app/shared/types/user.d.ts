@@ -32,3 +32,24 @@ interface Student {
   created_at?: string;
   updated_at?: string;
 }
+
+interface StudentDetail {
+  name: string
+  nisn: string
+  phone: any
+  address: any
+  parent_name: any
+  parent_phone: any
+  classroom: string
+  mood_history: MoodHistory[]
+  chart_labels: string[]
+  chart_data: number[]
+}
+
+interface MoodHistory {
+  id: string
+  emotion_name: string
+  magnitude: number
+  story: string
+  formatted_date: string
+}
