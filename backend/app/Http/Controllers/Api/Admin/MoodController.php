@@ -8,7 +8,9 @@ use App\Http\Resources\MoodResource;
 use App\Models\DailyMood;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Admin: Data Mood Siswa', weight: 3)]
 class MoodController extends Controller
 {
     public function index()

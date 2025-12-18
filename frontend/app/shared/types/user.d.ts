@@ -35,6 +35,7 @@ interface Student {
 
 interface StudentDetail {
   name: string
+  avatar_url?: string;
   nisn: string
   phone: any
   address: any

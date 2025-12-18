@@ -71,6 +71,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('articles', ArticleController::class);
 
         Route::get('moods', [MoodController::class, 'index']);
+        Route::get('moods/history', [MoodController::class, 'history']);
 
         // master data admin
         Route::group(['prefix' => 'master-data', 'as' => 'master-data.'], function () {

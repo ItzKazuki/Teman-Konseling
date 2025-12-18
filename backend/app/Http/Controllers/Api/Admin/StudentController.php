@@ -71,6 +71,7 @@ class StudentController extends Controller
         return ApiResponse::success([
             'name' => $student->name,
             'nisn' => $student->nisn,
+            'avatar_url' => $student->avatar_url,
             'phone' => $student->phone,
             'address' => $student->address,
             'parent_name' => $student->parent_name,

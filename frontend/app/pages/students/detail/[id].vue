@@ -26,9 +26,7 @@
       <div class="col-span-12 lg:col-span-4 space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div class="flex flex-col items-center text-center mb-6">
-            <div class="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-              <Icon name="tabler:user" class="w-12 h-12 text-primary-600" />
-            </div>
+            <img :src="student.avatar_url" alt="Avatar" class="w-24 h-24 rounded-full object-cover mb-4">
             <h3 class="text-xl font-bold text-gray-900">{{ student.name }}</h3>
             <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-bold mt-2">
               {{ student.classroom }}
@@ -141,16 +139,16 @@ const student = ref<StudentDetail>({
 
 // Konfigurasi Chart
 const chartData = computed(() => ({
-  labels: ['12 Des', '13 Des', '14 Des', '15 Des', '16 Des', '17 Des', '18 Des'],
+  labels: student.value.chart_labels,
   datasets: [{
     label: 'Tingkat Intensitas',
-    data: [1, 2, 1, 3, 4, 3, 4],
-    borderColor: '#4f46e5',
+    data: student.value.chart_data,
+    borderColor: '#7cacf9',
     backgroundColor: 'rgba(79, 70, 229, 0.1)',
     tension: 0.4,
     fill: true,
     pointRadius: 5,
-    pointBackgroundColor: '#4f46e5'
+    pointBackgroundColor: '#5c97f8'
   }]
 }))
 
