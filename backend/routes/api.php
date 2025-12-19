@@ -4,6 +4,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Api\Admin\ArticleCategoryController;
 use App\Http\Controllers\Api\Admin\ArticleController;
 use App\Http\Controllers\Api\Admin\ClassroomController as AdminClassroomController;
+use App\Http\Controllers\Api\Admin\CounselingController;
 use App\Http\Controllers\Api\Admin\MoodController;
 use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\UserController;
@@ -69,6 +70,7 @@ Route::prefix('v1')->group(function () {
         Route::get('students/details/{id}', [StudentController::class, 'detail']);
         Route::apiResource('students', StudentController::class);
         Route::apiResource('articles', ArticleController::class);
+        Route::apiResource('counselings', CounselingController::class);
 
         Route::get('moods', [MoodController::class, 'index']);
         Route::get('moods/history', [MoodController::class, 'history']);

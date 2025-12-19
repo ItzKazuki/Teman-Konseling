@@ -90,6 +90,11 @@ const navItems = [
     icon: 'tabler:mood-smile',
   },
   {
+    name: 'Konseling',
+    to: '/counseling',
+    icon: 'tabler:mood-smile',
+  },
+  {
     name: 'User',
     to: '/users',
     icon: 'tabler:user-circle',

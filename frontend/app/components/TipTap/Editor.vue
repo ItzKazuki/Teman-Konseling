@@ -6,7 +6,7 @@
         :disabled="item.disabled && item.disabled(editor)" :class="[
           'px-3 py-1 text-sm font-medium rounded-md transition',
           editor.isActive(item.isActive?.name, item.isActive?.attrs)
-            ? 'bg-blue-500 text-white'
+            ? 'bg-primary-500 text-white'
             : 'bg-white text-gray-700 hover:bg-gray-100',
           item.disabled?.(editor) ? 'opacity-50 cursor-not-allowed' : ''
         ]">
@@ -39,7 +39,7 @@ const editor = useEditor({
   editorProps: {
     attributes: {
       class:
-        'rounded-md border border-slate-200 bg-white p-3 w-full h-80 overflow-auto prose prose-sm max-w-none transition duration-300 ease-in focus:outline-none focus:border-blue-500 hover:border-blue-300 shadow-sm focus:shadow'
+        'rounded-md border border-slate-200 bg-white p-3 w-full h-80 overflow-auto prose prose-sm max-w-none transition duration-300 ease-in focus:outline-none focus:border-primary-500 hover:border-primary-300 shadow-sm focus:shadow'
     }
   }
 });

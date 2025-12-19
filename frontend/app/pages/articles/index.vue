@@ -2,7 +2,7 @@
   <div class="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
       <div class="flex items-center space-x-4">
-        <div class="p-3 bg-blue-100 rounded-full flex items-center text-blue-600">
+        <div class="p-3 bg-primary-100 rounded-full flex items-center text-primary-600">
           <Icon name="tabler:users" class="w-6 h-6" />
         </div>
         <div>
