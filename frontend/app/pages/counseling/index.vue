@@ -69,7 +69,7 @@
 
             <div class="flex items-center gap-4 text-xs text-gray-500 mt-4">
               <span class="flex items-center gap-1">
-                <Icon name="tabler:user" /> ID Siswa: {{ item.student_id.slice(0, 8) }}...
+                <Icon name="tabler:user" /> Nama Siswa: {{ item.student.name }}
               </span>
               <span class="flex items-center gap-1">
                 <Icon name="tabler:calendar-plus" /> Dibuat: {{ formatDate(item.created_at) }}
@@ -129,243 +129,8 @@
 </template>
 
 <script setup lang="ts">
-// Data dari JSON Anda (Biasanya dipanggil lewat useApi)
-const rawData = [
-  {
-    "id": "019b2033-8a96-7106-ba3a-308f502173dc",
-    "student_id": "019af42d-9860-712a-8f85-d0e91a24d123",
-    "title": "Lorem 1234",
-    "description": "My Lorem ipsum dolor sit amet asfas ffakjf afkjhasjfkha faksjfhakjfafafhi23r82h feiufhuiwe 32ri23ubire",
-    "urgency": "low",
-    "status": "scheduled",
-    "created_at": "2025-12-15T04:10:07.000000Z",
-    "updated_at": "2025-12-16T08:51:58.000000Z",
-    "schedule": {
-      "id": "019b265b-f1d6-7017-bb42-afe0de1bd087",
-      "request_id": "019b2033-8a96-7106-ba3a-308f502173dc",
-      "counselor_id": "019af420-0535-7005-8188-872b3274c131",
-      "method": "chat",
-      "schedule_date": "2025-12-16T00:00:00.000000Z",
-      "time_slot": "10:00",
-      "status": "pending",
-      "confirmed_at": null,
-      "created_at": "2025-12-16T08:51:58.000000Z",
-      "updated_at": "2025-12-16T08:51:58.000000Z",
-      "counselor": {
-        "id": "019af420-0535-7005-8188-872b3274c131",
-        "nip": "198001012005011001",
-        "name": "Ibu Lia Permata",
-        "email": "lia.bk@sekolah.sch.id",
-        "role": "bk",
-        "jabatan": "Koordinator BK",
-        "email_verified_at": "2025-12-06T14:45:30.000000Z",
-        "created_at": "2025-12-06T14:45:30.000000Z",
-        "updated_at": "2025-12-13T04:34:16.000000Z",
-        "avatar_file_id": null,
-        "phone_number": "",
-        "is_available": true,
-        "avatar_url": "http://api.teman-konseling.test/static/profile.png"
-      }
-    }
-  },
-  {
-    "id": "019b2666-f5f0-7087-bf16-0d591fa4ea25",
-    "student_id": "019af42d-9860-712a-8f85-d0e91a24d123",
-    "title": "Nilai Saya turun",
-    "description": "Nilai saya akhir akhir ini turun bu kenapa ya padahal saya sudah belajar dengan giat",
-    "urgency": "low",
-    "status": "scheduled",
-    "created_at": "2025-12-16T09:04:00.000000Z",
-    "updated_at": "2025-12-16T09:39:00.000000Z",
-    "schedule": {
-      "id": "019b2686-ff95-7150-8d34-4f5fd0bb6294",
-      "request_id": "019b2666-f5f0-7087-bf16-0d591fa4ea25",
-      "counselor_id": "019af420-06ce-70e2-b804-fd6e2beeb198",
-      "method": "face-to-face",
-      "schedule_date": "2025-12-16T00:00:00.000000Z",
-      "time_slot": "10:00",
-      "status": "pending",
-      "confirmed_at": null,
-      "created_at": "2025-12-16T09:39:00.000000Z",
-      "updated_at": "2025-12-16T09:39:00.000000Z",
-      "counselor": {
-        "id": "019af420-06ce-70e2-b804-fd6e2beeb198",
-        "nip": "198505152010022002",
-        "name": "Pak Bima Sakti",
-        "email": "bima.bk@sekolah.sch.id",
-        "role": "bk",
-        "jabatan": "Staf BK",
-        "email_verified_at": "2025-12-06T14:45:30.000000Z",
-        "created_at": "2025-12-06T14:45:30.000000Z",
-        "updated_at": "2025-12-06T14:45:30.000000Z",
-        "avatar_file_id": null,
-        "phone_number": "",
-        "is_available": true,
-        "avatar_url": "http://api.teman-konseling.test/static/profile.png"
-      }
-    }
-  },
-  {
-    "id": "019b2668-bb18-73a9-8d79-a6868acf68cf",
-    "student_id": "019af42d-9860-712a-8f85-d0e91a24d123",
-    "title": "fafas sdvasv",
-    "description": "avsvas sdvdsvs wvrwevre r vbrvberv ef rv3revewvew er brber",
-    "urgency": "medium",
-    "status": "pending",
-    "created_at": "2025-12-16T09:05:56.000000Z",
-    "updated_at": "2025-12-16T09:05:56.000000Z",
-    "schedule": null
-  },
-  {
-    "id": "019b2669-85f6-735f-9c84-c0ed4ae754da",
-    "student_id": "019af42d-9860-712a-8f85-d0e91a24d123",
-    "title": "fasfa efojnwieu eknjfkjenf wkfnkjwef",
-    "description": "ewfwejnfkjwe fewnfijwne fweijnfjwenjf efijejnfjkwef ejf kwenfjnwe wkefnwejnfjweifuifu23n ifewnjfnwef",
-    "urgency": "medium",
-    "status": "pending",
-    "created_at": "2025-12-16T09:06:48.000000Z",
-    "updated_at": "2025-12-16T09:06:48.000000Z",
-    "schedule": {
-      "id": "019b2669-ad5f-71d5-85b6-b47d71d82270",
-      "request_id": "019b2669-85f6-735f-9c84-c0ed4ae754da",
-      "counselor_id": "019af420-0535-7005-8188-872b3274c131",
-      "method": "face-to-face",
-      "schedule_date": "2025-12-16T00:00:00.000000Z",
-      "time_slot": "11:00",
-      "status": "pending",
-      "confirmed_at": null,
-      "created_at": "2025-12-16T09:06:58.000000Z",
-      "updated_at": "2025-12-16T09:06:58.000000Z",
-      "counselor": {
-        "id": "019af420-0535-7005-8188-872b3274c131",
-        "nip": "198001012005011001",
-        "name": "Ibu Lia Permata",
-        "email": "lia.bk@sekolah.sch.id",
-        "role": "bk",
-        "jabatan": "Koordinator BK",
-        "email_verified_at": "2025-12-06T14:45:30.000000Z",
-        "created_at": "2025-12-06T14:45:30.000000Z",
-        "updated_at": "2025-12-13T04:34:16.000000Z",
-        "avatar_file_id": null,
-        "phone_number": "",
-        "is_available": true,
-        "avatar_url": "http://api.teman-konseling.test/static/profile.png"
-      }
-    }
-  },
-  {
-    "id": "019b268b-8160-722e-b3fb-750f7deb57fd",
-    "student_id": "019af42d-9860-712a-8f85-d0e91a24d123",
-    "title": "Saya sedih",
-    "description": "Ga tau kenapa kok akhir akhir ini saya sedih sendiri",
-    "urgency": "medium",
-    "status": "scheduled",
-    "created_at": "2025-12-16T09:43:55.000000Z",
-    "updated_at": "2025-12-16T09:44:06.000000Z",
-    "schedule": {
-      "id": "019b268b-ac04-7132-b521-014a82b4f5d5",
-      "request_id": "019b268b-8160-722e-b3fb-750f7deb57fd",
-      "counselor_id": "019af420-06ce-70e2-b804-fd6e2beeb198",
-      "method": "chat",
-      "schedule_date": "2025-12-25T00:00:00.000000Z",
-      "time_slot": "14:00",
-      "status": "pending",
-      "confirmed_at": null,
-      "created_at": "2025-12-16T09:44:06.000000Z",
-      "updated_at": "2025-12-16T09:44:06.000000Z",
-      "counselor": {
-        "id": "019af420-06ce-70e2-b804-fd6e2beeb198",
-        "nip": "198505152010022002",
-        "name": "Pak Bima Sakti",
-        "email": "bima.bk@sekolah.sch.id",
-        "role": "bk",
-        "jabatan": "Staf BK",
-        "email_verified_at": "2025-12-06T14:45:30.000000Z",
-        "created_at": "2025-12-06T14:45:30.000000Z",
-        "updated_at": "2025-12-06T14:45:30.000000Z",
-        "avatar_file_id": null,
-        "phone_number": "",
-        "is_available": true,
-        "avatar_url": "http://api.teman-konseling.test/static/profile.png"
-      }
-    }
-  },
-  {
-    "id": "019b26b8-d485-70d6-bcef-bca9204744c7",
-    "student_id": "019b14a8-421f-73de-b074-1b21f66dbe5c",
-    "title": "Saya takut ga lolos utbk",
-    "description": "Jekekej rjrjjee ejeje ejejeusoxh eisuxjebekejennejej djdn",
-    "urgency": "medium",
-    "status": "scheduled",
-    "created_at": "2025-12-16T10:33:25.000000Z",
-    "updated_at": "2025-12-16T10:33:33.000000Z",
-    "schedule": {
-      "id": "019b26b8-f2db-7012-8a08-8e19aaa54777",
-      "request_id": "019b26b8-d485-70d6-bcef-bca9204744c7",
-      "counselor_id": "019af420-0535-7005-8188-872b3274c131",
-      "method": "face-to-face",
-      "schedule_date": "2025-12-25T00:00:00.000000Z",
-      "time_slot": "14:00",
-      "status": "pending",
-      "confirmed_at": null,
-      "created_at": "2025-12-16T10:33:33.000000Z",
-      "updated_at": "2025-12-16T10:33:33.000000Z",
-      "counselor": {
-        "id": "019af420-0535-7005-8188-872b3274c131",
-        "nip": "198001012005011001",
-        "name": "Ibu Lia Permata",
-        "email": "lia.bk@sekolah.sch.id",
-        "role": "bk",
-        "jabatan": "Koordinator BK",
-        "email_verified_at": "2025-12-06T14:45:30.000000Z",
-        "created_at": "2025-12-06T14:45:30.000000Z",
-        "updated_at": "2025-12-13T04:34:16.000000Z",
-        "avatar_file_id": null,
-        "phone_number": "",
-        "is_available": true,
-        "avatar_url": "http://api.teman-konseling.test/static/profile.png"
-      }
-    }
-  },
-  {
-    "id": "019b2b90-c2e6-7387-a6a9-435ca1439883",
-    "student_id": "019b14a8-421f-73de-b074-1b21f66dbe5c",
-    "title": "Takut sama masa depan pak",
-    "description": "Bisa kesurupan jerome polin gak, sjhdbdhdhdbhxhxhdudhdbdjdnncncjfjcjchchchhhccjcjcncbfhdjjfjdjfjhfbf",
-    "urgency": "high",
-    "status": "scheduled",
-    "created_at": "2025-12-17T09:07:46.000000Z",
-    "updated_at": "2025-12-17T09:08:14.000000Z",
-    "schedule": {
-      "id": "019b2b91-3320-703d-b93b-7d66b05e4582",
-      "request_id": "019b2b90-c2e6-7387-a6a9-435ca1439883",
-      "counselor_id": "019af420-0535-7005-8188-872b3274c131",
-      "method": "chat",
-      "schedule_date": "2025-12-17T00:00:00.000000Z",
-      "time_slot": "14:00",
-      "status": "pending",
-      "confirmed_at": null,
-      "created_at": "2025-12-17T09:08:14.000000Z",
-      "updated_at": "2025-12-17T09:08:14.000000Z",
-      "counselor": {
-        "id": "019af420-0535-7005-8188-872b3274c131",
-        "nip": "198001012005011001",
-        "name": "Ibu Lia Permata",
-        "email": "lia.bk@sekolah.sch.id",
-        "role": "bk",
-        "jabatan": "Koordinator BK",
-        "email_verified_at": "2025-12-06T14:45:30.000000Z",
-        "created_at": "2025-12-06T14:45:30.000000Z",
-        "updated_at": "2025-12-13T04:34:16.000000Z",
-        "avatar_file_id": null,
-        "phone_number": "",
-        "is_available": true,
-        "avatar_url": "http://api.teman-konseling.test/static/profile.png"
-      }
-    }
-  }
-];
-const counselingRequests = ref(rawData);
+const counselingRequests = ref<CounselingRequest[]>([]);
+const isLoading = ref<boolean>(false);
 const activeTab = ref('all');
 
 // Stats dihitung secara dinamis
@@ -405,4 +170,20 @@ function formatDate(dateStr: string) {
     day: 'numeric', month: 'short', year: 'numeric'
   });
 }
+
+async function getAllArticle() {
+  isLoading.value = true;
+  const resCounseling = await useApi().get<CounselingRequest[]>('/admin/counselings');
+
+  if (resCounseling.status && resCounseling.data) {
+    counselingRequests.value = resCounseling.data;
+  } else {
+    counselingRequests.value = [];
+  }
+  isLoading.value = false;
+}
+
+onMounted(() => {
+  getAllArticle();
+})
 </script>

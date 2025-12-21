@@ -16,6 +16,7 @@ interface User {
 interface Teacher {
   id: string;
   name: string;
+  avatar_url: string
 }
 
 interface Student {
@@ -31,6 +32,14 @@ interface Student {
   password_confirmation?: string;
   created_at?: string;
   updated_at?: string;
+}
+
+interface Counselor {
+  id: string
+  name: string
+  jabatan: string
+  is_available: boolean
+  avatar_url: string
 }
 
 interface StudentDetail {

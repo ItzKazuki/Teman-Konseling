@@ -26,12 +26,17 @@ class ScheduleCounseling extends Model
         'confirmed_at' => 'datetime',
     ];
 
+    public function getTimeSlotAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->format('H:i');
+    }
+
     /**
      * Relasi: Schedule terkait dengan satu Request.
      */
     public function request(): BelongsTo
     {
-        return $this->belongsTo(RequestCounseling::class. 'request_id');
+        return $this->belongsTo(RequestCounseling::class.'request_id');
     }
 
     /**

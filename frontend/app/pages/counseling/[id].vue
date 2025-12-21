@@ -1,6 +1,19 @@
 <template>
   <div class="space-y-6 max-w-7xl mx-auto pb-20">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div v-if="pending" class="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+      <Icon name="tabler:loader-2" class="w-12 h-12 animate-spin text-primary-600" />
+      <p class="text-gray-500 font-medium">Memuat detail permintaan...</p>
+    </div>
+
+    <div v-else-if="error" class="bg-red-50 p-8 rounded-3 text-center">
+      <Icon name="tabler:alert-circle" class="w-12 h-12 text-red-500 mb-2" />
+      <h2 class="text-lg font-bold text-red-800">Gagal Memuat Data</h2>
+      <p class="text-red-600 mb-4">{{ error.message || 'Terjadi kesalahan sistem' }}</p>
+      <button @click="() => refresh()" class="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold">Coba Lagi</button>
+    </div>
+    
+    <div v-else-if="requestData" class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div class="flex items-center gap-4">
         <button @click="$router.back()" class="p-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:bg-gray-50 transition flex items-center">
           <Icon name="tabler:arrow-left" class="w-6 h-6 text-gray-600" />
@@ -113,34 +126,34 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 const route = useRoute();
 const loading = ref(false);
+const counselingId = computed(() => route.params.id as string);
 
-// Data Mockup (Nanti diganti API call berdasarkan ID)
-const requestData = ref({
-  id: route.params.id,
-  title: "Takut sama masa depan pak",
-  description: "Bisa kesurupan jerome polin gak, sjhdbdhdhdbhxhxhdudhdbdjdnncncjfjcjchchchhhccjcjcncbfhdjjfjdjfjhfbf",
-  urgency: "high",
-  status: "scheduled",
-  schedule: {
-    method: "chat",
-    schedule_date: "2025-12-17",
-    time_slot: "14:00",
-    counselor: {
-      name: "Ibu Lia Permata",
-      jabatan: "Koordinator BK",
-      avatar_url: "http://api.teman-konseling.test/static/profile.png"
+const { data: requestData, pending, error, refresh } = await useAsyncData(
+  `counseling-${counselingId.value}`, // Gunakan .value untuk key
+  async () => {
+    try {
+      const res = await useApi().get<CounselingRequest>(`/admin/counselings/${counselingId.value}`);
+
+      if (!res.status || !res.data) {
+        throw createError({ statusCode: 404, statusMessage: 'Data tidak ditemukan' });
+      }
+
+      return res.data;
+    } catch (e: any) {
+      throw e;
     }
   }
-});
+);
 
 const form = reactive({
-  status: requestData.value.status,
+  status: requestData.value?.status,
   notes: ''
 });
 

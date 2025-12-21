@@ -6,6 +6,8 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CounselingFormRequest;
 use App\Http\Requests\CounselingScheduleRequest;
+use App\Http\Resources\CounselingResource;
+use App\Http\Resources\ScheduleCounselingResource;
 use App\Models\RequestCounseling;
 use App\Models\ScheduleCounseling;
 use App\Models\User;
@@ -27,10 +29,10 @@ class CounselingController extends Controller
             return response()->json(['message' => 'Student data not found.'], 404);
         }
 
-        $requests = RequestCounseling::where('student_id', $student->id)
+        $requestCounseling = RequestCounseling::where('student_id', $student->id)
             ->with('schedule.counselor')->get();
 
-        return ApiResponse::success($requests);
+        return ApiResponse::success(CounselingResource::collection($requestCounseling));
     }
 
     /**
@@ -69,16 +71,16 @@ class CounselingController extends Controller
             return response()->json(['message' => 'Student data not found.'], 404);
         }
 
-        $request = RequestCounseling::where('id', $id)
+        $requestCounseling = RequestCounseling::where('id', $id)
             ->where('student_id', $student->id)
             ->with('schedule.counselor')
             ->first();
 
-        if (! $request) {
+        if (! $requestCounseling) {
             return response()->json(['message' => 'Counseling request not found.'], 404);
         }
 
-        return ApiResponse::success($request);
+        return ApiResponse::success(new CounselingResource($requestCounseling));
     }
 
     /**
@@ -124,6 +126,6 @@ class CounselingController extends Controller
         // 5. Update status Request menjadi 'scheduled'
         $requestCounseling->update(['status' => 'scheduled']);
 
-        return ApiResponse::success($schedule->load('counselor'), 'Counseling schedule successfully proposed. Waiting for counselor confirmation.');
+        return ApiResponse::success(new ScheduleCounselingResource($schedule->load('counselor')), 'Counseling schedule successfully proposed. Waiting for counselor confirmation.');
     }
 }

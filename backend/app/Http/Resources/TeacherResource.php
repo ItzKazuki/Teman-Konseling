@@ -17,6 +17,7 @@ class TeacherResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'avatar_url' => $this->avatar_url
         ];
     }
 }
