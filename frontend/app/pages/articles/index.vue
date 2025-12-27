@@ -165,19 +165,7 @@
       </table>
     </div>
 
-    <div class="mt-4 flex justify-end">
-      <div class="flex items-center text-sm text-gray-600 space-x-2">
-        <button
-          class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-colors"
-          disabled>
-          <Icon name="tabler:chevron-left" class="w-4 h-4" />
-        </button>
-        <span class="px-2 py-1">Halaman 1 dari 1</span>
-        <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors" disabled>
-          <Icon name="tabler:chevron-right" class="w-4 h-4" />
-        </button>
-      </div>
-    </div>
+    <AppTablePagination :meta="meta" @change="changePage" v-if="data.length > 0" />
 
   </div>
 </template>
@@ -195,6 +183,7 @@ const {
   search: '',
   status: ''
 });
+
 const isFilterVisible = ref<boolean>(false);
 
 const handleFilterToggle = () => {
