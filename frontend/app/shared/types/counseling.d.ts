@@ -21,3 +21,9 @@ interface CounselingSchedule {
   confirmed_at: any
   counselor: Counselor
 }
+
+interface CounselingSummary {
+  highUrgency: number
+  scheduled: number
+  pending: number
+}

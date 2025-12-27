@@ -69,6 +69,7 @@ Route::prefix('v1')->group(function () {
     Route::group(['middleware' => ['auth:user', CheckRoleIsBk::class], 'prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::apiResource('users', UserController::class);
         Route::get('students/details/{id}', [StudentController::class, 'detail']);
+        Route::get('counselings/summary', [CounselingController::class, 'summary']);
         Route::apiResource('students', StudentController::class);
         Route::apiResource('articles', ArticleController::class);
         Route::apiResource('counselings', CounselingController::class);

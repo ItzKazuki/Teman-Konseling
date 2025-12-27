@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CounselingResource;
 use App\Models\RequestCounseling;
+use Carbon\Carbon;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,17 +15,51 @@ use Illuminate\Support\Facades\Validator;
 #[Group('Admin: Konseling', weight: 3)]
 class CounselingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $counselings = RequestCounseling::with([
+        $perPage = $request->input('perPage', 10);
+
+        $query = RequestCounseling::query();
+
+        if ($request->status && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        $counselings = $query->with([
             'schedule.counselor',
             'student.classroom',
         ])
             ->orderByRaw("FIELD(status, 'scheduled', 'pending', 'completed', 'rejected')")
             ->orderByRaw("FIELD(urgency, 'high', 'medium', 'low')")
-            ->get();
+            ->paginate($perPage);
 
-        return ApiResponse::success(CounselingResource::collection($counselings));
+        $counselings->getCollection()->transform(function ($counseling) {
+            return new CounselingResource($counseling);
+        });
+
+        return ApiResponse::success($counselings);
+    }
+
+    public function summary()
+    {
+        $highUrgency = RequestCounseling::where('urgency', 'high')
+            ->whereNotIn('status', ['rejected', 'completed'])
+            ->count();
+
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        $scheduledThisWeek = RequestCounseling::whereHas('schedule', function ($query) use ($startOfWeek, $endOfWeek) {
+            $query->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+        })->where('status', 'scheduled')->count();
+
+        $pendingConfirmation = RequestCounseling::where('status', 'pending')->count();
+
+        return ApiResponse::success([
+            'highUrgency' => $highUrgency,
+            'scheduled' => $scheduledThisWeek,
+            'pending' => $pendingConfirmation,
+        ], 'Berhasil mengambil ringkasan data');
     }
 
     public function show(string $id)

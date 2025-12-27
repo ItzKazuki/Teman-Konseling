@@ -7,8 +7,9 @@
       </div>
       <div class="flex items-center gap-3">
         <div class="flex bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
-          <button v-for="tab in ['all', 'pending', 'scheduled', 'rejected', 'completed']" :key="tab" @click="activeTab = tab" :class="['px-4 py-1.5 rounded-lg text-xs font-bold transition-all capitalize',
-            activeTab === tab ? 'bg-primary-600 text-white' : 'text-gray-500 hover:bg-gray-50']">
+          <button v-for="tab in ['all', 'pending', 'scheduled', 'rejected', 'completed']" :key="tab"
+            @click="activeTab = tab" :class="['px-4 py-1.5 rounded-lg text-xs font-bold transition-all capitalize',
+              activeTab === tab ? 'bg-primary-600 text-white' : 'text-gray-500 hover:bg-gray-50']">
             {{ tab }}
           </button>
         </div>
@@ -46,7 +47,11 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4">
-      <div v-for="item in filteredRequests" :key="item.id"
+      <div v-if="loading" class="absolute inset-0 bg-white/50 z-10 flex justify-center pt-20">
+        <Icon name="svg-spinners:ring-resize" class="w-10 h-10 text-primary-600" />
+      </div>
+
+      <div v-for="item in data" :key="item.id"
         class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
         <div class="flex flex-col lg:flex-row gap-6">
 
@@ -123,43 +128,56 @@
           </div>
         </div>
       </div>
+
+      <div v-if="data.length === 0 && !loading" class="text-center py-20 rounded-2xl">
+        <Icon name="tabler:database-off" class="w-12 h-12 text-gray-300 mb-2" />
+        <p class="text-gray-500">Tidak ada data permintaan konseling.</p>
+      </div>
     </div>
+
+    <AppPagination 
+      v-if="data.length > 0" 
+      :meta="meta" 
+      @change="changePage" 
+    />
+    
   </div>
 </template>
 
 <script setup lang="ts">
-const counselingRequests = ref<CounselingRequest[]>([]);
-const isLoading = ref<boolean>(false);
+const {
+  data,
+  loading,
+  meta,
+  filters,
+  fetchData,
+  changePage,
+  applyFilter
+} = useDataTable<CounselingRequest, { status: string }>('/admin/counselings', {
+  status: 'all'
+});
+
 const activeTab = ref('all');
 
-// Stats dihitung secara dinamis
-const stats = computed(() => {
-  return {
-    highUrgency: counselingRequests.value.filter(r => r.urgency === 'high').length,
-    scheduled: counselingRequests.value.filter(r => r.status === 'scheduled').length,
-    pending: counselingRequests.value.filter(r => r.status === 'pending').length,
-  };
+watch(activeTab, (newTab) => {
+  filters.status = newTab;
+  applyFilter();
+});
+
+const stats = ref<CounselingSummary>({
+  highUrgency: 0,
+  scheduled: 0,
+  pending: 0
 });
 
 // Filter Tab
-const filteredRequests = computed(() => {
-  if (activeTab.value === 'all') return counselingRequests.value;
-  return counselingRequests.value.filter(r => r.status === activeTab.value);
-});
-
-async function getAllArticle() {
-  isLoading.value = true;
-  const resCounseling = await useApi().get<CounselingRequest[]>('/admin/counselings');
-
-  if (resCounseling.status && resCounseling.data) {
-    counselingRequests.value = resCounseling.data;
-  } else {
-    counselingRequests.value = [];
-  }
-  isLoading.value = false;
+async function fetchStats() {
+  const res = await useApi().get<CounselingSummary>('/admin/counselings/summary');
+  if (res.status) stats.value = res.data;
 }
 
 onMounted(() => {
-  getAllArticle();
+  fetchData();
+  fetchStats();
 })
 </script>
