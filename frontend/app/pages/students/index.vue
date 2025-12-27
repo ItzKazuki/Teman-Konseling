@@ -91,8 +91,12 @@
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
-              <NuxtLink :to="`/students/${student.id}`"
+              <NuxtLink :to="`/students/detail/${student.id}`"
                 class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
+                <Icon name="tabler:eye" class="w-4 h-4" />
+              </NuxtLink>
+              <NuxtLink :to="`/students/${student.id}`"
+                class="text-yellow-600 hover:text-yellow-800 transition-colors p-1 rounded hover:bg-yellow-100/50">
                 <Icon name="tabler:edit" class="w-4 h-4" />
               </NuxtLink>
               <button @click="handleDelete(student.id ?? '', student.name)"

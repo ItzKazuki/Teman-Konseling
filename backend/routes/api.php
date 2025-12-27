@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Admin\ArticleCategoryController;
 use App\Http\Controllers\Api\Admin\ArticleController;
 use App\Http\Controllers\Api\Admin\ClassroomController as AdminClassroomController;
 use App\Http\Controllers\Api\Admin\CounselingController;
+use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\MoodController;
 use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\UserController;
@@ -74,6 +75,8 @@ Route::prefix('v1')->group(function () {
 
         Route::get('moods', [MoodController::class, 'index']);
         Route::get('moods/history', [MoodController::class, 'history']);
+
+        Route::get('dashboard-overview', [DashboardController::class, 'overview']);
 
         // master data admin
         Route::group(['prefix' => 'master-data', 'as' => 'master-data.'], function () {

@@ -96,7 +96,7 @@
                 <p class="text-xs text-gray-500 truncate italic">"{{ mood.story || '-' }}"</p>
               </td>
               <td class="px-6 py-4 text-right">
-                <NuxtLink :to="`/admin/students/${mood.student_id}`" class="p-2 text-gray-400 hover:text-primary-600">
+                <NuxtLink :to="`/students/${mood.student_id}`" class="p-2 text-gray-400 hover:text-primary-600">
                   <Icon name="tabler:eye" class="w-5 h-5" />
                 </NuxtLink>
               </td>

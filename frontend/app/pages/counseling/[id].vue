@@ -31,7 +31,7 @@
             class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-gray-50">
             <Icon name="tabler:printer" /> Cetak
           </button>
-          <NuxtLink :to="`/admin/counseling/tindak-lanjut/${requestData.id}`"
+          <NuxtLink :to="`/counseling/tindak-lanjut/${requestData.id}`"
             class="px-4 py-2 bg-primary-600 text-white rounded-xl text-xs font-bold hover:bg-primary-700 shadow-md">
             Edit / Tindak Lanjut
           </NuxtLink>
@@ -41,15 +41,22 @@
       <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 lg:col-span-8 space-y-6">
           <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-            <div :class="['h-2 w-full', getUrgencyBg(requestData.urgency)]"></div>
+            <div class="h-2 w-full bg-primary-700"></div>
             <div class="p-8">
               <div class="flex justify-between items-start mb-6">
-                <span
-                  :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter', getStatusClass(requestData.status)]">
-                  Status: {{ requestData.status }}
-                </span>
+                <div class="space-x-2">
+                  <span
+                    :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter', getUrgencyClass(requestData.urgency)]">
+                    {{ requestData.urgency }} Priority
+                  </span>
+
+                  <span
+                    :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter', getStatusClass(requestData.status)]">
+                    {{ requestData.status }}
+                  </span>
+                </div>
                 <span class="text-xs text-gray-400 font-medium">Masuk pada: {{ formatDateFull(requestData.created_at)
-                }}</span>
+                  }}</span>
               </div>
 
               <h2 class="text-2xl font-black text-gray-900 mb-4">{{ requestData.title }}</h2>
@@ -109,7 +116,7 @@
               <div class="grid grid-cols-2 gap-4">
                 <div class="bg-primary-800/50 p-3 rounded-2xl border border-primary-700">
                   <p class="text-[10px] font-bold text-primary-300 uppercase">Metode</p>
-                  <p class="text-xs font-bold mt-1 capitalize">{{ requestData.schedule.method }}</p>
+                  <p class="text-xs font-bold mt-1 capitalize">{{ requestData.schedule.method === 'chat' ? 'Online Chat' : 'Tatap Muka' }}</p>
                 </div>
                 <div class="bg-primary-800/50 p-3 rounded-2xl border border-primary-700">
                   <p class="text-[10px] font-bold text-primary-300 uppercase">Jam</p>
@@ -185,37 +192,6 @@ const { data: requestData, pending, error, refresh } = await useAsyncData(
     }
   }
 );
-
-// 3. Helpers
-function getUrgencyBg(urg: string) {
-  const map: Record<string, string> = {
-    high: 'bg-red-500',
-    medium: 'bg-orange-500',
-    low: 'bg-blue-500'
-  };
-  return map[urg] || 'bg-primary-500';
-}
-
-function getStatusClass(status: string) {
-  const map: Record<string, string> = {
-    scheduled: 'bg-primary-100 text-primary-700',
-    finished: 'bg-emerald-100 text-emerald-700',
-    pending: 'bg-amber-100 text-amber-700'
-  };
-  return map[status] || 'bg-gray-100 text-gray-600';
-}
-
-function formatDate(dateStr: string) {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-function formatDateFull(dateStr: string) {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleString('id-ID', {
-    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-  });
-}
 
 function printPage() {
   window.print();

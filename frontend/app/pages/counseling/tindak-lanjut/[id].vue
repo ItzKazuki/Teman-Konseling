@@ -21,7 +21,7 @@
             <Icon name="tabler:arrow-left" class="w-6 h-6 text-gray-600" />
           </button>
           <div>
-            <h1 class="text-2xl font-bold text-gray-800">Tindak Lanjut & Reschedule</h1>
+            <h1 class="text-2xl font-bold text-gray-800">Tindak Lanjut</h1>
             <p class="text-sm text-gray-500 font-medium italic">Ref: {{ requestData.id }}</p>
           </div>
         </div>
@@ -87,7 +87,7 @@
                 <div class="flex items-center gap-2">
                   <Icon name="tabler:calendar-event" class="w-6 h-6" />
                   <span class="font-bold text-lg leading-none">
-                    {{ formatDate(requestData.schedule?.schedule_date) }} — {{ requestData.schedule?.time_slot }}
+                    {{ formatDateFull(requestData.schedule?.schedule_date) }} — {{ requestData.schedule?.time_slot }}
                   </span>
                 </div>
               </div>
@@ -96,7 +96,7 @@
             <div class="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
               <span class="text-[10px] font-medium bg-white/20 px-3 py-1 rounded-full flex items-center gap-1">
                 <Icon name="tabler:info-circle" class="w-3 h-3" />
-                Status Sesi: {{ requestData.schedule?.status.toUpperCase() }}
+                <span>Status Sesi: {{ requestData.schedule?.status.toUpperCase() }}</span>
               </span>
             </div>
           </div>
@@ -142,7 +142,7 @@
                   ditolak.</p>
               </div>
 
-              <div class="p-5 bg-primary-50/50 rounded-2xl border border-primary-100 space-y-4">
+              <div class="border border-gray-400">
               </div>
 
               <div class="space-y-2">
@@ -218,18 +218,6 @@ function formatPhone(phone: string) {
   if (!phone) return '';
   // Mengubah 08... menjadi 628...
   return phone.replace(/^0/, '62');
-}
-
-function getUrgencyClass(urg: string) {
-  if (urg === 'high') return 'bg-red-50 text-red-700 border-red-200';
-  if (urg === 'medium') return 'bg-orange-50 text-orange-700 border-orange-200';
-  return 'bg-primary-50 text-primary-700 border-primary-200';
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('id-ID', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-  });
 }
 
 async function submitFollowUp() {

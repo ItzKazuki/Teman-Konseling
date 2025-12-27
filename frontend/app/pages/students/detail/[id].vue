@@ -147,7 +147,7 @@ const chartData = computed(() => ({
     backgroundColor: 'rgba(79, 70, 229, 0.1)',
     tension: 0.4,
     fill: true,
-    pointRadius: 5,
+    pointRadius: 4,
     pointBackgroundColor: '#5c97f8'
   }]
 }))
@@ -156,7 +156,7 @@ const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
   scales: {
-    y: { min: 0, max: 4, ticks: { stepSize: 1 } }
+    y: { min: 0, max: 5, ticks: { stepSize: 1 } }
   },
   plugins: {
     legend: { display: false }

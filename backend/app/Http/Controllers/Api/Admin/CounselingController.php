@@ -21,7 +21,7 @@ class CounselingController extends Controller
             'schedule.counselor',
             'student.classroom',
         ])
-            ->orderByRaw("FIELD(status, 'scheduled', 'pending', 'rejected', 'completed')")
+            ->orderByRaw("FIELD(status, 'scheduled', 'pending', 'completed', 'rejected')")
             ->orderByRaw("FIELD(urgency, 'high', 'medium', 'low')")
             ->get();
 

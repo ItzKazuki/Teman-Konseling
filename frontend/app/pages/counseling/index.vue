@@ -72,7 +72,7 @@
                 <Icon name="tabler:user" /> Nama Siswa: {{ item.student.name }}
               </span>
               <span class="flex items-center gap-1">
-                <Icon name="tabler:calendar-plus" /> Dibuat: {{ formatDate(item.created_at) }}
+                <Icon name="tabler:calendar-plus" /> Dibuat: {{ formatDateFull(item.created_at) }}
               </span>
             </div>
           </div>
@@ -99,7 +99,7 @@
                 </div>
                 <div class="flex items-center justify-between text-xs">
                   <span class="text-gray-500">Waktu:</span>
-                  <span class="font-bold text-gray-900">{{ formatDate(item.schedule.schedule_date) }} | {{
+                  <span class="font-bold text-gray-900">{{ formatDateFull(item.schedule.schedule_date) }} | {{
                     item.schedule.time_slot }}</span>
                 </div>
               </div>
@@ -146,29 +146,6 @@ const filteredRequests = computed(() => {
   if (activeTab.value === 'all') return counselingRequests.value;
   return counselingRequests.value.filter(r => r.status === activeTab.value);
 });
-
-// Helper Warna & Format
-function getUrgencyClass(urgency: string) {
-  switch (urgency) {
-    case 'high': return 'bg-red-100 text-red-700';
-    case 'medium': return 'bg-orange-100 text-orange-700';
-    default: return 'bg-primary-100 text-primary-700';
-  }
-}
-
-function getStatusClass(status: string) {
-  switch (status) {
-    case 'scheduled': return 'bg-indigo-100 text-indigo-700';
-    case 'pending': return 'bg-amber-100 text-amber-700';
-    default: return 'bg-gray-100 text-gray-700';
-  }
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('id-ID', {
-    day: 'numeric', month: 'short', year: 'numeric'
-  });
-}
 
 async function getAllArticle() {
   isLoading.value = true;

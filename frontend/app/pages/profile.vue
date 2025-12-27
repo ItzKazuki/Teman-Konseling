@@ -4,7 +4,7 @@
     <div class="flex items-center">
       <Icon name="tabler:user-circle" class="w-8 h-8 mr-2 text-primary-600" />
       <h1 class="text-3xl font-bold text-gray-900">
-        Pengaturan Profil
+        Pengaturan Akun
       </h1>
     </div>
 
@@ -27,7 +27,7 @@
           <p v-if="errors.email" class="mt-1 text-xs text-red-500">{{ errors.email[0] }}</p>
         </div>
 
-        <div class="pt-4 border-t border-gray-400 flex justify-end">
+        <div class="flex justify-end">
           <button type="submit" :disabled="isSubmittingProfile"
             class="px-5 py-2.5 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md disabled:bg-primary-400">
             <Icon v-if="isSubmittingProfile" name="tabler:loader-2" class="w-4 h-4 mr-1 animate-spin" />
@@ -69,7 +69,7 @@
             passwordErrors.password_confirmation[0] }}</p>
         </div>
 
-        <div class="pt-4 border-t border-gray-400 flex justify-end">
+        <div class="flex justify-end">
           <button type="submit" :disabled="isSubmittingPassword"
             class="px-5 py-2.5 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md disabled:bg-red-400">
             <Icon v-if="isSubmittingPassword" name="tabler:loader-2" class="w-4 h-4 mr-1 animate-spin" />
