@@ -34,6 +34,8 @@ class UserController extends Controller
         if ($request->has('role') && $request->role != '') {
             $query->where('role', $request->role);
         }
+
+        $query->orderByRaw("FIELD(role, 'bk', 'guru', 'staff')");
         
         $users = $query->paginate($perPage);
 

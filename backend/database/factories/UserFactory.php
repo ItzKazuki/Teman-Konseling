@@ -24,12 +24,62 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'id' => (string) Str::uuid(),
+
+            'nip' => $this->faker->unique()->numerify('################'),
+            'name' => $this->faker->name(),
+
+            'email' => $this->faker->unique()->safeEmail(),
+
+            'role' => $this->faker->randomElement(['bk', 'guru', 'staff']),
+            'jabatan' => $this->faker->jobTitle(),
+
             'email_verified_at' => now(),
+
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+
+            'avatar_file_id' => null,
+            'phone_number' => $this->faker->phoneNumber(),
+
+            'is_available' => 1,
+
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
+    }
+
+    /**
+     * State khusus role BK
+     */
+    public function bk(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'bk',
+            'jabatan' => 'Guru BK',
+        ]);
+    }
+
+    /**
+     * State khusus guru
+     */
+    public function guru(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'guru',
+            'jabatan' => 'Guru Mata Pelajaran',
+        ]);
+    }
+
+    /**
+     * State khusus staff
+     */
+    public function staff(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'staff',
+            'jabatan' => 'Staff Administrasi',
+        ]);
     }
 
     /**
