@@ -17,7 +17,7 @@
 
       <form @submit.prevent="submitStudentUpdate" class="space-y-6">
 
-        <section class="space-y-4 border-b pb-4">
+        <section class="space-y-4 border-b pb-6">
           <h2 class="text-xl font-semibold text-gray-800">Detail Identitas & Akun</h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -52,25 +52,83 @@
             </div>
 
             <div>
-              <label for="password" class="form-label">Ganti Kata Sandi (Kosongkan jika tidak diubah)</label>
-              <input type="password" id="password" v-model="form.password" class="form-input" :disabled="isSubmitting"
-                :class="{ 'border-red-500': errors.password }" />
+              <label for="phone_number" class="form-label">Nomor Telepon Siswa <span
+                  class="text-red-600">*</span></label>
+              <input type="text" id="phone_number" v-model="form.phone_number" class="form-input" required
+                :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" />
+              <p v-if="errors.phone_number" class="mt-1 text-xs text-red-500">{{ errors.phone_number[0] }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="password" class="form-label">Kata Sandi Awal <span class="text-red-600">*</span></label>
+              <input type="password" id="password" v-model="form.password" class="form-input"
+                :disabled="isSubmitting" :class="{ 'border-red-500': errors.password }" />
               <p v-if="errors.password" class="mt-1 text-xs text-red-500">{{ errors.password[0] }}</p>
-              <small class="text-gray-500 mt-1 block">Hanya isi jika Anda ingin mereset kata sandi.</small>
+            </div>
+
+            <FormSelect name="class_room_id" label="Penugasan Kelas" v-model="form.class_room_id"
+              placeholder="Pilih Kelas" :options="classRooms.map(c => ({ value: c.id, label: c.name }))" required
+              :disabled="isSubmitting" :class="{ 'border-red-500': errors.class_room_id }" />
+          </div>
+        </section>
+
+        <section class="space-y-4 border-b pb-6">
+          <h2 class="text-xl font-semibold text-gray-800">Alamat Tempat Tinggal</h2>
+
+          <div>
+            <label for="address" class="form-label">Alamat Lengkap</label>
+            <textarea id="address" v-model="form.address" rows="3" class="form-input"
+              :disabled="isSubmitting"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label for="province" class="form-label">Provinsi</label>
+              <input type="text" id="province" v-model="form.province" class="form-input" :disabled="isSubmitting" />
+            </div>
+            <div>
+              <label for="city" class="form-label">Kota/Kabupaten</label>
+              <input type="text" id="city" v-model="form.city" class="form-input" :disabled="isSubmitting" />
+            </div>
+            <div>
+              <label for="district" class="form-label">Kecamatan</label>
+              <input type="text" id="district" v-model="form.district" class="form-input" :disabled="isSubmitting" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="village" class="form-label">Desa/Kelurahan</label>
+              <input type="text" id="village" v-model="form.village" class="form-input" :disabled="isSubmitting" />
+            </div>
+            <div>
+              <label for="postal_code" class="form-label">Kode Pos</label>
+              <input type="text" id="postal_code" v-model="form.postal_code" class="form-input"
+                :disabled="isSubmitting" />
             </div>
           </div>
         </section>
 
         <section class="space-y-4">
-          <h2 class="text-xl font-semibold text-gray-800">Penugasan Kelas</h2>
+          <h2 class="text-xl font-semibold text-gray-800">Data Orang Tua / Wali</h2>
 
-          <FormSelect name="class_room_id" label="Pilih Kelas Siswa" v-model="form.class_room_id"
-            placeholder="Pilih Kelas" :options="classRooms.map(c => ({ value: c.id, label: c.name }))" required
-            :disabled="isSubmitting" :class="{ 'border-red-500': errors.class_room_id }" />
-          <p v-if="errors.class_room_id" class="mt-1 text-xs text-red-500">{{ errors.class_room_id[0] }}</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="parent_name" class="form-label">Nama Orang Tua / Wali</label>
+              <input type="text" id="parent_name" v-model="form.parent_name" class="form-input"
+                :disabled="isSubmitting" />
+            </div>
+            <div>
+              <label for="parent_phone_number" class="form-label">Nomor Telepon Orang Tua</label>
+              <input type="text" id="parent_phone_number" v-model="form.parent_phone_number" class="form-input"
+                :disabled="isSubmitting" />
+            </div>
+          </div>
         </section>
 
-        <div class="pt-6 border-t flex justify-end space-x-3">
+        <div class="flex justify-end space-x-3">
           <NuxtLink to="/students"
             class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
             Batal
@@ -104,6 +162,15 @@ interface StudentUpdatePayload {
   email: string;
   password?: string;
   class_room_id: string;
+  phone_number: string;
+  postal_code: string;
+  address: string;
+  village: string;
+  district: string;
+  city: string;
+  province: string;
+  parent_name: string;
+  parent_phone_number: string;
 }
 
 interface MasterDataClassroom {
@@ -116,8 +183,17 @@ const initialForm: StudentUpdatePayload = {
   nisn: '',
   name: '',
   email: '',
-  password: undefined, // Kosongkan
+  password: undefined,
   class_room_id: '',
+  phone_number: '',
+  postal_code: '',
+  address: '',
+  village: '',
+  district: '',
+  city: '',
+  province: '',
+  parent_name: '',
+  parent_phone_number: '',
 };
 
 const form = reactive<StudentUpdatePayload>({ ...initialForm });
@@ -144,7 +220,7 @@ async function fetchInitialData() {
   }
 
   try {
-    const resStudent = await useApi().get<StudentUpdatePayload>(`/admin/students/${studentId}`);
+    const resStudent = await useApi().get<Student>(`/admin/students/${studentId}`);
     if (resStudent.status && resStudent.data) {
       const data = resStudent.data;
 
@@ -153,13 +229,22 @@ async function fetchInitialData() {
         nisn: data.nisn,
         name: data.name,
         email: data.email,
-        class_room_id: data.class_room_id,
+        class_room_id: data.classroom_id,
+        phone_number: data.phone,
+        postal_code: data.postal_code,
+        address: data.address,
+        village: data.village,
+        district: data.district,
+        city: data.city,
+        province: data.province,
+        parent_name: data.parent_name,
+        parent_phone_number: data.parent_phone_number,
         password: undefined,
       });
       successCount++;
     } else {
       useToast().error('Data siswa tidak ditemukan atau gagal dimuat.');
-      router.replace('/admin/students');
+      router.replace('/students');
     }
 
   } catch (e) {

@@ -12,7 +12,7 @@
 
       <form @submit.prevent="submitStudent" class="space-y-6">
 
-        <section class="space-y-4 border-b pb-4">
+        <section class="space-y-4 border-b pb-6">
           <h2 class="text-xl font-semibold text-gray-800">Detail Identitas & Akun</h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -47,20 +47,75 @@
             </div>
 
             <div>
+              <label for="phone_number" class="form-label">Nomor Telepon Siswa <span class="text-red-600">*</span></label>
+              <input type="text" id="phone_number" v-model="form.phone_number" class="form-input" required :disabled="isSubmitting"
+                :class="{ 'border-red-500': errors.phone_number }" />
+              <p v-if="errors.phone_number" class="mt-1 text-xs text-red-500">{{ errors.phone_number[0] }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div>
               <label for="password" class="form-label">Kata Sandi Awal <span class="text-red-600">*</span></label>
               <input type="password" id="password" v-model="form.password" class="form-input" required
                 :disabled="isSubmitting" :class="{ 'border-red-500': errors.password }" />
               <p v-if="errors.password" class="mt-1 text-xs text-red-500">{{ errors.password[0] }}</p>
             </div>
+
+            <FormSelect name="class_room_id" label="Penugasan Kelas" v-model="form.class_room_id"
+              placeholder="Pilih Kelas" :options="classRooms.map(c => ({ value: c.id, label: c.name }))" required
+              :disabled="isSubmitting" :class="{ 'border-red-500': errors.class_room_id }" />
+          </div>
+        </section>
+
+        <section class="space-y-4 border-b pb-6">
+          <h2 class="text-xl font-semibold text-gray-800">Alamat Tempat Tinggal</h2>
+          
+          <div>
+            <label for="address" class="form-label">Alamat Lengkap</label>
+            <textarea id="address" v-model="form.address" rows="3" class="form-input" :disabled="isSubmitting"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label for="province" class="form-label">Provinsi</label>
+              <input type="text" id="province" v-model="form.province" class="form-input" :disabled="isSubmitting" />
+            </div>
+            <div>
+              <label for="city" class="form-label">Kota/Kabupaten</label>
+              <input type="text" id="city" v-model="form.city" class="form-input" :disabled="isSubmitting" />
+            </div>
+            <div>
+              <label for="district" class="form-label">Kecamatan</label>
+              <input type="text" id="district" v-model="form.district" class="form-input" :disabled="isSubmitting" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="village" class="form-label">Desa/Kelurahan</label>
+              <input type="text" id="village" v-model="form.village" class="form-input" :disabled="isSubmitting" />
+            </div>
+            <div>
+              <label for="postal_code" class="form-label">Kode Pos</label>
+              <input type="text" id="postal_code" v-model="form.postal_code" class="form-input" :disabled="isSubmitting" />
+            </div>
           </div>
         </section>
 
         <section class="space-y-4">
-          <h2 class="text-xl font-semibold text-gray-800">Penugasan Kelas</h2>
+          <h2 class="text-xl font-semibold text-gray-800">Data Orang Tua / Wali</h2>
 
-          <FormSelect name="class_room_id" label="Pilih Kelas Siswa" v-model="form.class_room_id"
-            placeholder="Pilih Kelas" :options="classRooms.map(c => ({ value: c.id, label: c.name }))" required
-            :disabled="isSubmitting" :class="{ 'border-red-500': errors.class_room_id }" />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="parent_name" class="form-label">Nama Orang Tua / Wali</label>
+              <input type="text" id="parent_name" v-model="form.parent_name" class="form-input" :disabled="isSubmitting" />
+            </div>
+            <div>
+              <label for="parent_phone_number" class="form-label">Nomor Telepon Orang Tua</label>
+              <input type="text" id="parent_phone_number" v-model="form.parent_phone_number" class="form-input" :disabled="isSubmitting" />
+            </div>
+          </div>
         </section>
 
         <div class="pt-6 border-t flex justify-end space-x-3">
@@ -91,6 +146,15 @@ interface StudentCreationPayload {
   email: string;
   password: string;
   class_room_id: string;
+  phone_number: string;
+  postal_code: string;
+  address: string;
+  village: string;
+  district: string;
+  city: string;
+  province: string;
+  parent_name: string;
+  parent_phone_number: string;
 }
 
 const initialForm: StudentCreationPayload = {
@@ -100,6 +164,15 @@ const initialForm: StudentCreationPayload = {
   email: '',
   password: '',
   class_room_id: '',
+  phone_number: '',
+  postal_code: '',
+  address: '',
+  village: '',
+  district: '',
+  city: '',
+  province: '',
+  parent_name: '',
+  parent_phone_number: '',
 };
 
 const form = reactive<StudentCreationPayload>({ ...initialForm });

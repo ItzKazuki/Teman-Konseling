@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Enums\Role;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StudentRequest extends FormRequest
 {
@@ -13,48 +13,68 @@ class StudentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->role === Role::BK || $this->user()->role === Role::GURU;
+        // Pastikan Role::BK atau Role::GURU diizinkan sesuai logic Anda
+        return in_array($this->user()->role, [Role::BK, Role::GURU]);
     }
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        // Mendapatkan ID Siswa jika ini adalah operasi update (PUT/PATCH)
-        // Kita asumsikan ID Siswa ada di parameter rute, misalnya /students/{student}
-        $studentId = $this->route('student'); 
+        $studentId = $this->route('student');
 
         return [
+            // Identitas & Akun
             'nis' => [
                 'required',
                 'string',
-                'max:10',
-                Rule::unique('students', 'nis')->ignore($studentId), 
+                'max:255', // Sesuai tipe varchar(255) di tabel
+                Rule::unique('students', 'nis')->ignore($studentId),
             ],
             'nisn' => [
                 'required',
                 'string',
-                'max:15',
-                // Pastikan NISN unik, kecuali untuk siswa yang sedang diupdate
-                Rule::unique('students', 'nisn')->ignore($studentId), 
+                'max:255', // Sesuai tipe varchar(255) di tabel
+                Rule::unique('students', 'nisn')->ignore($studentId),
             ],
             'name' => 'required|string|max:255',
-            
             'email' => [
                 'required',
                 'string',
                 'email',
                 'max:255',
-                // Pastikan Email unik, kecuali untuk siswa yang sedang diupdate
                 Rule::unique('students', 'email')->ignore($studentId),
             ],
-            
             'password' => Rule::when($this->isMethod('POST'), ['required', 'string', 'min:8']),
-            
-            'class_room_id' => 'required|uuid|exists:class_rooms,id',
+            'class_room_id' => 'required|string|size:36|exists:class_rooms,id', // char(36) untuk UUID
+
+            // Kontak & Alamat
+            'phone_number' => 'required|string|max:20',
+            'postal_code' => 'nullable|string|max:255',
+            'address' => 'nullable|string', // longtext di tabel
+            'village' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+
+            // Data Orang Tua
+            'parent_name' => 'nullable|string|max:255',
+            'parent_phone_number' => 'nullable|string|max:255',
+        ];
+    }
+
+    /**
+     * Custom attributes untuk pesan error yang lebih user-friendly.
+     */
+    public function attributes(): array
+    {
+        return [
+            'nis' => 'Nomor Induk Siswa',
+            'nisn' => 'NISN',
+            'class_room_id' => 'Kelas',
+            'parent_name' => 'Nama Orang Tua',
+            'parent_phone_number' => 'Nomor Telepon Orang Tua',
         ];
     }
 }
