@@ -23,8 +23,17 @@ class Student extends Authenticatable implements CanResetPasswordContract
         'name',
         'class_room_id',
         'email',
+        'phone_number',
         'password',
         'avatar_path',
+        'postal_code',
+        'address',
+        'village',
+        'district',
+        'city',
+        'province',
+        'parent_name',
+        'parent_phone_number',
     ];
 
     /**

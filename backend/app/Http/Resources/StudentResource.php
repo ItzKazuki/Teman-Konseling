@@ -20,6 +20,7 @@ class StudentResource extends JsonResource
             'nisn' => $this->nisn,
             'name' => $this->name,
             'email' => $this->email,
+            'phone' => $this->phone_number,
             'avatar_url' => $this->avatar_url,
             'classroom_id' => $this->class_room_id,
             'classroom_name' => $this->whenLoaded('classroom', fn () => $this->classroom->name),
