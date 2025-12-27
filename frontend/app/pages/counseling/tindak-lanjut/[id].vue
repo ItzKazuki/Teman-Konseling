@@ -56,11 +56,11 @@
                 <Icon name="tabler:brand-whatsapp" class="w-5 h-5" />
                 CHAT WHATSAPP
               </a>
-              <button
+              <NuxtLink :to="`/students/detail/${requestData.student?.id}`"
                 class="p-3 bg-gray-50 text-gray-400 rounded-2xl border border-gray-100 hover:text-primary-600 transition-colors flex items-center"
                 title="Lihat Profil">
                 <Icon name="tabler:user-search" class="w-6 h-6" />
-              </button>
+              </NuxtLink>
             </div>
           </div>
 
@@ -114,10 +114,16 @@
           <div class="bg-white p-8 rounded-3xl shadow-xl border border-primary-100 ring-8 ring-primary-50/50">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-black text-gray-900">Panel Intervensi</h3>
-              <button type="button" @click="quickFinish"
-                class="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors">
-                KASUS SELESAI?
-              </button>
+              <div class="space-x-2">
+                <button type="button"
+                  class="text-[10px] font-black text-yellow-600 bg-yellow-50 px-3 py-1.5 rounded-lg hover:bg-yellow-100 transition-colors">
+                  Ingatkan Siswa
+                </button>
+                <button type="button" @click="quickFinish"
+                  class="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors">
+                  KASUS SELESAI?
+                </button>
+              </div>
             </div>
 
             <form @submit.prevent="submitFollowUp" class="space-y-6">
