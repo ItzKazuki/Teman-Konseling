@@ -8,6 +8,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\Request;
 
 #[Group('Admin: Data Pengguna', weight: 3)]
 class UserController extends Controller
@@ -15,11 +16,32 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $perPage = $request->input('perPage', 10);
+        $query = User::query();
 
-        return ApiResponse::success(UserResource::collection($users), 'berhasil mengambil data staff sekolah');
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('nip', 'like', "%{$search}%")
+                ->orWhere('phone_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('role') && $request->role != '') {
+            $query->where('role', $request->role);
+        }
+        
+        $users = $query->paginate($perPage);
+
+        $users->getCollection()->transform(function ($user) {
+            return new UserResource($user);
+        });
+
+        return ApiResponse::success($users, 'Berhasil mengambil data pengguna');
     }
 
     /**

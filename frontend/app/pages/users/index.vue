@@ -25,9 +25,9 @@
       class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50 transition-all duration-300">
       <h4 class="text-sm font-semibold mb-3 text-gray-700">Opsi Filter Pengguna</h4>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input type="text" v-model="filterForm.search" placeholder="Cari Nama, Email, atau NIP"
+        <input type="text" v-model="filters.search" placeholder="Cari Nama, Email, atau NIP"
           class="form-input rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500" />
-        <FormSelect name="filter-role" v-model="filterForm.role" :options="[
+        <FormSelect name="filter-role" v-model="filters.role" :options="[
           { value: '', label: 'Semua Peran (Role)' },
           { value: 'guru', label: 'Guru' },
           { value: 'bk', label: 'BK/Konselor' },
@@ -61,7 +61,7 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
 
-          <tr v-if="filteredUsers.length === 0">
+          <tr v-if="data.length === 0">
             <td colspan="5" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
               <div class="flex items-center justify-center">
                 <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
@@ -70,8 +70,7 @@
             </td>
           </tr>
 
-          <tr v-for="user in filteredUsers" :key="user.id"
-            class="hover:bg-primary-50/50 transition-colors duration-100">
+          <tr v-for="user in data" :key="user.id" class="hover:bg-primary-50/50 transition-colors duration-100">
 
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
@@ -104,58 +103,30 @@
       </table>
     </div>
 
-    <div class="mt-4 flex justify-end">
-      <div class="flex items-center text-sm text-gray-600 space-x-2">
-        <button
-          class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-colors"
-          disabled>
-          <Icon name="tabler:chevron-left" class="w-4 h-4" />
-        </button>
-        <span class="px-2 py-1">Halaman 1 dari 1</span>
-        <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors" disabled>
-          <Icon name="tabler:chevron-right" class="w-4 h-4" />
-        </button>
-      </div>
-    </div>
+    <AppTablePagination :meta="meta" @change="changePage" v-if="data.length > 0" />
 
   </div>
 </template>
 
 <script setup lang="ts">
-const rawUserData = ref<User[]>([]);
-const isFilterVisible = ref<boolean>(false);
-const isLoading = ref<boolean>(true);
-const filterForm = reactive({
+const {
+  data,
+  loading,
+  meta,
+  filters,
+  fetchData,
+  changePage,
+  applyFilter
+} = useDataTable<User, { search: string; role: string }>('/admin/users', {
   search: '',
-  role: '',
+  role: ''
 });
+
+const isFilterVisible = ref<boolean>(false);
 
 const handleFilterToggle = () => {
   isFilterVisible.value = !isFilterVisible.value;
 };
-
-const applyFilter = () => {
-  alert('Filter diterapkan! (Cek console log untuk detail filter)');
-};
-
-const filteredUsers = computed(() => {
-  let data = rawUserData.value;
-
-  if (filterForm.search) {
-    const searchLower = filterForm.search.toLowerCase();
-    data = data.filter(item =>
-      item.name.toLowerCase().includes(searchLower) ||
-      item.email.toLowerCase().includes(searchLower) ||
-      item.nip.includes(filterForm.search)
-    );
-  }
-
-  if (filterForm.role) {
-    data = data.filter(item => item.role === filterForm.role);
-  }
-
-  return data;
-});
 
 const handleDelete = async (id: string, name: string) => {
   try {
@@ -167,7 +138,7 @@ const handleDelete = async (id: string, name: string) => {
 
     if (message.status) {
       useToast().success(`Data pengguna "${name}" berhasil dihapus.`);
-      await fetchUsers();
+      await fetchData();
     } else {
       useToast().error('Gagal menghapus data pengguna. Silakan coba lagi.');
     }
@@ -180,32 +151,7 @@ const handleDelete = async (id: string, name: string) => {
   }
 };
 
-const getRoleClass = (role?: string) => {
-  switch (role) {
-    case 'bk':
-      return 'bg-purple-100 text-purple-800';
-    case 'guru':
-      return 'bg-indigo-100 text-indigo-800';
-    case 'admin':
-      return 'bg-red-100 text-red-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
-
-async function fetchUsers() {
-  isLoading.value = true;
-  // Asumsi useApi().get mengembalikan { status: boolean, data: T }
-  const response = await useApi().get<User[]>('/admin/users');
-  if (response.status && response.data) {
-    rawUserData.value = response.data;
-  } else {
-    rawUserData.value = [];
-  }
-  isLoading.value = false;
-}
-
 onMounted(() => {
-  fetchUsers();
+  fetchData();
 });
 </script>
