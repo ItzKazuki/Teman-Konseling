@@ -2,12 +2,8 @@
   <div class="space-y-6 pb-10">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-black text-gray-900">Halo, Admin BK 👋</h1>
-        <p class="text-sm text-gray-500 font-medium">Berikut adalah rangkuman kondisi mental sekolah hari ini.</p>
-      </div>
-      <div class="flex items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100">
-        <button class="px-4 py-2 text-xs font-bold bg-primary-600 text-white rounded-xl shadow-md">Overview</button>
-        <button class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-50 rounded-xl">Laporan Tahunan</button>
+        <h1 class="text-2xl font-black text-gray-900">Halo, {{ auth.user?.name }}</h1>
+        <p class="text-sm text-gray-500 font-medium">Berikut adalah rangkuman kondisi mental siswa di sekolah hari ini.</p>
       </div>
     </div>
 
@@ -154,6 +150,8 @@ ChartJS.register(
   LinearScale,
   Filler
 );
+
+const auth = useAuthStore();
 
 const { data: overview, pending, error, refresh } = await useAsyncData(
   `overview`,
