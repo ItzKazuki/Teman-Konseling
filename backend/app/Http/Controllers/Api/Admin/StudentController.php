@@ -43,7 +43,6 @@ class StudentController extends Controller
             return new StudentResource($student);
         });
 
-
         return ApiResponse::success($students, 'Berhasil mengambil data siswa');
     }
 

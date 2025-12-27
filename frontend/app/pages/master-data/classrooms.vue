@@ -25,9 +25,9 @@
       class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50 transition-all duration-300">
       <h4 class="text-sm font-semibold mb-3 text-gray-700">Opsi Filter Lanjutan</h4>
       <div class="flex flex-col sm:flex-row gap-4 items-center">
-        <input type="text" v-model="filterForm.search" placeholder="Cari berdasarkan Nama atau Deskripsi"
+        <input type="text" v-model="filters.search" placeholder="Cari berdasarkan Nama atau Deskripsi"
           class="form-input rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-primary-500 focus:border-primary-500" />
-        <select v-model="filterForm.level"
+        <select v-model="filters.level"
           class="form-select rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-primary-500 focus:border-primary-500">
           <option value="">Semua Level (X, XI, XII)</option>
           <option value="X">Kelas X</option>
@@ -65,7 +65,7 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
 
-          <tr v-if="filteredClasses.length === 0">
+          <tr v-if="data.length === 0">
             <td colspan="5" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
               <div class="flex justify-center items-center">
                 <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
@@ -74,7 +74,7 @@
             </td>
           </tr>
 
-          <tr v-for="classItem in filteredClasses" :key="classItem.id"
+          <tr v-for="classItem in data" :key="classItem.id"
             class="hover:bg-primary-50/50 transition-colors duration-100">
 
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -108,19 +108,7 @@
       </table>
     </div>
 
-    <div class="mt-4 flex justify-end">
-      <div class="flex items-center text-sm text-gray-600 space-x-2">
-        <button
-          class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-colors"
-          disabled>
-          <Icon name="tabler:chevron-left" class="w-4 h-4" />
-        </button>
-        <span class="px-2 py-1">Halaman 1 dari 2</span>
-        <button class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
-          <Icon name="tabler:chevron-right" class="w-4 h-4" />
-        </button>
-      </div>
-    </div>
+    <AppTablePagination :meta="meta" @change="changePage" v-if="data.length > 0" />
 
   </div>
 
@@ -169,41 +157,26 @@
 </template>
 
 <script setup lang="ts">
-const rawClassData = ref<Classroom[]>([]);
+const {
+  data,
+  loading,
+  meta,
+  filters,
+  fetchData,
+  changePage,
+  applyFilter
+} = useDataTable<Classroom, { search: string; level: string }>('/admin/master-data/classrooms', {
+  search: '',
+  level: ''
+});
+
 const teachers = ref<Teacher[]>([]);
 const isFilterVisible = ref<boolean>(false);
 const isLoading = ref<boolean>(true);
 
-const filterForm = reactive({
-  search: '',
-  level: '',
-});
-
 const handleFilterToggle = () => {
   isFilterVisible.value = !isFilterVisible.value;
 };
-
-const applyFilter = () => {
-  alert('Filter diterapkan! (Cek console log untuk detail filter)');
-};
-
-const filteredClasses = computed(() => {
-  let data = rawClassData.value;
-
-  if (filterForm.search) {
-    const searchLower = filterForm.search.toLowerCase();
-    data = data.filter(item =>
-      item.name.toLowerCase().includes(searchLower) ||
-      item.description.toLowerCase().includes(searchLower)
-    );
-  }
-
-  if (filterForm.level) {
-    data = data.filter(item => item.name.startsWith(filterForm.level));
-  }
-
-  return data;
-});
 
 const showModal = ref<boolean>(false);
 const initialForm: Classroom = { name: '', homeroom_teacher: '', description: '', level: 10 };
@@ -265,7 +238,7 @@ const handleDelete = async (id: string, name: string) => {
 
     if (message.status) {
       useToast().success(`Kelas "${name}" berhasil dihapus.`);
-      await getAllClassrooms(); // Refresh data setelah penghapusan
+      await fetchData(); // Refresh data setelah penghapusan
     } else {
       useToast().error('Gagal menghapus Kelas. Silakan coba lagi.');
     }
@@ -296,7 +269,7 @@ const submitForm = async () => {
 
     if (response.status) {
       useToast().success(successMessage);
-      await getAllClassrooms(); // Refresh data tabel
+      await fetchData(); // Refresh data tabel
       closeModal();
     } else {
       if (response.errors) {
@@ -323,17 +296,6 @@ watch(showModal, (newVal) => {
   }
 });
 
-async function getAllClassrooms() {
-  isLoading.value = true;
-  const resClassrooms = await useApi().get<Classroom[]>('/admin/master-data/classrooms');
-  if (resClassrooms.status && resClassrooms.data) {
-    rawClassData.value = resClassrooms.data;
-  } else {
-    rawClassData.value = [];
-  }
-  isLoading.value = false;
-}
-
 async function getAllTeachers() {
   isLoading.value = true;
   const resTeachers = await useApi().get<Teacher[]>('/master-data/teachers');
@@ -346,7 +308,7 @@ async function getAllTeachers() {
 }
 
 onMounted(() => {
-  getAllClassrooms();
+  fetchData();
   getAllTeachers();
 })
 </script>

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ClassroomRequest;
 use App\Http\Resources\ClassRoomResource;
 use App\Models\ClassRoom;
+use Illuminate\Http\Request;
 use Dedoc\Scramble\Attributes\Group;
 
 #[Group('Admin Master Data: Kelas', weight: 10)]
@@ -15,11 +16,33 @@ class ClassroomController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $classrooms = ClassRoom::with('homeroomTeacher')->get();
+        $perPage = $request->input('perPage', 10);
+        $query = ClassRoom::query();
 
-        return ApiResponse::success(ClassRoomResource::collection($classrooms), 'Berhasil mengambil data kelas');
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('nis', 'like', "%{$search}%")
+                ->orWhere('nisn', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // 3. Filter berdasarkan Kelas
+        if ($request->has('level') && $request->level != '') {
+            $query->where('level', $request->level);
+        }
+        
+        $classrooms = $query->with('homeroomTeacher')->paginate($perPage);
+
+        $classrooms->getCollection()->transform(function ($classroom) {
+            return new ClassRoomResource($classroom);
+        });
+
+        return ApiResponse::success($classrooms, 'Berhasil mengambil data kelas');
     }
 
     /**
