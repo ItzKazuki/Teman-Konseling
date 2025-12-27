@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ArticleCategoryRequest;
 use App\Http\Resources\ArticleCategoryResource;
 use App\Models\ArticleCategory;
+use Illuminate\Http\Request;
 use Dedoc\Scramble\Attributes\Group;
 
 #[Group('Admin Master Data: Kategori Artikel', weight: 10)]
@@ -15,11 +16,30 @@ class ArticleCategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = ArticleCategory::all();
+        // $categories = ArticleCategory::all();
 
-        return ApiResponse::success(ArticleCategoryResource::collection($categories));
+        // return ApiResponse::success(ArticleCategoryResource::collection($categories));
+
+        $perPage = $request->input('perPage', 10);
+        $query = ArticleCategory::query();
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('slug', 'like', "%{$search}%");
+            });
+        }
+        
+        $categories = $query->paginate($perPage);
+
+        $categories->getCollection()->transform(function ($category) {
+            return new ArticleCategoryResource($category);
+        });
+
+        return ApiResponse::success($categories, 'Berhasil mengambil data kelas');
     }
 
     /**

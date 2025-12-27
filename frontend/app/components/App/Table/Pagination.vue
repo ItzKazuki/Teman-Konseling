@@ -3,7 +3,7 @@
     <p class="text-sm text-gray-500">
       Menampilkan <span class="font-bold text-gray-800">{{ from }}</span> -
       <span class="font-bold text-gray-800">{{ to }}</span> dari
-      <span class="font-bold text-gray-800">{{ meta.total }}</span> siswa
+      <span class="font-bold text-gray-800">{{ meta.total }}</span> data
     </p>
 
     <div class="flex items-center space-x-2">

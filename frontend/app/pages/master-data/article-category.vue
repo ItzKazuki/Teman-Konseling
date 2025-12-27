@@ -22,7 +22,7 @@
       class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50 transition-all duration-300">
       <h4 class="text-sm font-semibold mb-3 text-gray-700">Opsi Filter Lanjutan</h4>
       <div class="flex flex-col sm:flex-row gap-4 items-center">
-        <input type="text" v-model="filterForm.search" placeholder="Cari berdasarkan Nama atau Deskripsi"
+        <input type="text" v-model="filters.search" placeholder="Cari berdasarkan Nama atau Deskripsi"
           class="form-input rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-primary-500 focus:border-primary-500" />
         <button @click="applyFilter"
           class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 w-full sm:w-auto">
@@ -52,7 +52,7 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
 
-          <tr v-if="filteredCategories.length === 0">
+          <tr v-if="data.length === 0">
             <td colspan="4" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
               <div class="flex justify-center items-center">
                 <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
@@ -61,7 +61,7 @@
             </td>
           </tr>
 
-          <tr v-for="classItem in filteredCategories" :key="classItem.id"
+          <tr v-for="classItem in data" :key="classItem.id"
             class="hover:bg-primary-50/50 transition-colors duration-100">
 
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -91,8 +91,7 @@
       </table>
     </div>
 
-    <div class="mt-4 flex justify-end">
-      </div>
+    <AppTablePagination :meta="meta" @change="changePage" v-if="data.length > 0" />
 
   </div>
 
@@ -100,7 +99,8 @@
     <form @submit.prevent="submitForm" class="space-y-6">
 
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Kategori <span class="text-red-500">*</span></label>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Kategori <span
+            class="text-red-500">*</span></label>
         <input type="text" id="name" v-model="form.name" @input="generateSlug"
           class="form-input rounded-lg text-sm border-gray-300 shadow-sm w-full focus:ring-primary-500 focus:border-primary-500"
           required :disabled="isSubmitting" />
@@ -140,30 +140,23 @@
 </template>
 
 <script setup lang="ts">
-const rawArticleCategories = ref<ArticleCategory[]>([]);
+const {
+  data,
+  loading,
+  meta,
+  filters,
+  fetchData,
+  changePage,
+  applyFilter
+} = useDataTable<ArticleCategory, { search: string; }>('/admin/master-data/article-categories', {
+  search: '',
+});
+
 const isFilterVisible = ref<boolean>(false);
-const isLoading = ref<boolean>(true);
-const filterForm = reactive({ search: '' });
 
 const handleFilterToggle = () => {
   isFilterVisible.value = !isFilterVisible.value;
 };
-
-const applyFilter = () => {
-  useToast().info('Filter data diterapkan.');
-};
-
-const filteredCategories = computed(() => {
-  let data = rawArticleCategories.value;
-  if (filterForm.search) {
-    const searchLower = filterForm.search.toLowerCase();
-    data = data.filter(item =>
-      item.name.toLowerCase().includes(searchLower) ||
-      item.slug?.toLowerCase().includes(searchLower)
-    );
-  }
-  return data;
-});
 
 const showModal = ref<boolean>(false);
 const initialForm: ArticleCategory = { name: '', slug: '', description: '' };
@@ -217,7 +210,7 @@ async function fetchCategoryData(id: string) {
 
 const generateSlug = () => {
   if (!isEditMode.value) {
-    form.slug = slugify(form.name); 
+    form.slug = slugify(form.name);
   }
 };
 
@@ -228,7 +221,7 @@ const submitForm = async () => {
   try {
     let response;
     let successMessage: string;
-    
+
     if (isEditMode.value && currentEditId.value) {
       response = await useApi().put(`/admin/article-categories/${currentEditId.value}`, form);
       successMessage = 'Kategori artikel berhasil diperbarui!';
@@ -236,10 +229,10 @@ const submitForm = async () => {
       response = await useApi().post(`/admin/master-data/article-categories`, form);
       successMessage = 'Kategori artikel berhasil dibuat!';
     }
-    
+
     if (response.status) {
       useToast().success(successMessage);
-      await getAllCategories(); // Refresh data tabel
+      await fetchData(); // Refresh data tabel
       closeModal();
     } else {
       if (response.errors) {
@@ -263,7 +256,7 @@ const submitForm = async () => {
 watch(showModal, (newVal) => {
   if (newVal && currentEditId.value) {
     fetchCategoryData(currentEditId.value);
-  } 
+  }
 });
 
 const handleDelete = async (id: string, name: string) => {
@@ -276,7 +269,7 @@ const handleDelete = async (id: string, name: string) => {
 
     if (message.status) {
       useToast().success(`Kategori Artikel "${name}" berhasil dihapus.`);
-      await getAllCategories(); // Refresh data setelah penghapusan
+      await fetchData(); // Refresh data setelah penghapusan
     } else {
       useToast().error('Gagal menghapus kategori artikel. Silakan coba lagi.');
     }
@@ -290,18 +283,7 @@ const handleDelete = async (id: string, name: string) => {
   }
 };
 
-async function getAllCategories() {
-  isLoading.value = true;
-  const resArticleCategories = await useApi().get<ArticleCategory[]>('/admin/master-data/article-categories');
-  if (resArticleCategories.status && resArticleCategories.data) {
-    rawArticleCategories.value = resArticleCategories.data;
-  } else {
-    rawArticleCategories.value = [];
-  }
-  isLoading.value = false;
-}
-
 onMounted(() => {
-  getAllCategories();
+  fetchData();
 })
 </script>
