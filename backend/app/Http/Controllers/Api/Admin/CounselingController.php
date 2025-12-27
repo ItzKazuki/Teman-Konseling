@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 #[Group('Admin: Konseling', weight: 3)]
-
 class CounselingController extends Controller
 {
     public function index()

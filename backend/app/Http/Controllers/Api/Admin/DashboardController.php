@@ -10,7 +10,9 @@ use App\Models\ScheduleCounseling;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Dedoc\Scramble\Attributes\Group;
 
+#[Group('Admin: Dashboard', weight: 3)]
 class DashboardController extends Controller
 {
     public function overview()
