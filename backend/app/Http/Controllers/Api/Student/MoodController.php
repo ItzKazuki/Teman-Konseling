@@ -20,10 +20,7 @@ class MoodController extends Controller
         $student = Auth::guard('student')->user();
 
         if (! $student) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data siswa tidak ditemukan.',
-            ], 404);
+            return ApiResponse::error('Data siswa tidak ditemukan.', 404);
         }
 
         // 2. Validasi: Siswa hanya boleh isi 1x sehari
@@ -32,10 +29,7 @@ class MoodController extends Controller
             ->exists();
 
         if ($hasFilledToday) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Kamu sudah mengisi emosi hari ini. Sampai jumpa besok!',
-            ], 422);
+            return ApiResponse::error('Kamu sudah mengisi emosi hari ini. Sampai jumpa besok!', 422);
         }
 
         // 3. Simpan data

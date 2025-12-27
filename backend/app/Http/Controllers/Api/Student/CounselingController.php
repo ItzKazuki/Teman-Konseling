@@ -26,7 +26,7 @@ class CounselingController extends Controller
         $student = Auth::guard('student')->user();
 
         if (! $student) {
-            return response()->json(['message' => 'Student data not found.'], 404);
+            return ApiResponse::error('Student data not found.', 404);
         }
 
         $requestCounseling = RequestCounseling::where('student_id', $student->id)
@@ -44,7 +44,7 @@ class CounselingController extends Controller
         $student = Auth::guard('student')->user();
 
         if (! $student) {
-            return response()->json(['message' => 'Student data not found.'], 404);
+            return ApiResponse::error('Student data not found.', 404);
         }
 
         $counselingRequest = RequestCounseling::create([
@@ -68,7 +68,7 @@ class CounselingController extends Controller
         $student = Auth::guard('student')->user();
 
         if (! $student) {
-            return response()->json(['message' => 'Student data not found.'], 404);
+            return ApiResponse::error('Student data not found.', 404);
         }
 
         $requestCounseling = RequestCounseling::where('id', $id)
@@ -77,7 +77,7 @@ class CounselingController extends Controller
             ->first();
 
         if (! $requestCounseling) {
-            return response()->json(['message' => 'Counseling request not found.'], 404);
+            return ApiResponse::error('Counseling request not found.', 404);
         }
 
         return ApiResponse::success(new CounselingResource($requestCounseling));
@@ -91,7 +91,7 @@ class CounselingController extends Controller
         $student = Auth::guard('student')->user();
 
         if (! $student) {
-            return response()->json(['message' => 'Student data not found.'], 404);
+            return ApiResponse::error('Student data not found.', 404);
         }
 
         $requestCounseling = RequestCounseling::where('id', $request_id)
@@ -99,19 +99,19 @@ class CounselingController extends Controller
             ->first();
 
         if (! $requestCounseling) {
-            return response()->json(['message' => 'Request ID not valid or does not belong to user.'], 403);
+            return ApiResponse::error('Request ID not valid or does not belong to user.', 403);
         }
 
         // 2. Pastikan Request belum memiliki Schedule yang dikonfirmasi
         if ($requestCounseling->schedule()->exists()) {
-            return response()->json(['message' => 'This request is already scheduled.'], 409);
+            return ApiResponse::error('This request is already scheduled.', 409);
         }
 
         // 3. Validasi Ketersediaan Konselor dan Slot Waktu (Simulasi)
         $counselor = User::find($request->counselor_id);
 
         if (! $counselor || ! $counselor->is_available) {
-            return response()->json(['message' => 'Selected counselor is not available.'], 400);
+            return ApiResponse::error('Selected counselor is not available.', 400);
         }
 
         // 4. Buat Schedule baru
