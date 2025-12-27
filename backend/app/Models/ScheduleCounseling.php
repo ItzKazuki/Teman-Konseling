@@ -36,7 +36,7 @@ class ScheduleCounseling extends Model
      */
     public function request(): BelongsTo
     {
-        return $this->belongsTo(RequestCounseling::class.'request_id');
+        return $this->belongsTo(RequestCounseling::class, 'request_id');
     }
 
     /**

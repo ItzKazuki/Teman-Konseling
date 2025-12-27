@@ -26,6 +26,7 @@ interface Student {
   name: string;
   avatar_url?: string;
   email: string;
+  phone: string;
   password?: string;
   class_room_id: string;
   classroom_name?: string;

@@ -17,6 +17,7 @@ class RequestCounseling extends Model
         'description',
         'urgency',
         'status',
+        'notes',
     ];
 
     /**

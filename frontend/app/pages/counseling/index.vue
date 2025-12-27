@@ -7,7 +7,7 @@
       </div>
       <div class="flex items-center gap-3">
         <div class="flex bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
-          <button v-for="tab in ['all', 'pending', 'scheduled', 'finished']" :key="tab" @click="activeTab = tab" :class="['px-4 py-1.5 rounded-lg text-xs font-bold transition-all capitalize',
+          <button v-for="tab in ['all', 'pending', 'scheduled', 'rejected', 'completed']" :key="tab" @click="activeTab = tab" :class="['px-4 py-1.5 rounded-lg text-xs font-bold transition-all capitalize',
             activeTab === tab ? 'bg-primary-600 text-white' : 'text-gray-500 hover:bg-gray-50']">
             {{ tab }}
           </button>
@@ -108,16 +108,15 @@
             <div v-else class="h-full flex flex-col items-center justify-center text-center py-4">
               <Icon name="tabler:calendar-off" class="text-gray-300 w-8 h-8 mb-2" />
               <p class="text-xs text-gray-500">Jadwal Belum Dibuat</p>
-              <button class="mt-2 text-xs font-bold text-primary-600 hover:underline">Atur Jadwal Sekarang</button>
             </div>
           </div>
 
           <div class="flex lg:flex-col gap-2 justify-center lg:w-40">
-            <NuxtLink :to="`/counseling/${item.id}`"
+            <NuxtLink v-if="item.schedule" :to="`/counseling/tindak-lanjut/${item.id}`"
               class="flex-1 lg:flex-none py-2 px-4 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 transition">
               Tindak Lanjut
             </NuxtLink>
-            <NuxtLink :to="`/counseling/detail/${item.id}`"
+            <NuxtLink :to="`/counseling/${item.id}`"
               class="flex-1 lg:flex-none py-2 px-4 bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-50">
               Lihat Detail
             </NuxtLink>
