@@ -75,9 +75,9 @@
       class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50 transition-all duration-300">
       <h4 class="text-sm font-semibold mb-3 text-gray-700">Opsi Filter Artikel</h4>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input type="text" v-model="filterForm.search" placeholder="Cari Nama, Email, atau NIP"
+        <input type="text" v-model="filters.search" placeholder="Cari Nama atau slug Artikel"
           class="form-input rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500" />
-        <FormSelect name="filter-status" placeholder="Semua Status" v-model="filterForm.status" :options="[
+        <FormSelect name="filter-status" placeholder="Semua Status" v-model="filters.status" :options="[
           { label: 'Draft', value: 'draft' },
           { label: 'Published', value: 'published' },
           { label: 'Archived', value: 'archived' },
@@ -116,7 +116,7 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
 
-          <tr v-if="filteredArticles.length === 0">
+          <tr v-if="data.length === 0">
             <td colspan="6" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
               <div class="flex items-center justify-center">
                 <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
@@ -125,8 +125,7 @@
             </td>
           </tr>
 
-          <tr v-for="article in filteredArticles" :key="article.id"
-            class="hover:bg-primary-50/50 transition-colors duration-100">
+          <tr v-for="article in data" :key="article.id" class="hover:bg-primary-50/50 transition-colors duration-100">
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ article.title }}
@@ -184,53 +183,38 @@
 </template>
 
 <script setup lang="ts">
-const rawArticleData = ref<Article[]>([]);
-const isFilterVisible = ref<boolean>(false);
-const isLoading = ref<boolean>(true);
-const filterForm = reactive({
+const {
+  data,
+  loading,
+  meta,
+  filters,
+  fetchData,
+  changePage,
+  applyFilter
+} = useDataTable<Article, { search: string; status: string }>('/admin/articles', {
   search: '',
-  status: '',
+  status: ''
 });
+const isFilterVisible = ref<boolean>(false);
 
 const handleFilterToggle = () => {
   isFilterVisible.value = !isFilterVisible.value;
 };
 
-const applyFilter = () => {
-  alert('Filter diterapkan! (Cek console log untuk detail filter)');
-};
-
-const filteredArticles = computed(() => {
-  let data = rawArticleData.value;
-
-  if (filterForm.search) {
-    const searchLower = filterForm.search.toLowerCase();
-    data = data.filter(item =>
-      item.title.toLowerCase().includes(searchLower)
-    );
-  }
-
-  if (filterForm.status) {
-    data = data.filter(item => item.status === filterForm.status);
-  }
-
-  return data;
-});
-
 const draftArticles = computed(() =>
-  rawArticleData.value.filter(a => a.status === 'draft').length
+  data.value.filter(a => a.status === 'draft').length
 );
 
 const avgViews = computed(() => {
-  if (!rawArticleData.value.length) return 0;
-  return Math.round(totalViews.value / rawArticleData.value.length);
+  if (!data.value.length) return 0;
+  return Math.round(totalViews.value / data.value.length);
 });
 
 const totalViews = computed(() =>
-  rawArticleData.value.reduce((sum, a) => sum + (a.views || 0), 0)
+  data.value.reduce((sum, a) => sum + (a.views || 0), 0)
 );
 
-const totalArticles = computed(() => rawArticleData.value.length);
+const totalArticles = computed(() => data.value.length);
 
 const handleDelete = async (id?: string, name?: string) => {
   try {
@@ -242,7 +226,7 @@ const handleDelete = async (id?: string, name?: string) => {
 
     if (message.status) {
       useToast().success(`Kategori Artikel "${name}" berhasil dihapus.`);
-      await getAllArticle();
+      await fetchData();
     } else {
       useToast().error('Gagal menghapus kategori artikel. Silakan coba lagi.');
     }
@@ -268,19 +252,7 @@ const getStatusClass = (status: string) => {
   }
 };
 
-async function getAllArticle() {
-  isLoading.value = true;
-  const resArticle = await useApi().get<Article[]>('/admin/articles');
-
-  if (resArticle.status && resArticle.data) {
-    rawArticleData.value = resArticle.data;
-  } else {
-    rawArticleData.value = [];
-  }
-  isLoading.value = false;
-}
-
 onMounted(() => {
-  getAllArticle();
+  fetchData();
 })
 </script>

@@ -18,10 +18,6 @@ class ArticleCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        // $categories = ArticleCategory::all();
-
-        // return ApiResponse::success(ArticleCategoryResource::collection($categories));
-
         $perPage = $request->input('perPage', 10);
         $query = ArticleCategory::query();
 
@@ -39,7 +35,7 @@ class ArticleCategoryController extends Controller
             return new ArticleCategoryResource($category);
         });
 
-        return ApiResponse::success($categories, 'Berhasil mengambil data kelas');
+        return ApiResponse::success($categories, 'Berhasil mengambil data kategori artikel');
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\Request;
 
 #[Group('Admin: Artikel', weight: 3)]
 class ArticleController extends Controller
@@ -15,11 +16,30 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::with(['author', 'category'])->get();
+        $perPage = $request->input('perPage', 10);
+        $query = Article::query();
 
-        return ApiResponse::success(ArticleResource::collection($articles));
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('slug', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+        
+        $articles = $query->with(['author', 'category'])->paginate($perPage);
+
+        $articles->getCollection()->transform(function ($article) {
+            return new ArticleResource($article);
+        });
+
+        return ApiResponse::success($articles, 'Berhasil mengambil data artikel');
     }
 
     /**
