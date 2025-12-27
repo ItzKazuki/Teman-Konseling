@@ -17,11 +17,34 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::with('classroom')->get();
+        $perPage = $request->input('perPage', 10);
+        $query = Student::query();
 
-        return ApiResponse::success(StudentResource::collection($students), 'Berhasil mengambil data siswa');
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('nis', 'like', "%{$search}%")
+                ->orWhere('nisn', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // 3. Filter berdasarkan Kelas
+        if ($request->has('classId') && $request->classId != '') {
+            $query->where('class_room_id', $request->classId);
+        }
+        
+        $students = $query->with('classroom')->paginate($perPage);
+
+        $students->getCollection()->transform(function ($student) {
+            return new StudentResource($student);
+        });
+
+
+        return ApiResponse::success($students, 'Berhasil mengambil data siswa');
     }
 
     /**
@@ -72,10 +95,10 @@ class StudentController extends Controller
             'name' => $student->name,
             'nisn' => $student->nisn,
             'avatar_url' => $student->avatar_url,
-            'phone' => $student->phone,
+            'phone' => $student->phone_number,
             'address' => $student->address,
             'parent_name' => $student->parent_name,
-            'parent_phone' => $student->parent_phone,
+            'parent_phone' => $student->parent_phone_number,
             'classroom' => $student->classroom->name,
             'mood_history' => $student->dailyMoods->map(fn ($m) => [
                 'id' => $m->id,

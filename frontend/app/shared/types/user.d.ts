@@ -47,10 +47,10 @@ interface StudentDetail {
   name: string
   avatar_url?: string;
   nisn: string
-  phone: any
-  address: any
-  parent_name: any
-  parent_phone: any
+  phone: string;
+  address: string;
+  parent_name: string;
+  parent_phone: string;
   classroom: string
   mood_history: MoodHistory[]
   chart_labels: string[]
