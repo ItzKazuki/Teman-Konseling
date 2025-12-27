@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <article v-else-if="article" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <article v-else-if="article" class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-8 space-y-8">
       <div class="space-y-4">
         <img :src="article.thumbnail_url" :alt="article.title"
           class="w-full h-auto object-cover rounded-xl shadow-md max-h-96" />

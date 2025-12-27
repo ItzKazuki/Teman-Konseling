@@ -64,32 +64,12 @@
             </div>
 
             <div class="shrink-0">
-              <button @click="handleAction(item)" :disabled="item.schedule && item.schedule.status === 'pending'"
-                :class="[
-                  'w-full md:w-auto py-2.5 px-6 rounded-lg font-bold text-sm transition duration-150 flex items-center justify-center gap-2',
-
-                  // Jika Belum ada jadwal (Warna Primary/Indigo)
-                  !item.schedule
-                    ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm'
-                    : '',
-
-                  // Jika Jadwal ada tapi Pending (Warna Abu-abu & Disabled)
-                  (item.schedule && item.schedule.status === 'pending')
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : '',
-
-                  // Jika Jadwal Terkonfirmasi (Warna Emerald/Hijau)
-                  (item.schedule && item.schedule.status === 'confirmed')
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
-                    : ''
-                ]">
-                <Icon v-if="!item.schedule" name="heroicons:calendar-days-solid" class="w-4 h-4" />
-                <Icon v-else-if="item.schedule.status === 'pending'" name="heroicons:clock-solid" class="w-4 h-4" />
-                <Icon v-else name="heroicons:chat-bubble-left-right-solid" class="w-4 h-4" />
-
-                <span v-if="!item.schedule">Pilih Jadwal</span>
-                <span v-else-if="item.schedule.status === 'pending'">Menunggu Persetujuan</span>
-                <span v-else>Mulai Chat</span>
+              <button @click="handleAction(item)" :disabled="getActionButton(item).disabled" :class="[
+                'w-full md:w-auto py-2.5 px-6 rounded-lg font-bold text-sm transition duration-150 flex items-center justify-center gap-2',
+                getActionButton(item).class
+              ]">
+                <Icon :name="getActionButton(item).icon" class="w-4 h-4" />
+                <span>{{ getActionButton(item).text }}</span>
               </button>
             </div>
           </div>
@@ -117,6 +97,44 @@
 <script setup>
 const counselingList = ref([]);
 const isLoading = ref(true);
+
+const ACTION_BUTTON_CONFIG = {
+  none: {
+    text: 'Pilih Jadwal',
+    icon: 'heroicons:calendar-days-solid',
+    class: 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm',
+    disabled: false,
+  },
+  pending: {
+    text: 'Menunggu Persetujuan',
+    icon: 'heroicons:clock-solid',
+    class: 'bg-gray-200 text-gray-400 cursor-not-allowed',
+    disabled: true,
+  },
+  confirmed: {
+    text: 'Mulai Chat',
+    icon: 'heroicons:chat-bubble-left-right-solid',
+    class: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm',
+    disabled: false,
+  },
+  completed: {
+    text: 'Selesai',
+    icon: 'heroicons:check-circle-solid',
+    class: 'bg-slate-200 text-slate-600 cursor-default',
+    disabled: true,
+  },
+  canceled: {
+    text: 'Ditolak',
+    icon: 'heroicons:x-circle-solid',
+    class: 'bg-red-100 text-red-600 cursor-default',
+    disabled: true,
+  },
+}
+
+function getActionButton(item) {
+  if (!item.schedule) return ACTION_BUTTON_CONFIG.none
+  return ACTION_BUTTON_CONFIG[item.schedule.status] ?? ACTION_BUTTON_CONFIG.none
+}
 
 const fetchData = async () => {
   isLoading.value = true;
