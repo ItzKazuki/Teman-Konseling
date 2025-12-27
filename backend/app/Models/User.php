@@ -31,6 +31,7 @@ class User extends Authenticatable
         'role',
         'jabatan',
         'password',
+        'is_available'
     ];
 
     /**

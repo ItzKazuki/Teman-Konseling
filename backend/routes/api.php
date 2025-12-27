@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Admin\ClassroomController as AdminClassroomControll
 use App\Http\Controllers\Api\Admin\CounselingController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\MoodController;
+use App\Http\Controllers\Api\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Auth\AccountController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Api\MasterDataController;
 use App\Http\Controllers\Api\Student\ArticleController as StudentArticleController;
 use App\Http\Controllers\Api\Student\CounselingController as StudentCounselingController;
 use App\Http\Controllers\Api\Student\MoodController as StudentMoodController;
+use App\Http\Controllers\Api\Student\ProfileController;
 use App\Http\Middleware\CheckRoleIsBk;
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +60,9 @@ Route::prefix('v1')->group(function () {
 
         Route::post('daily-moods', [StudentMoodController::class, 'store']);
         Route::get('daily-moods/check', [StudentMoodController::class, 'checkStatus']);
+
+        Route::put('profile/update', [ProfileController::class, 'update']);
+        Route::put('profile/password/update', [ProfileController::class, 'changePassword']);
     });
 
     Route::middleware(['auth:sanctum'])->group(function () {
@@ -78,6 +83,9 @@ Route::prefix('v1')->group(function () {
         Route::get('moods/history', [MoodController::class, 'history']);
 
         Route::get('dashboard-overview', [DashboardController::class, 'overview']);
+
+        Route::put('profile/update', [AdminProfileController::class, 'update']);
+        Route::put('profile/password/update', [AdminProfileController::class, 'changePassword']);
 
         // master data admin
         Route::group(['prefix' => 'master-data', 'as' => 'master-data.'], function () {

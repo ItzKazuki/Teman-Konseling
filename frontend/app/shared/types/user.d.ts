@@ -9,6 +9,8 @@ interface User {
   avatar_url?: string;
   avatar_file_id?: string;
   email: string;
+  phone: string;
+  is_available?: boolean;
   password?: string;
   password_confirmation?: string;
 }
