@@ -79,11 +79,14 @@
       </form>
     </div>
 
+    <p class="text-center text-gray-500 text-xs">{{ config.public.buildVersion }}</p>
+
   </div>
 </template>
 
 <script setup lang="ts">
 const auth = useAuthStore();
+const config = useRuntimeConfig();
 
 interface UserProfile {
   name: string;
