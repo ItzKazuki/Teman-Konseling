@@ -50,6 +50,9 @@
               Nama Kelas
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Level Kelas
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Deskripsi
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -63,7 +66,7 @@
         <tbody class="bg-white divide-y divide-gray-200">
 
           <tr v-if="filteredClasses.length === 0">
-            <td colspan="4" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
+            <td colspan="5" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
               <div class="flex justify-center items-center">
                 <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
                 <p>Tidak ada data kelas yang ditemukan.</p>
@@ -76,6 +79,10 @@
 
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
               {{ classItem.name }}
+            </td>
+
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ classItem.level }}
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -132,6 +139,10 @@
       <FormSelect name="homeroom_teacher" label="Wali Kelas" v-model="form.homeroom_teacher"
         :options="teachers.map(teacher => ({ label: teacher.name, value: teacher.id }))" placeholder="Pilih Wali Kelas"
         :disabled="isSubmitting || !teachers.length" required />
+
+      <FormSelect name="level" label="Level Kelas" v-model="form.level"
+        :options="[{ label: '10', value: 10 }, { label: '11', value: 11 }, { label: '12', value: 12 }]"
+        placeholder="Pilih Level Kelas" :disabled="isSubmitting" required />
 
       <div>
         <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
@@ -195,7 +206,7 @@ const filteredClasses = computed(() => {
 });
 
 const showModal = ref<boolean>(false);
-const initialForm: Classroom = { name: '', homeroom_teacher: '', description: '' };
+const initialForm: Classroom = { name: '', homeroom_teacher: '', description: '', level: 10 };
 const form = reactive<Classroom>({ ...initialForm });
 const errors = reactive<{ [key: string]: string | undefined }>({});
 const isSubmitting = ref(false);

@@ -17,7 +17,7 @@ class ClassroomController extends Controller
      */
     public function index()
     {
-        $classrooms = ClassRoom::all();
+        $classrooms = ClassRoom::with('homeroomTeacher')->get();
 
         return ApiResponse::success(ClassRoomResource::collection($classrooms), 'Berhasil mengambil data kelas');
     }

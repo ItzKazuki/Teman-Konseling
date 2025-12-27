@@ -37,6 +37,8 @@ class ClassroomRequest extends FormRequest
 
             'description' => 'nullable|string|max:255',
 
+            'level' => 'required|in:10,11,12',
+
             'homeroom_teacher' => [
                 'nullable',
                 'uuid',

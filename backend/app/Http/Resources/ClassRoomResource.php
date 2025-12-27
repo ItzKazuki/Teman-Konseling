@@ -18,8 +18,9 @@ class ClassRoomResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'level' => $this->level,
             'homeroom_teacher' => $this->homeroom_teacher,
-            'homeroom_teacher_name' => $this->whenLoaded('homeroomTeacher', fn () => $this->homeroom_teacher->name),
+            'homeroom_teacher_name' => $this->whenLoaded('homeroomTeacher', fn () => $this->homeroomTeacher->name),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
