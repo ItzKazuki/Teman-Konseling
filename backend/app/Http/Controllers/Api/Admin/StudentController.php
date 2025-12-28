@@ -6,10 +6,13 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentRequest;
 use App\Http\Resources\StudentResource;
+use App\Mail\StudentResetPasswordMail;
 use App\Models\Student;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 #[Group('Admin: Data Siswa', weight: 3)]
 class StudentController extends Controller
@@ -24,11 +27,11 @@ class StudentController extends Controller
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('nis', 'like', "%{$search}%")
-                ->orWhere('nisn', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('nis', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -36,7 +39,7 @@ class StudentController extends Controller
         if ($request->has('classId') && $request->classId != '') {
             $query->where('class_room_id', $request->classId);
         }
-        
+
         $students = $query->with('classroom')->paginate($perPage);
 
         $students->getCollection()->transform(function ($student) {
@@ -151,5 +154,18 @@ class StudentController extends Controller
         $student->delete();
 
         return ApiResponse::success(null, 'berhasil menghapus data siswa');
+    }
+
+    public function resetPassword(Student $student)
+    {
+        $newPassword = Str::random(8);
+
+        $student->update([
+            'password' => Hash::make($newPassword),
+        ]);
+
+        Mail::to($student->email)->send(new StudentResetPasswordMail($student, $newPassword));
+
+        return ApiResponse::success(null, 'Kata sandi berhasil direset dan dikirim ke email pengguna.');
     }
 }

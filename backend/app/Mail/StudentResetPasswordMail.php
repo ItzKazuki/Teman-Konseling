@@ -9,19 +9,19 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class UserResetPasswordMail extends Mailable
+class StudentResetPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
+    public $student;
     public $newPassword;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($user, $newPassword)
+    public function __construct($student, $newPassword)
     {
-        $this->user = $user;
+        $this->student = $student;
         $this->newPassword = $newPassword;
     }
 
@@ -41,7 +41,7 @@ class UserResetPasswordMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.reset-password',
+            markdown: 'mail.student-reset-password',
         );
     }
 

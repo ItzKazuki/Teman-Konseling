@@ -73,6 +73,7 @@ Route::prefix('v1')->group(function () {
     // untuk bk
     Route::group(['middleware' => ['auth:user', CheckRoleIsBk::class], 'prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword']);
+        Route::post('students/{student}/reset-password', [StudentController::class, 'resetPassword']);
         Route::apiResource('users', UserController::class);
         Route::get('students/details/{id}', [StudentController::class, 'detail']);
         Route::get('counselings/summary', [CounselingController::class, 'summary']);

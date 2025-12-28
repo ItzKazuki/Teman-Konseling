@@ -19,6 +19,13 @@
 
         <section class="space-y-4 border-b pb-6">
           <h2 class="text-xl font-semibold text-gray-800">Detail Identitas & Akun</h2>
+          
+          <div>
+            <label for="name" class="form-label">Nama Lengkap <span class="text-red-600">*</span></label>
+            <input type="text" id="name" v-model="form.name" class="form-input" required :disabled="isSubmitting"
+              :class="{ 'border-red-500': errors.name }" />
+            <p v-if="errors.name" class="mt-1 text-xs text-red-500">{{ errors.name[0] }}</p>
+          </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -36,14 +43,7 @@
             </div>
           </div>
 
-          <div>
-            <label for="name" class="form-label">Nama Lengkap <span class="text-red-600">*</span></label>
-            <input type="text" id="name" v-model="form.name" class="form-input" required :disabled="isSubmitting"
-              :class="{ 'border-red-500': errors.name }" />
-            <p v-if="errors.name" class="mt-1 text-xs text-red-500">{{ errors.name[0] }}</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label for="email" class="form-label">Email (Akun Login) <span class="text-red-600">*</span></label>
               <input type="email" id="email" v-model="form.email" class="form-input" required :disabled="isSubmitting"
@@ -57,15 +57,6 @@
               <input type="text" id="phone_number" v-model="form.phone_number" class="form-input" required
                 :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" />
               <p v-if="errors.phone_number" class="mt-1 text-xs text-red-500">{{ errors.phone_number[0] }}</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="password" class="form-label">Kata Sandi Awal <span class="text-red-600">*</span></label>
-              <input type="password" id="password" v-model="form.password" class="form-input"
-                :disabled="isSubmitting" :class="{ 'border-red-500': errors.password }" />
-              <p v-if="errors.password" class="mt-1 text-xs text-red-500">{{ errors.password[0] }}</p>
             </div>
 
             <FormSelect name="class_room_id" label="Penugasan Kelas" v-model="form.class_room_id"
@@ -128,6 +119,19 @@
           </div>
         </section>
 
+        <section class="space-y-4 pt-4 border-t">
+          <h2 class="text-xl font-semibold text-gray-800">Reset Kata Sandi</h2>
+          <p class="text-sm text-gray-500">Anda dapat mengatur ulang kata sandi siswa ini jika diperlukan.</p>
+          <button type="button" @click="resetPassword" :disabled="isSubmitting"
+            class="flex items-center justify-center px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:bg-red-300">
+            <Icon name="tabler:key" class="w-4 h-4 mr-1" /> Reset Kata Sandi
+          </button>
+          <p v-if="resetPasswordMessage" class="mt-2 text-sm"
+            :class="resetPasswordMessage.status === 'success' ? 'text-green-600' : 'text-red-600'">
+            {{ resetPasswordMessage.message }}
+          </p>
+        </section>
+
         <div class="flex justify-end space-x-3">
           <NuxtLink to="/students"
             class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
@@ -150,6 +154,8 @@
 const route = useRoute();
 const router = useRouter();
 
+const resetPasswordMessage = ref<{ status: 'success' | 'error', message: string } | null>(null);
+
 const studentId = route.params.id as string;
 if (!studentId) {
   router.replace('/students');
@@ -160,7 +166,6 @@ interface StudentUpdatePayload {
   nisn: string;
   name: string;
   email: string;
-  password?: string;
   class_room_id: string;
   phone_number: string;
   postal_code: string;
@@ -183,7 +188,6 @@ const initialForm: StudentUpdatePayload = {
   nisn: '',
   name: '',
   email: '',
-  password: undefined,
   class_room_id: '',
   phone_number: '',
   postal_code: '',
@@ -288,6 +292,36 @@ const submitStudentUpdate = async () => {
     isSubmitting.value = false;
   }
 };
+
+const resetPassword = async () => {
+  isSubmitting.value = true;
+  resetPasswordMessage.value = null;
+
+  try {
+    const confirmed = await useAlert().confirm('Apakah Anda yakin ingin mereset kata sandi siswa ini? Kata sandi baru akan di-generate oleh sistem.');
+
+    if (!confirmed) {
+      isSubmitting.value = false;
+      return;
+    }
+
+    const response = await useApi().post(`/admin/students/${studentId}/reset-password`);
+
+    if (response.status) {
+      resetPasswordMessage.value = { status: 'success', message: response.message || 'Kata sandi berhasil direset. Harap informasikan kepada pengguna.' };
+      useToast().success('Kata sandi berhasil direset!');
+    } else {
+      resetPasswordMessage.value = { status: 'error', message: response.message || 'Gagal mereset kata sandi.' };
+      useToast().error('Gagal mereset kata sandi.');
+    }
+
+  } catch (err: any) {
+    resetPasswordMessage.value = { status: 'error', message: err.data?.message || 'Terjadi kesalahan saat mereset kata sandi.' };
+    useToast().error('Terjadi kesalahan saat mereset kata sandi.');
+  } finally {
+    isSubmitting.value = false;
+  };
+}
 
 onMounted(() => {
   fetchInitialData();
