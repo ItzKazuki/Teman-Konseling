@@ -59,32 +59,46 @@
         <section class="space-y-6">
           <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Pengaturan Publikasi</h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+          <div class="grid grid-cols-1 gap-6">
             <div>
-              <label for="thumbnail_file_id" class="form-label">Thumbnail Gambar</label>
-              <input type="text" id="thumbnail_file_id" v-model="form.thumbnail_file_id"
-                placeholder="ID File Gambar (Mis: 123)" class="form-input" :disabled="isSubmitting"
-                :class="{ 'border-red-500': errors.thumbnail_file_id }" />
-              <p class="mt-1 text-xs text-gray-500">Masukkan ID File dari File Manager.</p>
+              <label class="form-label">Thumbnail Artikel</label>
+
+              <div class="mt-2 flex flex-col items-start gap-4">
+                <div v-if="thumbnailPreview" class="relative group">
+                  <img :src="thumbnailPreview"
+                    class="w-full max-w-sm aspect-video object-cover rounded-xl border-2 border-primary-100 shadow-sm" />
+                  <button type="button" @click="removeThumbnail"
+                    class="absolute top-2 flex items-center right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                    <Icon name="tabler:x" class="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div v-else class="w-full max-w-sm">
+                  <label for="thumbnail-upload"
+                    class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Icon name="tabler:photo-plus" class="w-10 h-10 text-gray-400 mb-2" />
+                      <p class="text-sm text-gray-500 font-medium">Klik untuk pilih gambar</p>
+                      <p class="text-xs text-gray-400 mt-1">PNG, JPG atau WEBP (Maks. 2MB)</p>
+                    </div>
+                    <input id="thumbnail-upload" type="file" class="hidden" accept="image/*"
+                      @change="handleThumbnailChange" />
+                  </label>
+                </div>
+              </div>
+
               <p v-if="errors.thumbnail_file_id" class="mt-1 text-xs text-red-500">{{ errors.thumbnail_file_id[0] }}</p>
             </div>
-
-            <FormSelect name="status" label="Status Artikel" v-model="form.status" :options="[
-              { label: 'Draft', value: 'draft' },
-              { label: 'Published', value: 'published' },
-              { label: 'Archived', value: 'archived' },
-            ]" required :disabled="isSubmitting" />
-
           </div>
 
           <div>
             <label for="published_at" class="form-label">Jadwal Publikasi (Opsional)</label>
             <input type="datetime-local" id="published_at" v-model="form.published_at" class="form-input"
               :disabled="isSubmitting" :class="{ 'border-red-500': errors.published_at }" />
-            <p class="mt-1 text-xs text-gray-500">Kosongkan jika ingin segera dipublikasikan (tergantung status).</p>
-            <p v-if="errors.published_at" class="mt-1 text-xs text-red-500">{{ errors.published_at[0] }}</p>
           </div>
+
+          <ModalCropper :show="showCropper" :src="imageSource" :aspect-ratio="16 / 9" @close="showCropper = false"
+            @cropped="onThumbnailCropped" />
         </section>
 
         <div class="flex justify-end space-x-3">
@@ -92,6 +106,11 @@
             class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
             Batal
           </NuxtLink>
+          <button type="button" @click="saveAsDraft"
+            class="px-4 py-2 text-sm font-medium bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors shadow-md"
+            :disabled="isSubmitting">
+            Draft
+          </button>
           <button type="submit" :disabled="isSubmitting"
             class="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md disabled:bg-primary-400">
             <Icon v-if="isSubmitting" name="tabler:loader-2" class="w-4 h-4 mr-1 animate-spin" />
@@ -127,7 +146,7 @@ const initialForm: ArticlePayload = {
   excerpt: '',
   thumbnail_file_id: '',
   content: '',
-  status: 'draft',
+  status: 'published',
   published_at: null,
 };
 
@@ -143,6 +162,46 @@ const generateSlug = () => {
   }
 };
 
+// file
+
+const thumbnailFile = ref<File | null>(null);
+const thumbnailPreview = ref<string | null>(null);
+const imageSource = ref<any>(null);
+const showCropper = ref(false);
+
+const handleThumbnailChange = (event: any) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  // Cek ukuran file (2MB = 2 * 1024 * 1024 bytes)
+  if (file.size > 2 * 1024 * 1024) {
+    useToast().error('Ukuran file terlalu besar. Maksimal 2MB.');
+    event.target.value = ''; // Reset input
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    imageSource.value = reader.result;
+    showCropper.value = true; // Buka cropper
+  };
+  reader.readAsDataURL(file);
+};
+
+const onThumbnailCropped = (base64: string) => {
+  thumbnailPreview.value = base64; // Untuk tampilan preview di frontend
+  thumbnailFile.value = base64ToFile(base64, "thumbnail.jpeg");
+  showCropper.value = false;
+};
+
+const removeThumbnail = () => {
+  thumbnailFile.value = null;
+  thumbnailPreview.value = null;
+  form.thumbnail_file_id = '';
+};
+
+// end file
+
 async function fetchMasterData() {
   try {
     const res = await useApi().get<{ id: string, name: string }[]>('/master-data/article-categories');
@@ -156,11 +215,41 @@ async function fetchMasterData() {
   }
 }
 
+const saveAsDraft = async () => {
+  form.status = 'draft';
+
+  const confirmed = await useAlert().confirm('Apakah Anda yakin ingin menyimpan artikel ini sebagai draft?');
+
+  if (!confirmed) {
+    isSubmitting.value = false;
+    return;
+  }
+
+  await submitArticle();
+};
+
 const submitArticle = async () => {
   isSubmitting.value = true;
   Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
 
+  if (form.status !== 'draft') {
+    const confirm = await useAlert().confirm('Apakah Anda yakin ingin menyimpan artikel ini?');
+
+    if (!confirm) {
+      isSubmitting.value = false;
+      return;
+    }
+  }
+
   try {
+
+    if (thumbnailFile.value) {
+      const fileId = await useFile().uploadAsset(thumbnailFile.value, 'thumbnails', 'public');
+      if (!fileId) throw new Error('Gagal mengunggah thumbnail');
+
+      form.thumbnail_file_id = fileId;
+    }
+
     const response = await useApi().post('/admin/articles', form);
 
     if (response.status) {
