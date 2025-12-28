@@ -6,9 +6,13 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\UserResetPasswordMail;
 use App\Models\User;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 #[Group('Admin: Data Pengguna', weight: 3)]
 class UserController extends Controller
@@ -23,11 +27,11 @@ class UserController extends Controller
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhere('nip', 'like', "%{$search}%")
-                ->orWhere('phone_number', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('nip', 'like', "%{$search}%")
+                    ->orWhere('phone_number', 'like', "%{$search}%");
             });
         }
 
@@ -36,7 +40,7 @@ class UserController extends Controller
         }
 
         $query->orderByRaw("FIELD(role, 'bk', 'guru', 'staff')");
-        
+
         $users = $query->paginate($perPage);
 
         $users->getCollection()->transform(function ($user) {
@@ -104,5 +108,18 @@ class UserController extends Controller
         $user->delete();
 
         return ApiResponse::success(null, 'Berhasil menghapus pengguna');
+    }
+
+    public function resetPassword(User $user)
+    {
+        $newPassword = Str::random(8);
+
+        $user->update([
+            'password' => Hash::make($newPassword),
+        ]);
+
+        Mail::to($user->email)->send(new UserResetPasswordMail($user, $newPassword));
+
+        return ApiResponse::success(null, 'Kata sandi berhasil direset dan dikirim ke email pengguna.');
     }
 }

@@ -115,7 +115,7 @@ export function useApi(withAuth: boolean = true) {
     return fetch<Blob>(url, { responseType: "blob" });
   }
 
-  async function post<T = any>(url: string, body: any) {
+  async function post<T = any>(url: string, body?: any) {
     return fetch<ApiResponse<T>>(url, {
       method: "POST",
       body,

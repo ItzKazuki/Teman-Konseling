@@ -49,12 +49,12 @@
         </section>
 
         <section class="space-y-4">
-          <h2 class="text-xl font-semibold text-gray-800">Detail Pekerjaan</h2>
+          <h2 class="text-xl font-semibold text-gray-800">Detail Pekerjaan & Kontak</h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="nip" class="form-label">NIP</label>
-              <input type="text" id="nip" v-model="form.nip" class="form-input" :disabled="isSubmitting"
+              <label for="nip" class="form-label">NIP <span class="text-red-600">*</span></label>
+              <input type="text" id="nip" v-model="form.nip" class="form-input" required :disabled="isSubmitting"
                 :class="{ 'border-red-500': errors.nip }" />
               <p v-if="errors.nip" class="mt-1 text-xs text-red-500">{{ errors.nip[0] }}</p>
             </div>
@@ -67,12 +67,38 @@
             </div>
           </div>
 
-          <FormSelect name="role" label="Peran (Role)" v-model="form.role" :options="[
-            { value: '', label: 'Pilih Peran' },
-            { value: 'guru', label: 'Guru' },
-            { value: 'bk', label: 'BK/Konselor' },
-            { value: 'admin', label: 'Administrator' },
-          ]" required :disabled="isSubmitting" />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="phone_number" class="form-label">Nomor Telepon <span class="text-red-600">*</span></label>
+              <input type="text" id="phone_number" v-model="form.phone_number" class="form-input" required
+                :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" />
+              <p v-if="errors.phone_number" class="mt-1 text-xs text-red-500">{{ errors.phone_number[0] }}</p>
+            </div>
+
+            <FormSelect name="role" label="Peran (Role)" v-model="form.role" :options="[
+              { value: '', label: 'Pilih Peran' },
+              { value: 'guru', label: 'Guru' },
+              { value: 'bk', label: 'BK/Konselor' },
+              { value: 'staff', label: 'Staff' },
+            ]" required :disabled="isSubmitting" />
+          </div>
+
+          <div class="flex flex-col">
+            <label class="form-label mb-2">Status Ketersediaan</label>
+            <div class="flex items-center space-x-3 h-full">
+              <button type="button" @click="form.is_available = form.is_available === 1 ? 0 : 1"
+                :class="form.is_available === 1 ? 'bg-primary-600' : 'bg-gray-300'"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none"
+                :disabled="isSubmitting">
+                <span :class="form.is_available === 1 ? 'translate-x-6' : 'translate-x-1'"
+                  class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+              </button>
+              <span class="text-sm font-medium text-gray-700">
+                {{ form.is_available === 1 ? 'Tersedia' : 'Tidak Tersedia' }}
+              </span>
+            </div>
+            <p class="mt-1 text-[10px] text-gray-500 italic">Khusus untuk role BK/Konselor guna status layanan.</p>
+          </div>
         </section>
 
         <div class="pt-6 border-t flex justify-end space-x-3">
@@ -100,8 +126,10 @@ interface UserCreationPayload {
   name: string;
   email: string;
   nip: string;
-  role: 'bk' | 'guru' | string;
+  role: 'bk' | 'guru' | 'staff' | string;
   jabatan: string;
+  phone_number: string;
+  is_available: number;
   password: string;
   password_confirmation: string;
 }
@@ -112,6 +140,8 @@ const initialForm: UserCreationPayload = {
   nip: '',
   role: '',
   jabatan: '',
+  phone_number: '',
+  is_available: 1,
   password: '',
   password_confirmation: '',
 };
@@ -131,10 +161,8 @@ const submitUser = async () => {
     return;
   }
 
-  const payload = { ...form };
-
   try {
-    const response = await useApi().post('/admin/users', payload);
+    const response = await useApi().post('/admin/users', form);
 
     if (response.status) {
       useToast().success('Pengguna baru berhasil ditambahkan!');

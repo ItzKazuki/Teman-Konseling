@@ -64,6 +64,58 @@
           ]" required :disabled="isSubmitting" />
         </section>
 
+        <section class="space-y-4">
+          <h2 class="text-xl font-semibold text-gray-800">Detail Pekerjaan & Kontak</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="nip" class="form-label">NIP <span class="text-red-600">*</span></label>
+              <input type="text" id="nip" v-model="form.nip" class="form-input" required :disabled="isSubmitting"
+                :class="{ 'border-red-500': errors.nip }" />
+              <p v-if="errors.nip" class="mt-1 text-xs text-red-500">{{ errors.nip[0] }}</p>
+            </div>
+
+            <div>
+              <label for="jabatan" class="form-label">Jabatan <span class="text-red-600">*</span></label>
+              <input type="text" id="jabatan" v-model="form.jabatan" class="form-input" required
+                :disabled="isSubmitting" :class="{ 'border-red-500': errors.jabatan }" />
+              <p v-if="errors.jabatan" class="mt-1 text-xs text-red-500">{{ errors.jabatan[0] }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="phone_number" class="form-label">Nomor Telepon <span class="text-red-600">*</span></label>
+              <input type="text" id="phone_number" v-model="form.phone_number" class="form-input" required
+                :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" />
+              <p v-if="errors.phone_number" class="mt-1 text-xs text-red-500">{{ errors.phone_number[0] }}</p>
+            </div>
+
+            <FormSelect name="role" label="Peran (Role)" v-model="form.role" :options="[
+              { value: '', label: 'Pilih Peran' },
+              { value: 'guru', label: 'Guru' },
+              { value: 'bk', label: 'BK/Konselor' },
+              { value: 'staff', label: 'Staff' },
+            ]" required :disabled="isSubmitting" />
+          </div>
+
+          <div class="flex flex-col">
+            <label class="form-label mb-2">Status Ketersediaan</label>
+            <div class="flex items-center space-x-3 h-full">
+              <button type="button" @click="form.is_available = !form.is_available"
+                :class="form.is_available ? 'bg-primary-600' : 'bg-gray-300'"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none"
+                :disabled="isSubmitting">
+                <span :class="form.is_available ? 'translate-x-6' : 'translate-x-1'"
+                  class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+              </button>
+              <span class="text-sm font-medium text-gray-700">
+                {{ form.is_available ? 'Tersedia' : 'Tidak Tersedia' }}
+              </span>
+            </div>
+          </div>
+        </section>
+
         <section class="space-y-4 pt-4 border-t">
           <h2 class="text-xl font-semibold text-gray-800">Reset Kata Sandi</h2>
           <p class="text-sm text-gray-500">Anda dapat mengatur ulang kata sandi pengguna ini jika diperlukan.</p>
@@ -108,8 +160,10 @@ interface UserUpdatePayload {
   name: string;
   email: string;
   nip: string;
-  role: 'bk' | 'guru' | string;
+  role: 'bk' | 'guru' | 'staff' | string;
   jabatan: string;
+  phone_number: string;
+  is_available: boolean;
 }
 
 const initialForm: UserUpdatePayload = {
@@ -118,6 +172,8 @@ const initialForm: UserUpdatePayload = {
   nip: '',
   role: '',
   jabatan: '',
+  phone_number: '',
+  is_available: true,
 };
 
 const form = reactive<UserUpdatePayload>({ ...initialForm });
@@ -129,28 +185,25 @@ const resetPasswordMessage = ref<{ status: 'success' | 'error', message: string 
 
 async function fetchUserData() {
   isLoading.value = true;
-
   try {
-    const res = await useApi().get<UserUpdatePayload>(`/admin/users/${userId}`);
-
+    const res = await useApi().get<User>(`/admin/users/${userId}`);
     if (res.status && res.data) {
       const data = res.data;
-
       Object.assign(form, {
         name: data.name,
         email: data.email,
         nip: data.nip || '',
         role: data.role,
         jabatan: data.jabatan,
+        phone_number: data.phone || '',
+        is_available: data.is_available ?? 1,
       });
-
     } else {
-      useToast().error('Data pengguna tidak ditemukan atau gagal dimuat.');
-      router.replace('/users'); // Redirect jika user tidak ada
+      useToast().error('Data pengguna tidak ditemukan.');
+      router.replace('/users');
     }
-
   } catch (e) {
-    useToast().error('Terjadi kesalahan saat memuat data awal.');
+    useToast().error('Terjadi kesalahan saat memuat data.');
     router.replace('/users');
   } finally {
     isLoading.value = false;
@@ -195,7 +248,7 @@ const resetPassword = async () => {
       return;
     }
 
-    const response = await useApi().post(`/admin/users/${userId}/reset-password`, {});
+    const response = await useApi().post(`/admin/users/${userId}/reset-password`);
 
     if (response.status) {
       resetPasswordMessage.value = { status: 'success', message: response.message || 'Kata sandi berhasil direset. Harap informasikan kepada pengguna.' };

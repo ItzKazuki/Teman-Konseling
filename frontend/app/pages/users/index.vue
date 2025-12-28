@@ -55,6 +55,9 @@
               Peran (Role)
             </th>
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Status Ketersediaan
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               Aksi
             </th>
           </tr>
@@ -85,6 +88,13 @@
               <span :class="getRoleClass(user.role)"
                 class="inline-flex px-3 py-1 text-xs leading-5 font-semibold rounded-full uppercase">
                 {{ user.role }}
+              </span>
+            </td>
+
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+              <span :class="user.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                class="inline-flex px-3 py-1 text-xs leading-5 font-semibold rounded-full uppercase">
+                {{ user.is_available ? 'Tersedia' : 'Tidak Tersedia' }}
               </span>
             </td>
 

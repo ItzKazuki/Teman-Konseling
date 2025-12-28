@@ -3,9 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Enums\Role;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
-use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
 {
@@ -24,7 +24,7 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('user'); 
+        $userId = $this->route('user');
 
         return [
             'name' => 'required|string|max:255',
@@ -33,25 +33,42 @@ class UserRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                // Pastikan Email unik, kecuali untuk user yang sedang diupdate
                 Rule::unique('users', 'email')->ignore($userId, 'id'),
             ],
-            
+
             'nip' => [
                 'required',
                 'string',
                 'max:18',
-                // Pastikan NIP unik
-                Rule::unique('users', 'nip')->ignore($userId, 'id'), 
+                Rule::unique('users', 'nip')->ignore($userId, 'id'),
             ],
-            
+
             'role' => [
                 'required',
                 new Enum(Role::class),
             ],
+
             'jabatan' => 'required|string|max:255',
-            
+
+            'phone_number' => 'required|string|max:20',
+
+            'is_available' => 'required|boolean',
+
             'password' => Rule::when($this->isMethod('POST'), ['required', 'string', 'min:8', 'confirmed']),
+        ];
+    }
+
+    /**
+     * Custom attributes agar pesan error lebih rapi
+     */
+    public function attributes(): array
+    {
+        return [
+            'nip' => 'NIP',
+            'role' => 'Peran',
+            'jabatan' => 'Jabatan',
+            'is_available' => 'Status Ketersediaan',
+            'password' => 'Kata Sandi',
         ];
     }
 }
