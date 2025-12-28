@@ -31,7 +31,8 @@ class User extends Authenticatable
         'role',
         'jabatan',
         'password',
-        'is_available'
+        'is_available',
+        'avatar_file_id'
     ];
 
     /**

@@ -33,6 +33,10 @@ import 'cropperjs/dist/cropper.css';
 const props = defineProps({
   show: Boolean,
   src: String,
+  aspectRatio: {
+    type: Number,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["close", "cropped"]);
@@ -49,7 +53,8 @@ const initCropper = () => {
   }
 
   cropper = new Cropper(imageRef.value, {
-    // aspectRatio: 1,
+    // Gunakan nilai dari props
+    aspectRatio: props.aspectRatio, 
     viewMode: 1,
     autoCropArea: 0.8,
     movable: true,
@@ -59,23 +64,17 @@ const initCropper = () => {
     cropBoxMovable: true,
     cropBoxResizable: true,
   });
-
 };
 
 const confirm = () => {
   if (!cropper) return;
 
-  const canvas = cropper.getCroppedCanvas({
-    width: 500,
-    height: 500,
-  });
+  const canvas = cropper.getCroppedCanvas();
 
   const base64 = canvas.toDataURL("image/png");
-
   emit("cropped", base64);
   emit("close");
 };
-
 
 watch(
   () => props.show,

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
@@ -22,6 +23,7 @@ class ProfileController extends Controller
             'jabatan' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20'],
             'is_available' => ['required', 'boolean'],
+            'avatar_file_id' => ['nullable', 'string', Rule::exists('files', 'id')],
         ]);
 
         $user->update($validated);
