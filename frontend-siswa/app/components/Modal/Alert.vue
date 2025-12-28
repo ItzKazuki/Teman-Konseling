@@ -4,7 +4,7 @@
 
       <div class="bg-white rounded-xl-lg shadow-soft w-full max-w-md p-6 relative mx-4 max-h-[80vh] overflow-y-auto">
 
-        <button @click="modal.close"
+        <button @click="modal.resolve(false)"
           class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-base cursor-pointer">
           <Icon name="mdi:close" class="w-5 h-5" />
         </button>
