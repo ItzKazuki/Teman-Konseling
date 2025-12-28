@@ -32,11 +32,20 @@
           <button @click="toggleDropdown"
             class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
             :aria-expanded="isProfileDropdownOpen" aria-controls="profile-menu">
-            <img :src="auth.user?.avatar_url" alt="User Avatar" class="w-10 h-10 rounded-full">
+
+            <div class="relative inline-block">
+              <img :src="auth.user?.avatar_url" alt="User Avatar" class="w-10 h-10 rounded-full object-cover">
+
+              <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-white"
+                :class="auth.user?.is_available ? 'bg-green-500' : 'bg-red-500'"
+                :title="auth.user?.is_available ? 'Tersedia' : 'Tidak Tersedia'"></span>
+            </div>
+
             <div class="text-sm hidden sm:block text-left">
               <div class="font-medium text-gray-800">{{ auth.user?.name }}</div>
               <div class="text-xs text-gray-500">{{ auth.user?.jabatan }}</div>
             </div>
+
             <Icon name="tabler:chevron-down" :class="{ 'rotate-180': isProfileDropdownOpen }"
               class="w-4 h-4 text-gray-600 transition-transform hidden sm:block" />
           </button>
