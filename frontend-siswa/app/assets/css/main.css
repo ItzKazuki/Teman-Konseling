@@ -125,6 +125,9 @@
     /* Menggunakan base utilitas yang sama, hanya override warna */
     @apply text-red-600 hover:bg-red-50 focus:ring-red-300;
   }
+
+  .form-label-custom { @apply font-medium text-xs block mb-1 text-gray-700; }
+.form-input-custom { @apply border border-gray-300 p-3 rounded-lg w-full focus:border-primary-600 focus:ring-1 focus:ring-primary-600 transition outline-none; }
 }
 
 @utility no-scrollbar {
