@@ -3,36 +3,33 @@ version: 1.0.0
 last_update: 30 Desember 2025
 ---
 
-# Tentang Website
+# Tentang TemanKonseling
 
-Selamat datang di **Sistem Manajemen Presensi Digital** 🎉
+Selamat datang di **TemanKonseling**, platform layanan konseling digital yang hadir sebagai ruang aman dan nyaman bagi siswa dalam mendapatkan dukungan bimbingan.
 
-Website ini dibuat untuk memberikan kemudahan bagi pengguna dalam mengelola dan mengakses data dengan aman, cepat, dan modern. Dibangun dengan teknologi web terbaru (Nuxt, Tailwind, dan API berbasis Laravel), website ini mengutamakan **keamanan data** serta **kemudahan penggunaan**.
-
----
-
-## Tujuan
-
-* Menyediakan platform yang sederhana namun powerful untuk manajemen data.
-* Mendukung produktivitas tim dengan sistem yang terintegrasi.
-* Memastikan keamanan serta privasi data setiap pengguna.
+Platform ini dikembangkan untuk memudahkan siswa dalam mengakses layanan konseling tanpa hambatan jarak dan waktu. TemanKonseling memastikan setiap interaksi yang dilakukan terlindungi oleh sistem keamanan tingkat tinggi, sehingga siswa dapat fokus pada pengembangan diri dan solusi tanpa rasa khawatir.
 
 ---
 
-## Fitur Utama
+## Tujuan Kami
 
-* 🔐 **Keamanan & Data**: Sistem berbasis enkripsi, mendukung autentikasi multi-level, serta pengaturan akses.
-* 📊 **Dashboard Interaktif**: Menampilkan informasi penting secara ringkas dan mudah dipahami.
-* ⚡ **Performa Cepat**: Optimasi caching & API membuat website lebih responsif.
-* 🌐 **Multi-Perangkat**: Dapat diakses melalui desktop maupun perangkat mobile.
-
----
-
-## Komitmen Kami
-
-Kami percaya bahwa data pengguna adalah aset yang sangat berharga. Oleh karena itu, website ini dirancang dengan standar **legalitas, privasi, dan keamanan** yang jelas. Setiap informasi yang tersimpan dikelola dengan prinsip keterbukaan, integritas, dan tanggung jawab.
+* Menyediakan akses konseling yang mudah, cepat, dan rahasia bagi seluruh siswa.
+* Menghapus batasan dalam berkomunikasi dengan konselor sekolah atau tenaga profesional.
+* Menjamin perlindungan privasi siswa sebagai prioritas utama dalam setiap proses bimbingan.
 
 ---
 
-✨ Terima kasih telah menggunakan **Sistem Manajemen Presensi Digital**.
-Kami akan terus mengembangkan fitur-fitur baru agar pengalaman Anda semakin baik.
+## Fitur Utama bagi Siswa
+
+* **Akses Responsif**: Layanan dapat diakses secara stabil melalui laptop maupun ponsel pintar, kapan pun diperlukan.
+* **Interaksi Terintegrasi**: Sistem yang memudahkan siswa terhubung dengan konselor secara efisien dan terstruktur.
+
+---
+
+## Komitmen Keamanan dan Privasi
+
+Kami menyadari bahwa kepercayaan adalah pondasi utama dalam sebuah layanan konseling. Oleh karena itu, TemanKonseling dirancang dengan standar kepatuhan terhadap privasi data siswa. Kami berkomitmen untuk mengelola setiap informasi dengan prinsip transparansi, integritas, dan tanggung jawab penuh sesuai dengan etika bimbingan dan konseling.
+
+---
+
+Terima kasih telah menggunakan **TemanKonseling**. Kami hadir untuk mendukung perjalanan belajar dan kesehatan mental Anda dengan cara yang lebih baik dan modern.

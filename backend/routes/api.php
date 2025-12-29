@@ -32,7 +32,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/', function () {
         return ApiResponse::success([
             'app_name' => config('app.name'),
-            'version' => config('app.version'),
+            'version' => config('app.env') === 'production' ? config('app.version') : config('app.version') . '-dev',
             'maintainer' => 'ItzKazuki (Cha)',
         ]);
     });
