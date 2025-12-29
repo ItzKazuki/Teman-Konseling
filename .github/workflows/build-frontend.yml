@@ -18,7 +18,7 @@ jobs:
       NUXT_APP_DEBUG: 'false'
       NUXT_APP_LOCALE: 'id-ID'
       NUXT_APP_TIMEZONE: 'Asia/Jakarta'
-      NUXT_PUBLIC_API_URL: ${{ secrets.API_BASE_URL }}
+      # NUXT_PUBLIC_API_URL: ${{ env.API_BASE_URL }}
       NUXT_PUBLIC_API_VERSION: 'v1'
 
     steps:
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Sesuaikan dengan versi node kamu
+          node-version: '24' # Sesuaikan dengan versi node kamu
           cache: 'npm'
           # Kita arahkan cache ke salah satu folder atau root
           cache-dependency-path: './**/package-lock.json'
