@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: prod
 
     env:
       NUXT_APP_NAME: 'Teman Konseling'
@@ -18,7 +19,7 @@ jobs:
       NUXT_APP_DEBUG: 'false'
       NUXT_APP_LOCALE: 'id-ID'
       NUXT_APP_TIMEZONE: 'Asia/Jakarta'
-      # NUXT_PUBLIC_API_URL: ${{ env.API_BASE_URL }}
+      NUXT_PUBLIC_API_URL: ${{ secrets.API_BASE_URL }}
       NUXT_PUBLIC_API_VERSION: 'v1'
 
     steps:
