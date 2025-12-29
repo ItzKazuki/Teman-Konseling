@@ -1,0 +1,91 @@
+name: Build Nuxt Frontends
+
+on:
+  push:
+    branches:
+      - main # Jalankan otomatis saat push ke branch main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:  
+      NUXT_APP_NAME: "Teman Konseling"
+      NUXT_APP_ENV: "production"
+      NUXT_APP_DEBUG: "false"
+      NUXT_APP_LOCALE: "id-ID"
+      NUXT_APP_TIMEZONE: "Asia/Jakarta"
+      NUXT_PUBLIC_API_URL: ${{ secrets.API_BASE_URL }}
+      NUXT_PUBLIC_API_VERSION: "v1"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Penting: agar git rev-list di script build-version.cjs bekerja
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Sesuaikan dengan versi node kamu
+          cache: 'npm'
+          # Kita arahkan cache ke salah satu folder atau root
+          cache-dependency-path: './**/package-lock.json'
+
+      # --- Build Folder frontend ---
+      - name: Install Dependencies (Frontend Dashboard)
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build & Generate (Frontend Dashboard)
+        working-directory: ./frontend
+        run: npm run generate
+
+      # --- Build Folder frontend-siswa ---
+      - name: Install Dependencies (Frontend Siswa)
+        working-directory: ./frontend-siswa
+        run: npm ci
+
+      - name: Build & Generate (Frontend Siswa)
+        working-directory: ./frontend-siswa
+        run: npm run generate
+
+      # (Opsional) Simpan hasil build folder .output atau dist sebagai artifact
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-builds
+          path: |
+            frontend/.output
+            frontend-siswa/.output
+  build:
+    runs-on: ubuntu-latest
+    
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './**/package-lock.json'
+
+      - name: Build Dashboard
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run generate
+
+      - name: Build Siswa
+        working-directory: ./frontend-siswa
+        run: |
+          npm ci
+          npm run generate
