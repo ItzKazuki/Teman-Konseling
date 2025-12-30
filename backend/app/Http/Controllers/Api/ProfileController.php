@@ -48,4 +48,14 @@ class ProfileController extends Controller
 
         return ApiResponse::success(null, 'Kata sandi berhasil diubah!');
     }
+
+    public function status(Request $request) {
+        $validated = $request->validate([
+            'is_available' => 'required|boolean'
+        ]);
+
+        $request->user()->update($validated);
+
+        return ApiResponse::success(null, 'Status Ketersediaan Konselor berhasil diubah');
+    }
 }

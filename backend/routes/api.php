@@ -75,6 +75,7 @@ Route::prefix('v1')->group(function () {
 
         Route::put('profile/update', [UserProfileController::class, 'update']);
         Route::put('profile/password/update', [UserProfileController::class, 'changePassword']);
+        Route::patch('profile/status', [UserProfileController::class, 'status']);
 
         Route::get('dashboard-overview', [DashboardController::class, 'overview']);
     });

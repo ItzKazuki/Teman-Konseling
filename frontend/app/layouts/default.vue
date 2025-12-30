@@ -143,11 +143,13 @@ const toggleAvailability = async () => {
       auth.user.is_available = !auth.user.is_available;
     }
 
-    await useApi().patch('/admin/profile/status', {
+    const response = await useApi().patch('/profile/status', {
       is_available: auth.user?.is_available
     });
 
-    useToast().success(`Status diubah ke: ${auth.user?.is_available ? 'Tersedia' : 'Sibuk'}`);
+    if(response.status) {
+      useToast().success(`Status diubah ke: ${auth.user?.is_available ? 'Tersedia' : 'Sibuk'}`);
+    }
   } catch (err) {
     if (auth.user) {
       auth.user.is_available = !auth.user.is_available;
