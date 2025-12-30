@@ -25,7 +25,6 @@ class Student extends Authenticatable implements CanResetPasswordContract
         'phone_number',
         'avatar_path',
         'password',
-        'avatar_path',
         'postal_code',
         'address',
         'village',
@@ -34,6 +33,8 @@ class Student extends Authenticatable implements CanResetPasswordContract
         'province',
         'parent_name',
         'parent_phone_number',
+        'is_online',
+        'last_seen_at'
     ];
 
     /**
@@ -59,6 +60,8 @@ class Student extends Authenticatable implements CanResetPasswordContract
     {
         return [
             'password' => 'hashed',
+            'is_online' => 'boolean',
+            'last_seen_at' => 'datetime',
         ];
     }
 

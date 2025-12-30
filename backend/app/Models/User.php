@@ -32,6 +32,8 @@ class User extends Authenticatable
         'jabatan',
         'password',
         'is_available',
+        'is_online',
+        'last_seen_at',
         'avatar_file_id',
     ];
 
@@ -62,6 +64,8 @@ class User extends Authenticatable
             'role' => Role::class,
             'password' => 'hashed',
             'is_available' => 'bool',
+            'is_online' => 'boolean',
+            'last_seen_at' => 'datetime',
         ];
     }
 

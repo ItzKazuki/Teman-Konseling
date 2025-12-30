@@ -1,6 +1,8 @@
 <?php
 
 use App\Helpers\ApiResponse;
+use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\UpdateLastSeen;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -23,7 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'role' => RoleMiddleware::class,
+        ]);
+
+        $middleware->api(append: [
+            UpdateLastSeen::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

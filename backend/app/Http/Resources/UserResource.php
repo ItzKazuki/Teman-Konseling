@@ -14,6 +14,8 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $isReallyOnline = $this->is_online && $this->last_seen_at?->gt(now()->subMinutes(5));
+
         return [
             'id' => $this->id,
             'nip' => $this->nip,
@@ -21,6 +23,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone_number,
             'is_available' => $this->is_available,
+            'is_online' => $isReallyOnline,
+            'last_seen_label' => $this->last_seen_at?->diffForHumans(),
             'role' => $this->role,
             'jabatan' => $this->jabatan,
             'avatar_url' => $this->avatar_url,

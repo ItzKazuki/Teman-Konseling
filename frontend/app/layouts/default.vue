@@ -37,7 +37,7 @@
                 class="w-10 h-10 rounded-full object-cover border border-gray-100">
 
               <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-white"
-                :class="true ? 'bg-emerald-500' : 'bg-gray-300'" :title="true ? 'Online' : 'Offline'"></span>
+                :class="auth.user?.is_online ? 'bg-emerald-500' : 'bg-gray-300'" :title="auth.user?.is_online ? 'Online' : 'Offline'"></span>
             </div>
 
             <div class="text-sm hidden sm:block text-left">

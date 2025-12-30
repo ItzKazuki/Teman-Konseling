@@ -78,8 +78,8 @@
                     class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm" :alt="student.name" />
                   <span :class="[
                     'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white',
-                    true ? 'bg-emerald-500' : 'bg-gray-300'
-                  ]" :title="true ? 'Online' : 'Offline'"></span>
+                    student.is_online ? 'bg-emerald-500' : 'bg-gray-300'
+                  ]" :title="student.is_online ? 'Online' : 'Offline'"></span>
                 </div>
                 <div>
                   <div class="text-sm font-bold text-gray-900 leading-none mb-1">{{ student.name }}</div>

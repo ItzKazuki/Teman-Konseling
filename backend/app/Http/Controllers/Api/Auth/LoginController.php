@@ -56,6 +56,12 @@ class LoginController extends Controller
 
         $token = $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
 
+        $user->timestamps = false;
+        $user->update([
+            'is_online' => true,
+            'last_seen_at' => now(),
+        ]);
+
         return ApiResponse::success([
             'token' => $token,
             'type' => 'Bearer',
@@ -101,6 +107,12 @@ class LoginController extends Controller
             : Carbon::now()->addHour();
 
         $token = $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
+
+        $user->timestamps = false;
+        $user->update([
+            'is_online' => true,
+            'last_seen_at' => now(),
+        ]);
 
         return ApiResponse::success([
             'token' => $token,

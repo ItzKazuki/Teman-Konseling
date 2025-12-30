@@ -82,8 +82,8 @@
                     :alt="user.name" />
                   <span :class="[
                     'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white',
-                    true ? 'bg-emerald-500' : 'bg-gray-300'
-                  ]" :title="true ? 'Online' : 'Offline'"></span>
+                    user.is_online ? 'bg-emerald-500' : 'bg-gray-300'
+                  ]" :title="user.is_online ? 'Online' : 'Offline'"></span>
                 </div>
 
                 <div>

@@ -16,7 +16,17 @@ class LogoutController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $request->user()->tokens()->delete();
+        $user = $request->user();
+
+        if ($user) {
+            $user->timestamps = false;
+            $user->update([
+                'is_online' => false,
+                'last_seen_at' => now(),
+            ]);
+
+            $user->tokens()->delete();
+        }
 
         return ApiResponse::success(null, 'Logout berhasil, Selamat tinggal');
     }
