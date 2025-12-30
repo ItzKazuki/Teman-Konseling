@@ -165,7 +165,7 @@ const {
   fetchData,
   changePage,
   applyFilter
-} = useDataTable<Classroom, { search: string; level: string }>('/admin/master-data/classrooms', {
+} = useDataTable<Classroom, { search: string; level: string }>('/master-data/classrooms', {
   search: '',
   level: ''
 });
@@ -209,7 +209,7 @@ const handleEdit = (id: string) => {
 async function fetchCategoryData(id: string) {
   isSubmitting.value = true;
   try {
-    const response = await useApi().get<Classroom>(`/admin/master-data/classrooms/${id}`);
+    const response = await useApi().get<Classroom>(`/master-data/classrooms/${id}`);
     if (response.status && response.data) {
       Object.assign(form, {
         name: response.data.name,
@@ -234,7 +234,7 @@ const handleDelete = async (id: string, name: string) => {
 
     if (!confirmed) return;
 
-    const message = await useApi().destroy(`/admin/master-data/classrooms/${id}`);
+    const message = await useApi().destroy(`/master-data/classrooms/${id}`);
 
     if (message.status) {
       useToast().success(`Kelas "${name}" berhasil dihapus.`);
@@ -260,10 +260,10 @@ const submitForm = async () => {
     let successMessage: string;
 
     if (isEditMode.value && currentEditId.value) {
-      response = await useApi().put(`/admin/master-data/classrooms/${currentEditId.value}`, form);
+      response = await useApi().put(`/master-data/classrooms/${currentEditId.value}`, form);
       successMessage = 'Kelas berhasil diperbarui!';
     } else {
-      response = await useApi().post(`/admin/master-data/classrooms`, form);
+      response = await useApi().post(`/master-data/classrooms`, form);
       successMessage = 'Kelas berhasil dibuat!';
     }
 
@@ -298,7 +298,7 @@ watch(showModal, (newVal) => {
 
 async function getAllTeachers() {
   isLoading.value = true;
-  const resTeachers = await useApi().get<Teacher[]>('/master-data/teachers');
+  const resTeachers = await useApi().get<Teacher[]>('/reference/teachers');
   if (resTeachers.status && resTeachers.data) {
     teachers.value = resTeachers.data;
   } else {

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CounselingFormRequest extends FormRequest
 {
-   /**
+    /**
      * Tentukan apakah pengguna berwenang untuk membuat permintaan ini.
      * Pastikan siswa sudah login.
      */

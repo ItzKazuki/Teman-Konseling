@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\MasterData;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ArticleCategoryRequest;
 use App\Http\Resources\ArticleCategoryResource;
 use App\Models\ArticleCategory;
-use Illuminate\Http\Request;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\Request;
 
-#[Group('Admin Master Data: Kategori Artikel', weight: 10)]
+#[Group('Master Data: Kategori Artikel', weight: 10)]
 class ArticleCategoryController extends Controller
 {
     /**
@@ -23,12 +23,12 @@ class ArticleCategoryController extends Controller
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('slug', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
         }
-        
+
         $categories = $query->paginate($perPage);
 
         $categories->getCollection()->transform(function ($category) {
@@ -44,7 +44,7 @@ class ArticleCategoryController extends Controller
     public function store(ArticleCategoryRequest $request)
     {
         $validatedData = $request->validated();
-        
+
         $category = ArticleCategory::create($validatedData);
 
         return ApiResponse::success(new ArticleCategoryResource($category), 'Kategori artikel berhasil dibuat.', 201);
@@ -57,7 +57,7 @@ class ArticleCategoryController extends Controller
     {
         $category = ArticleCategory::find($id);
 
-        if(!$category) {
+        if (! $category) {
             return ApiResponse::error('Kategori artikel tidak ditemukan', 404);
         }
 
@@ -71,12 +71,12 @@ class ArticleCategoryController extends Controller
     {
         $category = ArticleCategory::find($id);
 
-        if(!$category) {
+        if (! $category) {
             return ApiResponse::error('Kategori artikel tidak ditemukan', 404);
         }
 
         $validatedData = $request->validated();
-        
+
         $category->update($validatedData);
 
         return ApiResponse::success(null, 'Berhasil mengubah kategori artikel');
@@ -89,7 +89,7 @@ class ArticleCategoryController extends Controller
     {
         $category = ArticleCategory::find($id);
 
-        if(!$category) {
+        if (! $category) {
             return ApiResponse::error('Kategori artikel tidak ditemukan', 404);
         }
 

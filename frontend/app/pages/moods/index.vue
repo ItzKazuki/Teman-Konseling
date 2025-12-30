@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div class="col-span-12 lg:col-span-8 space-y-6">
+    <div v-if="can(['bk', 'guru'])" class="col-span-12 lg:col-span-8 space-y-6">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-lg font-bold text-gray-800">Log Emosi Harian</h3>
@@ -76,45 +76,71 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-              <tr v-for="mood in moodStudentData.mood_logs" :key="mood.id" class="hover:bg-gray-50 transition">
-                <td class="px-4 py-4">
-                  <div class="flex items-center gap-3">
-                    <img :src="mood.student_avatar_url" class="w-8 h-8 rounded-full bg-gray-200" />
-                    <div>
-                      <div class="text-sm font-bold text-gray-900">{{ mood.student_name }}</div>
-                      <div class="text-xs text-gray-500">{{ mood.student_classroom }}</div>
+              <tr v-if="isLoading">
+                <td colspan="5" class="px-4 py-12 text-center">
+                  <div class="flex items-center justify-center gap-2 text-primary-600">
+                    <Icon name="svg-spinners:180-ring-with-bg" class="w-6 h-6" />
+                    <span class="text-sm font-bold">Memuat data...</span>
+                  </div>
+                </td>
+              </tr>
+              <template v-else-if="moodStudentData.mood_logs.length > 0">
+                <tr v-for="mood in moodStudentData.mood_logs" :key="mood.id" class="hover:bg-gray-50 transition">
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <img :src="mood.student_avatar_url" class="w-8 h-8 rounded-full bg-gray-200" />
+                      <div>
+                        <div class="text-sm font-bold text-gray-900">{{ mood.student_name }}</div>
+                        <div class="text-xs text-gray-500">{{ mood.student_classroom }}</div>
+                      </div>
                     </div>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span
+                      :class="['px-2.5 py-1 rounded-full text-xs font-bold transition-colors', getEmotionClass(mood)]">
+                      <span v-if="mood.is_custom" class="mr-1">✨</span>
+                      {{ mood.emotion_name }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-1">
+                      <div v-for="i in 4" :key="i" :class="[
+                        'h-1.5 w-4 rounded-full transition-all duration-300',
+                        i <= mood.magnitude
+                          ? getMagnitudeColor(mood.magnitude, mood.emotion_name)
+                          : 'bg-gray-200'
+                      ]"></div>
+                      <span class="text-xs ml-2 font-bold text-gray-600">{{ mood.magnitude }}/4</span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-xs text-gray-500 italic">
+                    {{ mood.time_ago }}
+                  </td>
+                  <td class="px-4 py-4 text-right">
+                    <NuxtLink :to="`/students/detail/${mood.student_id}`"
+                      class="text-primary-600 hover:text-primary-800 text-sm font-bold">Detail</NuxtLink>
+                  </td>
+                </tr>
+              </template>
+
+              <tr v-else>
+                <td colspan="5" class="px-4 py-12 text-center">
+                  <div class="flex flex-col items-center justify-center">
+                    <Icon name="tabler:mood-empty" class="w-12 h-12 text-gray-300 mb-2" />
+                    <p class="text-sm font-bold text-gray-500">Belum ada data emosi hari ini</p>
+                    <p class="text-xs text-gray-400">Data akan muncul setelah siswa mengisi mood harian mereka.</p>
                   </div>
-                </td>
-                <td class="px-4 py-4">
-                  <span
-                    :class="['px-2.5 py-1 rounded-full text-xs font-bold transition-colors', getEmotionClass(mood)]">
-                    <span v-if="mood.is_custom" class="mr-1">✨</span>
-                    {{ mood.emotion_name }}
-                  </span>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="flex items-center gap-1">
-                    <div v-for="i in 4" :key="i" :class="[
-                      'h-1.5 w-4 rounded-full transition-all duration-300',
-                      i <= mood.magnitude
-                        ? getMagnitudeColor(mood.magnitude, mood.emotion_name)
-                        : 'bg-gray-200'
-                    ]"></div>
-                    <span class="text-xs ml-2 font-bold text-gray-600">{{ mood.magnitude }}/4</span>
-                  </div>
-                </td>
-                <td class="px-4 py-4 text-xs text-gray-500 italic">
-                  {{ mood.time_ago }}
-                </td>
-                <td class="px-4 py-4 text-right">
-                  <NuxtLink :to="`/students/detail/${mood.student_id}`" class="text-primary-600 hover:text-primary-800 text-sm font-bold">Detail</NuxtLink>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+    </div>
+
+    <div v-else class="col-span-12 lg:col-span-8 bg-white p-10 text-center rounded-xl">
+      <Icon name="tabler:lock" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
+      <p class="text-gray-500">Detail emosi siswa hanya dapat diakses oleh Guru BK dan Guru Kelas.</p>
     </div>
 
     <div class="col-span-12 lg:col-span-4 space-y-6">
@@ -133,10 +159,11 @@
             </div>
             <p class="text-xs text-gray-600 line-clamp-2 italic">"{{ student.story }}"</p>
             <div class="mt-3 flex gap-2">
-              <button
+              <button v-if="can('bk')"
                 class="flex-1 bg-white border border-red-200 text-red-600 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100 transition">
                 Hubungi Siswa
               </button>
+              <p v-else class="text-[10px] text-red-400 italic">BK akan segera menindaklanjuti</p>
             </div>
           </div>
         </div>
@@ -173,6 +200,7 @@
 </template>
 
 <script setup lang="ts">
+const { can } = usePermission();
 const moodStudentData = ref<MoodData>({
   stats: {
     total_students: 0,
@@ -225,7 +253,7 @@ function getMagnitudeColor(magnitude: number, emotionName: string) {
 
 async function getMoodData() {
   isLoading.value = true;
-  const resArticle = await useApi().get<MoodData>('/admin/moods');
+  const resArticle = await useApi().get<MoodData>('/moods');
 
   if (resArticle.status && resArticle.data) {
     moodStudentData.value = resArticle.data;

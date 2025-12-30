@@ -23,9 +23,9 @@ class MoodRequest extends FormRequest
     {
         return [
             'emotion_name' => 'required|string|max:50',
-            'magnitude'    => 'required|integer|min:1|max:4',
-            'story'         => 'nullable|string|max:500',
-            'is_custom'    => 'required|boolean',
+            'magnitude' => 'required|integer|min:1|max:4',
+            'story' => 'nullable|string|max:500',
+            'is_custom' => 'required|boolean',
         ];
     }
 
@@ -33,10 +33,10 @@ class MoodRequest extends FormRequest
     {
         return [
             'emotion_name.required' => 'Nama emosi harus diisi.',
-            'magnitude.required'    => 'Tingkat intensitas harus dipilih.',
-            'magnitude.min'         => 'Skala minimal adalah 1.',
-            'magnitude.max'         => 'Skala maksimal adalah 4.',
-            'story.max'             => 'Cerita maksimal 500 karakter.',
+            'magnitude.required' => 'Tingkat intensitas harus dipilih.',
+            'magnitude.min' => 'Skala minimal adalah 1.',
+            'magnitude.max' => 'Skala maksimal adalah 4.',
+            'story.max' => 'Cerita maksimal 500 karakter.',
         ];
     }
 }

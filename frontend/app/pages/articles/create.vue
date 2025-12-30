@@ -204,7 +204,7 @@ const removeThumbnail = () => {
 
 async function fetchMasterData() {
   try {
-    const res = await useApi().get<{ id: string, name: string }[]>('/master-data/article-categories');
+    const res = await useApi().get<{ id: string, name: string }[]>('/reference/article-categories');
     if (res.status && res.data) {
       categories.value = res.data;
     } else {
@@ -250,7 +250,7 @@ const submitArticle = async () => {
       form.thumbnail_file_id = fileId;
     }
 
-    const response = await useApi().post('/admin/articles', form);
+    const response = await useApi().post('/articles', form);
 
     if (response.status) {
       useToast().success('Artikel berhasil dibuat dan disimpan!');

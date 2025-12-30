@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api\Student;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StudentResource;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
+#[Group('Student: Profile', weight: 3)]
 class ProfileController extends Controller
 {
     public function update(Request $request)

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Staff;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
@@ -10,7 +10,7 @@ use App\Models\Article;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 
-#[Group('Admin: Artikel', weight: 3)]
+#[Group('Staff: Manajemen Artikel', weight: 4)]
 class ArticleController extends Controller
 {
     /**

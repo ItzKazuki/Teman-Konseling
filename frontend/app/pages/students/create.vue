@@ -183,7 +183,7 @@ const classRooms = ref<MasterDataClassroom[]>([]);
 
 async function fetchClassRooms() {
   try {
-    const res = await useApi().get<MasterDataClassroom[]>('/master-data/classrooms');
+    const res = await useApi().get<MasterDataClassroom[]>('/reference/classrooms');
     if (res.status && res.data) {
       classRooms.value = res.data;
     } else {
@@ -199,7 +199,7 @@ const submitStudent = async () => {
   Object.keys(errors).forEach(key => errors[key] = undefined);
 
   try {
-    const response = await useApi().post('/admin/students', form);
+    const response = await useApi().post('/students', form);
 
     if (response.status) {
       useToast().success('Siswa baru berhasil didaftarkan!');

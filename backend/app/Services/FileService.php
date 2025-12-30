@@ -32,8 +32,8 @@ class FileService
             // Transaksi untuk menjaga konsistensi data
             return DB::transaction(function () use ($file, $user, $defaultPath, $visibility) {
                 // Simpan file ke storage
-                DebugLog::info('DISK', $visibility->value);
-                $path = $file->store($defaultPath, $visibility->value);
+                DebugLog::info('DISK', $visibility->disk());
+                $path = $file->store($defaultPath, $visibility->disk());
 
                 // Simpan ke database
                 return File::create([
@@ -53,7 +53,8 @@ class FileService
                 'error' => $e->getMessage(),
             ]);
 
-            return null; // null = gagal upload
+            // null = gagal upload
+            return null;
         }
     }
 

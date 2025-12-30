@@ -11,8 +11,8 @@ use App\Http\Resources\ScheduleCounselingResource;
 use App\Models\RequestCounseling;
 use App\Models\ScheduleCounseling;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Support\Facades\Auth;
 
 #[Group('Student: Counseling', weight: 3)]
 class CounselingController extends Controller

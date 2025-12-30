@@ -15,14 +15,14 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('request_id')->constrained('request_counselings')->onDelete('cascade');
             $table->foreignUuid('counselor_id')->constrained('users')->onDelete('cascade');
-            
+
             $table->enum('method', ['chat', 'face-to-face']);
-            
+
             $table->date('schedule_date');
             $table->time('time_slot');
-            
+
             $table->enum('status', ['pending', 'confirmed', 'canceled', 'completed'])->default('pending');
-            
+
             $table->timestamp('confirmed_at')->nullable();
             $table->timestamps();
         });

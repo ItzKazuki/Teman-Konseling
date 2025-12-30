@@ -1,5 +1,5 @@
 <template>
-  <div class="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+  <div v-if="can(['bk', 'staff'])" class="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
       <div class="flex items-center space-x-4">
         <div class="p-3 bg-primary-100 rounded-full flex items-center text-primary-600">
@@ -155,7 +155,7 @@
                 class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
                 <Icon name="tabler:edit" class="w-4 h-4" />
               </NuxtLink>
-              <button @click="handleDelete(article.id, article.title)"
+              <button @click="handleDelete(article.id, article.title)" v-if="can(['bk', 'staff'])"
                 class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
                 <Icon name="tabler:trash" class="w-4 h-4" />
               </button>
@@ -171,6 +171,7 @@
 </template>
 
 <script setup lang="ts">
+const { can } = usePermission();
 const {
   data,
   loading,
@@ -179,7 +180,7 @@ const {
   fetchData,
   changePage,
   applyFilter
-} = useDataTable<Article, { search: string; status: string }>('/admin/articles', {
+} = useDataTable<Article, { search: string; status: string }>('/articles', {
   search: '',
   status: ''
 });
@@ -211,7 +212,7 @@ const handleDelete = async (id?: string, name?: string) => {
 
     if (!confirmed) return;
 
-    const message = await useApi().destroy(`/admin/articles/${id}`);
+    const message = await useApi().destroy(`/articles/${id}`);
 
     if (message.status) {
       useToast().success(`Kategori Artikel "${name}" berhasil dihapus.`);

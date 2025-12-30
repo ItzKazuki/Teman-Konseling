@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\RequestCounseling;
 use App\Models\ScheduleCounseling;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,7 +32,7 @@ class CounselingScheduleRequest extends FormRequest
                 'uuid',
                 // Pastikan konselor ID valid dan tersedia (is_available = true)
                 function ($attribute, $value, $fail) {
-                    if (!User::where('id', $value)->where('is_available', true)->exists()) {
+                    if (! User::where('id', $value)->where('is_available', true)->exists()) {
                         $fail('Guru BK yang dipilih tidak valid atau sedang tidak tersedia.');
                     }
                 },
@@ -41,15 +40,15 @@ class CounselingScheduleRequest extends FormRequest
             'method' => ['required', 'string', 'in:chat,face-to-face'],
             'schedule_date' => ['required', 'date', 'after_or_equal:today'], // Tidak boleh tanggal lampau
             'time_slot' => [
-                'required', 
+                'required',
                 'date_format:H:i',
                 // Validasi custom: Pastikan slot waktu belum dipesan oleh konselor ini pada tanggal ini
                 function ($attribute, $value, $fail) {
                     $isBooked = ScheduleCounseling::where('counselor_id', $this->counselor_id)
-                                        ->where('schedule_date', $this->schedule_date)
-                                        ->where('time_slot', $value)
-                                        ->where('status', '!=', 'canceled') // Abaikan yang dibatalkan
-                                        ->exists();
+                        ->where('schedule_date', $this->schedule_date)
+                        ->where('time_slot', $value)
+                        ->where('status', '!=', 'canceled') // Abaikan yang dibatalkan
+                        ->exists();
                     if ($isBooked) {
                         $fail("Slot jam $value pada tanggal {$this->schedule_date} sudah terisi oleh Guru BK ini.");
                     }

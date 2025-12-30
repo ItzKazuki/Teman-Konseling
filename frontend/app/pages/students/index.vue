@@ -13,7 +13,7 @@
           Filter Data
         </button>
 
-        <NuxtLink to="/students/create"
+        <NuxtLink to="/students/create" v-if="can(['bk', 'staff'])"
           class="flex items-center px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md">
           <Icon name="tabler:plus" class="w-5 h-5 mr-1" />
           Tambah Siswa
@@ -94,11 +94,11 @@
                 class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
                 <Icon name="tabler:eye" class="w-4 h-4" />
               </NuxtLink>
-              <NuxtLink :to="`/students/${student.id}`"
+              <NuxtLink :to="`/students/${student.id}`" v-if="can(['bk', 'staff'])"
                 class="text-yellow-600 hover:text-yellow-800 transition-colors p-1 rounded hover:bg-yellow-100/50">
                 <Icon name="tabler:edit" class="w-4 h-4" />
               </NuxtLink>
-              <button @click="handleDelete(student.id ?? '', student.name)"
+              <button @click="handleDelete(student.id ?? '', student.name)" v-if="can(['bk', 'staff'])"
                 class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
                 <Icon name="tabler:trash" class="w-4 h-4" />
               </button>
@@ -114,6 +114,7 @@
 </template>
 
 <script setup lang="ts">
+const { can } = usePermission();
 const {
   data,
   loading,
@@ -122,7 +123,7 @@ const {
   fetchData,
   changePage,
   applyFilter
-} = useDataTable<Student, { search: string; classId: string }>('/admin/students', {
+} = useDataTable<Student, { search: string; classId: string }>('/students', {
   search: '',
   classId: ''
 });
@@ -140,7 +141,7 @@ const handleDelete = async (id: string, name: string) => {
     const confirmed = await useAlert().confirm(`Apakah Anda yakin ingin menghapus siswa "${name}"?`);
     if (!confirmed) return;
 
-    const res = await useApi().destroy(`/admin/students/${id}`);
+    const res = await useApi().destroy(`/students/${id}`);
 
     if (res.status) {
       useToast().success(`Data siswa "${name}" berhasil dihapus.`);
@@ -153,7 +154,7 @@ const handleDelete = async (id: string, name: string) => {
 
 async function fetchClassRooms() {
   try {
-    const res = await useApi().get<MasterDataClassroom[]>('/master-data/classrooms');
+    const res = await useApi().get<MasterDataClassroom[]>('/reference/classrooms');
     if (res.status && res.data) classRooms.value = res.data;
   } catch (e) {
     useToast().error('Error saat mengambil data kelas.');

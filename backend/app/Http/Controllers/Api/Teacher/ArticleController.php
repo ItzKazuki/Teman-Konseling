@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Teacher;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
@@ -10,7 +10,7 @@ use App\Models\Article;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 
-#[Group('Admin: Artikel', weight: 3)]
+#[Group('Teacher: Manajemen Artikel', weight: 4)]
 class ArticleController extends Controller
 {
     /**
@@ -33,7 +33,7 @@ class ArticleController extends Controller
             $query->where('status', $request->status);
         }
 
-        $articles = $query->with(['author', 'category'])->paginate($perPage);
+        $articles = $query->with(['author', 'category'])->where('author_id', $request->user()->id)->paginate($perPage);
 
         $articles->getCollection()->transform(function ($article) {
             return new ArticleResource($article);
@@ -59,9 +59,9 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        $article = Article::find($id);
+        $article = Article::where('author_id', $request->user()->id)->find($id);
 
         if (! $article) {
             return ApiResponse::error('Artikel tidak ditemukan', 404);
@@ -75,7 +75,7 @@ class ArticleController extends Controller
      */
     public function update(ArticleRequest $request, string $id)
     {
-        $article = Article::find($id);
+        $article = Article::where('author_id', $request->user()->id)->find($id);
 
         if (! $article) {
             return ApiResponse::error('Artikel tidak ditemukan', 404);
@@ -86,21 +86,5 @@ class ArticleController extends Controller
         $article->update($validatedData);
 
         return ApiResponse::success(null, 'Berhasil mengubah kategori artikel');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $article = Article::find($id);
-
-        if (! $article) {
-            return ApiResponse::error('Artikel tidak ditemukan', 404);
-        }
-
-        $article->delete();
-
-        return ApiResponse::success(null, 'Berhasil menghapus artikel');
     }
 }

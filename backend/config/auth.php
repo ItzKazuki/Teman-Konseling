@@ -134,7 +134,6 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
-
     'trusted_callback_domains' => explode(',', env('TRUSTED_CALLBACK_DOMAINS')),
 
 ];

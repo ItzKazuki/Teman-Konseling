@@ -1,4 +1,4 @@
-type UserRoleType = 'bk' | 'guru';
+type UserRoleType = 'bk' | 'guru' | 'staff';
 
 interface User {
   id?: string;

@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignUuid('student_id')->constrained('students')->onDelete('cascade');
             $table->string('title');
             $table->text('description');
-            
-            $table->enum('urgency', ['low', 'medium', 'high']); 
-            
+
+            $table->enum('urgency', ['low', 'medium', 'high']);
+
             $table->enum('status', ['pending', 'scheduled', 'rejected'])->default('pending');
             $table->timestamps();
         });

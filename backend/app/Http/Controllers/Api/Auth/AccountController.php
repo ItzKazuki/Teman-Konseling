@@ -6,9 +6,9 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StudentResource;
 use App\Http\Resources\UserResource;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Dedoc\Scramble\Attributes\Group;
 
 #[Group('Account', weight: 1)]
 class AccountController extends Controller

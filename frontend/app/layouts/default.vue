@@ -6,16 +6,15 @@
         <img src="/static/teman-konseling-md.svg" class="mx-auto" alt="TemanKonseling">
       </div>
       <nav class="grow p-4 space-y-2 border-t border-gray-100 overflow-y-auto">
-
-        <NuxtLink v-for="item in navItems" :key="item.name" :to="item.to" :class="getLinkClass(item.to)">
+        <NuxtLink v-for="item in filteredNavItems" :key="item.name" :to="item.to" :class="getLinkClass(item.to)">
           <Icon :name="item.icon" class="w-5 h-5 mr-3" />
           {{ item.name }}
         </NuxtLink>
 
-        <div class="pt-4 mt-4 border-t border-gray-100 space-y-2">
+        <div v-if="filteredMasterData.length > 0" class="pt-4 mt-4 border-t border-gray-100 space-y-2">
           <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3">Master Data</p>
 
-          <NuxtLink v-for="item in masterData" :key="item.name" :to="item.to" :class="getLinkClass(item.to)">
+          <NuxtLink v-for="item in filteredMasterData" :key="item.name" :to="item.to" :class="getLinkClass(item.to)">
             <Icon :name="item.icon" class="w-5 h-5 mr-3" />
             {{ item.name }}
           </NuxtLink>
@@ -83,50 +82,26 @@ const route = useRoute()
 const auth = useAuthStore();
 
 const navItems = [
-  {
-    name: 'Dashboard',
-    to: '/dashboard',
-    icon: 'tabler:dashboard'
-  },
-  {
-    name: 'Artikel',
-    to: '/articles',
-    icon: 'tabler:article',
-  },
-  {
-    name: 'Mood Siswa',
-    to: '/moods',
-    icon: 'tabler:mood-smile',
-  },
-  {
-    name: 'Konseling',
-    to: '/counseling',
-    icon: 'tabler:mood-smile',
-  },
-  {
-    name: 'User',
-    to: '/users',
-    icon: 'tabler:user-circle',
-  },
-  {
-    name: 'Siswa',
-    to: '/students',
-    icon: 'tabler:users-group',
-  },
-]
+  { name: 'Dashboard', to: '/dashboard', icon: 'tabler:dashboard', roles: ['bk', 'guru', 'staff'] },
+  { name: 'Artikel', to: '/articles', icon: 'tabler:article', roles: ['bk', 'guru', 'staff'] },
+  { name: 'Mood Siswa', to: '/moods', icon: 'tabler:mood-smile', roles: ['bk', 'guru'] },
+  { name: 'Konseling', to: '/counseling', icon: 'tabler:mood-smile', roles: ['bk'] }, // Khusus BK
+  { name: 'User', to: '/users', icon: 'tabler:user-circle', roles: ['bk'] }, // Khusus BK
+  { name: 'Siswa', to: '/students', icon: 'tabler:users-group', roles: ['bk', 'guru', 'staff'] },
+];
 
 const masterData = [
-  {
-    name: 'Kelas',
-    to: '/master-data/classrooms',
-    icon: 'tabler:door',
-  },
-  {
-    name: 'Kategori Artikel',
-    to: '/master-data/article-category',
-    icon: 'tabler:list-details',
-  },
-]
+  { name: 'Kelas', to: '/master-data/classrooms', icon: 'tabler:door', roles: ['bk', 'staff'] },
+  { name: 'Kategori Artikel', to: '/master-data/article-category', icon: 'tabler:list-details', roles: ['bk', 'staff'] },
+];
+
+const filteredNavItems = computed(() => {
+  return navItems.filter(item => item.roles.includes(auth.user?.role as string));
+});
+
+const filteredMasterData = computed(() => {
+  return masterData.filter(item => item.roles.includes(auth.user?.role as string));
+});
 
 const getLinkClass = (itemPath: string) => {
   const isActive = route.path === itemPath ||

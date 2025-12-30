@@ -142,7 +142,7 @@ const form = reactive<ArticlePayload>({
 const errors = reactive<{ [key: string]: string[] | undefined }>({});
 const isSubmitting = ref(false);
 const isLoading = ref(true);
-const categories = ref<{ id: string, name: string }[]>([]);
+const categories = ref<ArticleCategory[]>([]);
 
 // File State
 const thumbnailFile = ref<File | null>(null);
@@ -177,8 +177,8 @@ async function fetchInitialData() {
   isLoading.value = true;
   try {
     const [resCat, resArticle] = await Promise.all([
-      useApi().get<{ id: string, name: string }[]>('/master-data/article-categories'),
-      useApi().get<any>(`/admin/articles/${articleId}`)
+      useApi().get<ArticleCategory[]>('/reference/article-categories'),
+      useApi().get<any>(`/articles/${articleId}`)
     ]);
 
     if (resCat.status) categories.value = resCat.data;
@@ -217,7 +217,7 @@ const submitArticleUpdate = async () => {
       if (fileId) form.thumbnail_file_id = fileId;
     }
 
-    const response = await useApi().put(`/admin/articles/${articleId}`, form);
+    const response = await useApi().put(`/articles/${articleId}`, form);
     if (response.status) {
       useToast().success('Artikel diperbarui!');
       router.push('/articles');

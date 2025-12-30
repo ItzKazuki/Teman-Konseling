@@ -3,14 +3,11 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class ArticleCategoryRequest extends FormRequest
 {
     /**
      * Tentukan apakah pengguna diizinkan untuk membuat request ini.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -38,8 +35,6 @@ class ArticleCategoryRequest extends FormRequest
 
     /**
      * Kustomisasi pesan kesalahan validasi.
-     *
-     * @return array
      */
     public function messages(): array
     {

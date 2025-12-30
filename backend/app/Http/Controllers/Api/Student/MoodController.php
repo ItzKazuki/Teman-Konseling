@@ -8,8 +8,8 @@ use App\Http\Requests\MoodRequest;
 use App\Http\Resources\MoodResource;
 use App\Models\DailyMood;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Support\Facades\Auth;
 
 #[Group('Student: Daily Mood', weight: 3)]
 class MoodController extends Controller
