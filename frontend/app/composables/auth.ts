@@ -56,7 +56,16 @@ export const useAuthStore = defineStore("auth", {
     },
 
     setToken(token: string | null) {
-      const tokenCookie = useCookie<string | null>("auth_token");
+      const config = useRuntimeConfig();
+
+      const isProd = config.appEnv === "production";
+
+      const tokenCookie = useCookie<string | null>("auth_token", {
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+        secure: isProd,
+        sameSite: 'lax',
+      });
 
       this.token = token;
       tokenCookie.value = token;
