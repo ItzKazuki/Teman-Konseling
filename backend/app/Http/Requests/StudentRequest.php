@@ -13,8 +13,7 @@ class StudentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Pastikan Role::BK atau Role::GURU diizinkan sesuai logic Anda
-        return in_array($this->user()->role, [Role::BK, Role::GURU]);
+        return $this->user() && $this->user()->role->isManagement();
     }
 
     /**

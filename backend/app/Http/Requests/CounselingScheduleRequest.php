@@ -14,7 +14,6 @@ class CounselingScheduleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Pastikan siswa sudah login
         return Auth::guard('student')->check();
     }
 

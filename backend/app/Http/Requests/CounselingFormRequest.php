@@ -13,7 +13,6 @@ class CounselingFormRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Pastikan siswa sudah terautentikasi
         return Auth::guard('student')->check();
     }
 

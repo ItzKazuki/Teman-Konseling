@@ -11,7 +11,7 @@ class ArticleCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Asumsikan otorisasi ditangani di tempat lain (misalnya, middleware)
+        return $this->user() && $this->user()->role->isManagement(); // Asumsikan otorisasi ditangani di tempat lain (misalnya, middleware)
     }
 
     /**
