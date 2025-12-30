@@ -4,7 +4,7 @@
 
     <p class="text-gray-600">Temukan artikel dan tips bermanfaat dari Guru Bimbingan Konseling (BK) sekolah Anda.</p>
 
-    <div class="flex space-x-3 overflow-x-auto pb-2">
+    <div class="flex space-x-3 overflow-x-auto pb-2 no-scrollbar">
       <button v-for="category in uniqueCategories" :key="category" @click="selectedCategory = category" :class="[
         'py-1.5 px-4 rounded-full text-sm font-medium transition duration-200 shrink-0',
         selectedCategory === category
@@ -36,7 +36,7 @@ const selectedCategory = ref('Semua'); // Mengganti selectedTopic
 const fetchCategories = async () => {
   try {
     // Ganti 'useApi(true)' dengan cara Anda memanggil API
-    const res = await useApi(true).get('/master-data/article-categories');
+    const res = await useApi(true).get('/reference/article-categories');
 
     if (res.status && Array.isArray(res.data)) {
       categories.value = res.data;

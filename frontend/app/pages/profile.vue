@@ -230,7 +230,7 @@ const updateProfile = async () => {
       }
     }
 
-    const response = await useApi().put<User>('/admin/profile/update', profileForm);
+    const response = await useApi().put<User>('/profile/update', profileForm);
 
     if (response.status) {
       useToast().success('Profil berhasil diperbarui');
@@ -257,7 +257,7 @@ const updatePassword = async () => {
   }
 
   try {
-    const response = await useApi().put<User>('/admin/profile/password/update', passwordForm);
+    const response = await useApi().put<User>('/profile/password/update', passwordForm);
 
     if (response.status) {
       useToast().success(response.message);

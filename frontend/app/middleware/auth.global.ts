@@ -1,35 +1,56 @@
+const PUBLIC_ROUTES: (string | RegExp)[] = [/^\/auth/];
+
+const RESTRICTED_PATHS: Record<UserRoleType, (string | RegExp)[]> = {
+  // BK: Tidak ada batasan (akses semua)
+  bk: [],
+
+  // Guru: Tidak boleh akses manajemen user, master data, dan fitur khusus konseling
+  guru: [
+    /^\/users/,
+    /^\/master-data/,
+    /^\/counseling/
+  ],
+
+  // Staff: Tidak boleh akses manajemen user, konseling privasi, dan monitoring mood
+  staff: [
+    /^\/users/,
+    /^\/counseling/,
+    /^\/moods/
+  ],
+};
+
 export default defineNuxtRouteMiddleware((to, from) => {
   if (import.meta.server) return;
 
   const auth = useAuthStore();
+  const path = to.path;
 
-  const publicRoutes: (string | RegExp)[] = [/^\/auth/];
+  const isPublic = PUBLIC_ROUTES.some((route) =>
+    route instanceof RegExp ? route.test(path) : path === route
+  );
 
-  const isPublicRoute = () => {
-    return publicRoutes.some((route) =>
-      route instanceof RegExp ? route.test(to.path) : to.path === route
-    );
-  };
-
-  const restrictedPaths: Record<UserRoleType, (string | RegExp)[]> = {
-    guru: [/^\/dashboard\/admin/],
-    bk: [/^\/dashboard\/leader/],
-  };
-
-  if (!auth.isAuthenticated && !isPublicRoute()) {
+  // 1. Jika BELUM login dan akses halaman private -> Tendang ke login
+  if (!auth.isAuthenticated && !isPublic) {
     return navigateTo("/auth/login");
   }
 
+  // 2. Jika SUDAH login
   if (auth.isAuthenticated) {
-    const role = auth.userRole ?? "guru";
-    const expectedPath = '/dashboard';
+    // A. Mencegah user login masuk kembali ke halaman auth (Login/Register)
+    if (isPublic) {
+      return navigateTo("/dashboard");
+    }
 
-    const forbidden = restrictedPaths[role].some((rule) =>
-      rule instanceof RegExp ? rule.test(to.path) : to.path === rule
+    // B. Cek Hak Akses (RBAC)
+    const role = auth.userRole || "guru";
+    const restrictions = RESTRICTED_PATHS[role] || [];
+
+    const isForbidden = restrictions.some((rule) =>
+      rule instanceof RegExp ? rule.test(path) : path === rule
     );
 
-    if (forbidden) {
-      return navigateTo(expectedPath);
+    if (isForbidden) {
+      return navigateTo("/dashboard");
     }
   }
 });

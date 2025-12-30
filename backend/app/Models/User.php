@@ -5,18 +5,18 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\Role;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens, HasUuids;
+    use HasApiTokens, HasFactory, HasUuids, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -32,7 +32,9 @@ class User extends Authenticatable
         'jabatan',
         'password',
         'is_available',
-        'avatar_file_id'
+        'is_online',
+        'last_seen_at',
+        'avatar_file_id',
     ];
 
     /**
@@ -61,7 +63,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'role' => Role::class,
             'password' => 'hashed',
-            'is_available' => 'bool'
+            'is_available' => 'bool',
+            'is_online' => 'boolean',
+            'last_seen_at' => 'datetime',
         ];
     }
 
@@ -82,5 +86,10 @@ class User extends Authenticatable
     public function articles()
     {
         return $this->hasMany(Article::class);
+    }
+
+    public function classrooms()
+    {
+        return $this->hasOne(ClassRoom::class, 'homeroom_teacher');
     }
 }

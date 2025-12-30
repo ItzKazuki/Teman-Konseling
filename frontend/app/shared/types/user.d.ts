@@ -1,4 +1,4 @@
-type UserRoleType = 'bk' | 'guru';
+type UserRoleType = 'bk' | 'guru' | 'staff';
 
 interface User {
   id?: string;
@@ -11,8 +11,12 @@ interface User {
   email: string;
   phone: string;
   is_available?: boolean;
+  is_online: boolean;
+  last_seen_at: string;
   password?: string;
   password_confirmation?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface Teacher {
@@ -29,6 +33,8 @@ interface Student {
   avatar_url?: string;
   email: string;
   phone: string;
+  is_online: boolean;
+  last_seen_at: string;
   password?: string;
   classroom_id: string;
   classroom_name?: string;

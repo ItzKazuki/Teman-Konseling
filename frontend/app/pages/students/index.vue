@@ -3,7 +3,7 @@
 
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
 
-      <h3 class="text-2xl font-semibold text-gray-800">Daftar Siswa Aktif</h3>
+      <h3 class="text-2xl font-semibold text-gray-800">Daftar Siswa</h3>
 
       <div class="flex items-center space-x-3">
 
@@ -13,7 +13,7 @@
           Filter Data
         </button>
 
-        <NuxtLink to="/students/create"
+        <NuxtLink to="/students/create" v-if="can(['bk', 'staff'])"
           class="flex items-center px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md">
           <Icon name="tabler:plus" class="w-5 h-5 mr-1" />
           Tambah Siswa
@@ -71,37 +71,67 @@
           </tr>
 
           <tr v-for="student in data" :key="student.id" class="hover:bg-primary-50/50 transition-colors duration-100">
-
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              {{ student.name }}
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-3">
+                <div class="relative inline-flex">
+                  <img :src="student.avatar_url || `https://ui-avatars.com/api/?name=${student.name}&background=random`"
+                    class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm" :alt="student.name" />
+                  <span :class="[
+                    'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white',
+                    student.is_online ? 'bg-emerald-500' : 'bg-gray-300'
+                  ]" :title="student.is_online ? 'Online' : 'Offline'"></span>
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-gray-900 leading-none mb-1">{{ student.name }}</div>
+                  <div class="text-[11px] text-gray-500 flex items-center gap-1">
+                    <Icon name="tabler:mail" class="w-3.5 h-3.5" />
+                    {{ student.email }}
+                  </div>
+                </div>
+              </div>
             </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ student.classroom_name ?? '-' }}
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+              <div class="flex items-center gap-1.5">
+                <Icon name="tabler:door-enter" class="w-4 h-4 text-gray-400" />
+                {{ student.classroom_name ?? '-' }}
+              </div>
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-mono text-gray-700">NIS: {{ student.nis }}</div>
-              <div class="text-xs font-mono text-gray-500">NISN: {{ student.nisn }}</div>
+              <div class="flex flex-col gap-1">
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 w-fit">
+                  NIS: {{ student.nis }}
+                </span>
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-600 w-fit">
+                  NISN: {{ student.nisn }}
+                </span>
+              </div>
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ student.email }}
             </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
-              <NuxtLink :to="`/students/detail/${student.id}`"
-                class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
-                <Icon name="tabler:eye" class="w-4 h-4" />
-              </NuxtLink>
-              <NuxtLink :to="`/students/${student.id}`"
-                class="text-yellow-600 hover:text-yellow-800 transition-colors p-1 rounded hover:bg-yellow-100/50">
-                <Icon name="tabler:edit" class="w-4 h-4" />
-              </NuxtLink>
-              <button @click="handleDelete(student.id ?? '', student.name)"
-                class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
-                <Icon name="tabler:trash" class="w-4 h-4" />
-              </button>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+              <div class="flex items-center justify-center gap-1">
+                <NuxtLink :to="`/students/detail/${student.id}`"
+                  class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Detail Siswa">
+                  <Icon name="tabler:eye" class="w-5 h-5" />
+                </NuxtLink>
+
+                <NuxtLink :to="`/students/${student.id}`" v-if="can(['bk', 'staff'])"
+                  class="p-2 text-amber-600 hover:bg-amber-50 rounded-xl transition-all" title="Edit Data">
+                  <Icon name="tabler:edit" class="w-5 h-5" />
+                </NuxtLink>
+
+                <button @click="handleDelete(student.id ?? '', student.name)" v-if="can(['bk', 'staff'])"
+                  class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-all" title="Hapus Siswa">
+                  <Icon name="tabler:trash" class="w-5 h-5" />
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -114,6 +144,7 @@
 </template>
 
 <script setup lang="ts">
+const { can } = usePermission();
 const {
   data,
   loading,
@@ -122,7 +153,7 @@ const {
   fetchData,
   changePage,
   applyFilter
-} = useDataTable<Student, { search: string; classId: string }>('/admin/students', {
+} = useDataTable<Student, { search: string; classId: string }>('/students', {
   search: '',
   classId: ''
 });
@@ -140,7 +171,7 @@ const handleDelete = async (id: string, name: string) => {
     const confirmed = await useAlert().confirm(`Apakah Anda yakin ingin menghapus siswa "${name}"?`);
     if (!confirmed) return;
 
-    const res = await useApi().destroy(`/admin/students/${id}`);
+    const res = await useApi().destroy(`/students/${id}`);
 
     if (res.status) {
       useToast().success(`Data siswa "${name}" berhasil dihapus.`);
@@ -153,7 +184,7 @@ const handleDelete = async (id: string, name: string) => {
 
 async function fetchClassRooms() {
   try {
-    const res = await useApi().get<MasterDataClassroom[]>('/master-data/classrooms');
+    const res = await useApi().get<MasterDataClassroom[]>('/reference/classrooms');
     if (res.status && res.data) classRooms.value = res.data;
   } catch (e) {
     useToast().error('Error saat mengambil data kelas.');

@@ -7,13 +7,12 @@ use Illuminate\Support\Facades\Auth;
 
 class CounselingFormRequest extends FormRequest
 {
-   /**
+    /**
      * Tentukan apakah pengguna berwenang untuk membuat permintaan ini.
      * Pastikan siswa sudah login.
      */
     public function authorize(): bool
     {
-        // Pastikan siswa sudah terautentikasi
         return Auth::guard('student')->check();
     }
 

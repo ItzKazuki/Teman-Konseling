@@ -8,7 +8,6 @@
     <h1 class="text-3xl font-bold text-gray-900 mb-8">Hi, Welcome!</h1>
 
     <form class="space-y-6" @submit.prevent="handleLogin">
-
       <div>
         <label for="email" class="font-normal text-base block mb-1">Email address</label>
         <input id="email" type="email" v-model="form.email"
@@ -16,28 +15,17 @@
           placeholder="Your email">
       </div>
 
-      <div class="relative">
+      <div>
         <label for="password" class="font-normal text-base block mb-1">Password</label>
-        <input id="password" :type="passwordFieldType" v-model="form.password"
-          class="w-full border border-gray-300 p-3 pr-10 rounded-lg focus:border-gray-500 focus:ring-0 focus:outline-none placeholder-gray-400"
-          placeholder="Password">
-        <button type="button" @click="togglePasswordVisibility"
-          class="absolute inset-y-0 right-0 top-6 flex items-center pr-3 text-gray-400 hover:text-gray-600">
-          <svg v-if="passwordFieldType === 'password'" class="w-5 h-5" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
-            </path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-            </path>
-          </svg>
-          <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7 1.274-4.057 5.065-7 9.542-7 1.141 0 2.228.188 3.239.52M1 1l22 22">
-            </path>
-          </svg>
-        </button>
+        <div class="relative">
+          <input id="password" :type="passwordFieldType" v-model="form.password"
+            class="w-full border border-gray-300 p-3 pr-10 rounded-lg focus:border-gray-500 focus:ring-0 focus:outline-none placeholder-gray-400"
+            placeholder="Password">
+          <button type="button" @click="togglePasswordVisibility"
+            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+            <Icon :name="passwordFieldType === 'password' ? 'tabler:eye' : 'tabler:eye-off'" class="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div class="flex justify-between items-center text-sm">

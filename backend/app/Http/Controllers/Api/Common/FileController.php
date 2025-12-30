@@ -7,14 +7,14 @@ use App\Helpers\ApiResponse;
 use App\Http\Resources\FileResource;
 use App\Models\File;
 use App\Services\FileService;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Enum;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Dedoc\Scramble\Attributes\Group;
 
-#[Group('Guru File: Manajemen File upload', weight: 1)]
+#[Group('File: Manajemen File', weight: 1)]
 class FileController
 {
     /**
@@ -45,7 +45,8 @@ class FileController
 
         $defaultPath = $validated['file_location'] ?? $request->user()->id;
 
-        $visibility = $validated['visibility'] === 'public' ? Visibility::PUBLIC : Visibility::LOCAL; // change public or private to public or local
+        $visibility = Visibility::tryFrom($request->visibility) ?? Visibility::LOCAL;
+        // $visibility = $validated['visibility'] === 'public' ? Visibility::PUBLIC : Visibility::LOCAL; // change public or private to public or local
 
         $file = FileService::upload(
             $request->file('file'),

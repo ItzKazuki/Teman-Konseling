@@ -3,7 +3,7 @@
 
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
 
-      <h3 class="text-2xl font-semibold text-gray-800">Daftar Pengguna Sistem</h3>
+      <h3 class="text-2xl font-semibold text-gray-800">Daftar Pengguna</h3>
 
       <div class="flex items-center space-x-3">
 
@@ -31,7 +31,7 @@
           { value: '', label: 'Semua Peran (Role)' },
           { value: 'guru', label: 'Guru' },
           { value: 'bk', label: 'BK/Konselor' },
-          { value: 'admin', label: 'Administrator' },
+          { value: 'staff', label: 'Staff' },
         ]" />
         <button @click="applyFilter"
           class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 md:col-span-3 lg:col-span-1">
@@ -55,7 +55,7 @@
               Peran (Role)
             </th>
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status Ketersediaan
+              Status Ketersediaan Counselor
             </th>
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               Aksi
@@ -76,8 +76,24 @@
           <tr v-for="user in data" :key="user.id" class="hover:bg-primary-50/50 transition-colors duration-100">
 
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
-              <div class="text-xs text-gray-500">{{ user.email }}</div>
+              <div class="flex items-center gap-3">
+                <div class="relative inline-flex">
+                  <img :src="user.avatar_url" class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm"
+                    :alt="user.name" />
+                  <span :class="[
+                    'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white',
+                    user.is_online ? 'bg-emerald-500' : 'bg-gray-300'
+                  ]" :title="user.is_online ? 'Online' : 'Offline'"></span>
+                </div>
+
+                <div>
+                  <div class="text-sm font-bold text-gray-900 leading-none mb-1">{{ user.name }}</div>
+                  <div class="text-xs text-gray-500 flex items-center gap-1">
+                    <Icon name="tabler:mail" class="w-3 h-3" />
+                    {{ user.email }}
+                  </div>
+                </div>
+              </div>
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -86,15 +102,21 @@
 
             <td class="px-6 py-4 whitespace-nowrap text-center">
               <span :class="getRoleClass(user.role)"
-                class="inline-flex px-3 py-1 text-xs leading-5 font-semibold rounded-full uppercase">
+                class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-lg border capitalize">
                 {{ user.role }}
               </span>
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-center">
-              <span :class="user.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                class="inline-flex px-3 py-1 text-xs leading-5 font-semibold rounded-full uppercase">
-                {{ user.is_available ? 'Tersedia' : 'Tidak Tersedia' }}
+              <span :class="user.is_available
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : 'bg-rose-50 text-rose-700 border-rose-200'"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg border transition-all">
+                <span :class="[
+                  'w-1.5 h-1.5 rounded-full bg-current',
+                  user.is_available ? 'animate-pulse' : ''
+                ]"></span>
+                {{ user.is_available ? 'Tersedia' : 'Sibuk' }}
               </span>
             </td>
 

@@ -212,7 +212,7 @@ async function fetchInitialData() {
   let successCount = 0;
 
   try {
-    const res = await useApi().get<MasterDataClassroom[]>('/master-data/classrooms');
+    const res = await useApi().get<MasterDataClassroom[]>('/reference/classrooms');
     if (res.status && res.data) {
       classRooms.value = res.data;
       successCount++;
@@ -224,7 +224,7 @@ async function fetchInitialData() {
   }
 
   try {
-    const resStudent = await useApi().get<Student>(`/admin/students/${studentId}`);
+    const resStudent = await useApi().get<Student>(`/students/${studentId}`);
     if (resStudent.status && resStudent.data) {
       const data = resStudent.data;
 
@@ -272,7 +272,7 @@ const submitStudentUpdate = async () => {
   }
 
   try {
-    const response = await useApi().put(`/admin/students/${studentId}`, payload);
+    const response = await useApi().put(`/students/${studentId}`, payload);
 
     if (response.status) {
       useToast().success('Data siswa berhasil diperbarui!');
@@ -305,7 +305,7 @@ const resetPassword = async () => {
       return;
     }
 
-    const response = await useApi().post(`/admin/students/${studentId}/reset-password`);
+    const response = await useApi().post(`/students/${studentId}/reset-password`);
 
     if (response.status) {
       resetPasswordMessage.value = { status: 'success', message: response.message || 'Kata sandi berhasil direset. Harap informasikan kepada pengguna.' };

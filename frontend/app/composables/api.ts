@@ -24,6 +24,27 @@ export function useApi(withAuth: boolean = true) {
   const config = useRuntimeConfig();
   const auth = withAuth ? useAuthStore() : null;
 
+  // Fungsi internal untuk selipkan role prefix
+  const withRole = (url: string, autoPrefix: boolean = true) => {
+    // 1. Jika autoPrefix dimatikan secara manual, kembalikan URL asli
+    if (!autoPrefix || !auth?.user?.role) return url;
+
+    // 2. Daftar rute yang TIDAK boleh diberi prefix (Public/Common)
+    // Contoh: /auth/login, /public/articles, atau master-data jika endpointnya global
+    const excludedPaths = ['/auth', '/master-data', '/files', '/profile', '/dashboard-overview', '/reference'];
+    if (excludedPaths.some(p => url.startsWith(p))) return url;
+
+    // 3. Jika URL sudah punya prefix role (mencegah double prefix)
+    const prefixes = ['/admin', '/teacher', '/staff'];
+    if (prefixes.some(p => url.startsWith(p))) return url;
+
+    // 4. Tambahkan prefix berdasarkan role
+    const roleMap: Record<string, string> = { bk: 'admin', guru: 'teacher', staff: 'staff' };
+    const prefix = roleMap[auth?.user?.role] || 'public';
+
+    return `/${prefix}${url.startsWith('/') ? url : '/' + url}`;
+  };
+
   const baseURL = `${config.public.apiBase}/api/${config.public.apiVersion}`;
   const defaultHeaders = { Accept: "application/json" };
 
@@ -108,7 +129,7 @@ export function useApi(withAuth: boolean = true) {
   async function get<T>(url: string, options?: GetOptions) {
     const query = buildQuery(options?.params);
 
-    return fetch<ApiResponse<T>>(`${url}${query}`);
+    return fetch<ApiResponse<T>>(`${withRole(url)}${query}`);
   }
 
   async function fetchFileBlob(url: string): Promise<Blob> {
@@ -116,28 +137,28 @@ export function useApi(withAuth: boolean = true) {
   }
 
   async function post<T = any>(url: string, body?: any) {
-    return fetch<ApiResponse<T>>(url, {
+    return fetch<ApiResponse<T>>(withRole(url), {
       method: "POST",
       body,
     });
   }
 
   async function put<T>(url: string, body: any) {
-    return fetch<ApiResponse<T>>(url, {
+    return fetch<ApiResponse<T>>(withRole(url), {
       method: "PUT",
       body,
     });
   }
 
   async function patch<T>(url: string, body: any) {
-    return fetch<ApiResponse<T>>(url, {
+    return fetch<ApiResponse<T>>(withRole(url), {
       method: "PATCH",
       body,
     });
   }
 
   async function destroy<T = any>(url: string, body?: object) {
-    return fetch<ApiResponse<T>>(url, {
+    return fetch<ApiResponse<T>>(withRole(url), {
       method: "DELETE",
       body,
     });

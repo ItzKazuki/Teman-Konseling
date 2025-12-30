@@ -119,7 +119,7 @@ const fetchData = async () => {
       requestData.value = requestRes.data;
     }
 
-    const listCounselors = await useApi().get('/master-data/counselors');
+    const listCounselors = await useApi().get('/reference/counselors');
     if (listCounselors.status && listCounselors.data) {
       // availableCounselors.value = listCounselors.data.filter(c => c.is_available);
       availableCounselors.value = listCounselors.data;

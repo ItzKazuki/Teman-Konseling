@@ -50,12 +50,21 @@ export const useAuthStore = defineStore("auth", {
     },
 
     loadTokenFromCookie() {
-      const tokenCookie = useCookie<string | null>("auth_token")
+      const tokenCookie = useCookie<string | null>("tk_siswa_token")
       this.token = tokenCookie.value || null
     },
 
     setToken(token: string | null) {
-      const tokenCookie = useCookie<string | null>("auth_token");
+      const config = useRuntimeConfig();
+
+      const isProd = config.appEnv === "production";
+
+      const tokenCookie = useCookie<string | null>("tk_siswa_token", {
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+        secure: isProd,
+        sameSite: 'lax',
+      });
 
       this.token = token;
       tokenCookie.value = token;

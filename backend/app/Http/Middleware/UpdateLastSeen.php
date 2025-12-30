@@ -2,12 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\Role;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckRoleIsBk
+class UpdateLastSeen
 {
     /**
      * Handle an incoming request.
@@ -16,11 +15,16 @@ class CheckRoleIsBk
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->role !== Role::BK) {
-            abort(403, 'Anda tidak memiliki akses ke halaman ini');
+        $user = $request->user();
+
+        if ($user && (! $user->last_seen_at || $user->last_seen_at->diffInMinutes(now()) >= 1)) {
+            $user->timestamps = false;
+            $user->update([
+                'last_seen_at' => now(),
+                'is_online' => true
+            ]);
         }
 
         return $next($request);
-
     }
 }

@@ -14,6 +14,8 @@ class StudentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $isReallyOnline = $this->is_online && $this->last_seen_at?->gt(now()->subMinutes(5));
+        
         return [
             'id' => $this->id,
             'nis' => $this->nis,
@@ -32,6 +34,8 @@ class StudentResource extends JsonResource
             'province' => $this->province,
             'parent_name' => $this->parent_name,
             'parent_phone_number' => $this->parent_phone_number,
+            'is_online' => $isReallyOnline,
+            'last_seen_label' => $this->last_seen_at?->diffForHumans(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

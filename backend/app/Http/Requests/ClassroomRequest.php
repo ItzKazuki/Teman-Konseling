@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Enums\Role;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ClassroomRequest extends FormRequest
 {
@@ -13,7 +13,7 @@ class ClassroomRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->role === Role::BK;;
+        return $this->user() && $this->user()->role->isManagement();
     }
 
     /**

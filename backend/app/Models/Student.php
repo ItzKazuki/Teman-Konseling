@@ -2,20 +2,19 @@
 
 namespace App\Models;
 
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\HasApiTokens;
 
 class Student extends Authenticatable implements CanResetPasswordContract
 {
     use CanResetPassword;
-    use HasApiTokens, HasFactory, Notifiable, HasUuids;
+    use HasApiTokens, HasFactory, HasUuids, Notifiable;
 
     protected $fillable = [
         'nis',
@@ -26,7 +25,6 @@ class Student extends Authenticatable implements CanResetPasswordContract
         'phone_number',
         'avatar_path',
         'password',
-        'avatar_path',
         'postal_code',
         'address',
         'village',
@@ -35,6 +33,8 @@ class Student extends Authenticatable implements CanResetPasswordContract
         'province',
         'parent_name',
         'parent_phone_number',
+        'is_online',
+        'last_seen_at'
     ];
 
     /**
@@ -60,6 +60,8 @@ class Student extends Authenticatable implements CanResetPasswordContract
     {
         return [
             'password' => 'hashed',
+            'is_online' => 'boolean',
+            'last_seen_at' => 'datetime',
         ];
     }
 

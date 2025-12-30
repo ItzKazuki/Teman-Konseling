@@ -1,7 +1,7 @@
 export const useDataTable = <T, F extends object>(url: string, initialFilters: F) => {
   const data = ref<T[]>([]);
   const loading = ref(false);
-  
+
   const meta = ref({
     current_page: 1,
     last_page: 1,
@@ -17,7 +17,7 @@ export const useDataTable = <T, F extends object>(url: string, initialFilters: F
     try {
       // Mengirim query params seperti ?page=1&search=...
       const res = await useApi().get<any>(url, { params: filters });
-      
+
       if (res.status && res.pagination) {
         // MAPPING DISINI:
         data.value = res.data;       // List siswa ada di res.data

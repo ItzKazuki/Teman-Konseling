@@ -176,7 +176,7 @@ function getMagnitudeColor(mag: number, name: string) {
 
 onMounted(async () => {
   isLoading.value = true;
-  const res = await useApi().get<StudentDetail>(`/admin/students/details/${route.params.id}`)
+  const res = await useApi().get<StudentDetail>(`/students/details/${route.params.id}`)
   if (res.status && res.data) {
     student.value = res.data
   }

@@ -34,15 +34,19 @@ class ArticleRequest extends FormRequest
 
             'title' => ['required', 'string', 'max:255'],
 
-            'excerpt' => ['nullable', 'string'],
+            'excerpt' => ['nullable', 'string', 'max:255'],
 
-            'thumbnail_file_id' => ['nullable', 'string', Rule::exists('files', 'id')],
+            'thumbnail_file_id' => ['nullable', 'uuid', Rule::exists('files', 'id')],
 
             'content' => ['required', 'string'],
 
-            'status' => ['required', 'string', new Enum(ArticleStatus::class)],
+            'status' => ['required', new Enum(ArticleStatus::class)],
 
-            'published_at' => ['nullable', 'date'],
+            'published_at' => [
+                'nullable',
+                'date',
+                'after_or_equal:today', // Opsional: mencegah jadwal rilis di masa lalu
+            ],
         ];
     }
 

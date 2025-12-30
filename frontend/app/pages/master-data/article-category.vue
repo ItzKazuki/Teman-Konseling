@@ -123,7 +123,7 @@
         <p v-if="errors.description" class="mt-1 text-xs text-red-500">{{ errors.description }}</p>
       </div>
 
-      <div class="pt-4 border-t flex justify-end">
+      <div class="flex justify-end">
         <button type="button" @click="closeModal" :disabled="isSubmitting"
           class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 mr-3">
           Batal
@@ -148,7 +148,7 @@ const {
   fetchData,
   changePage,
   applyFilter
-} = useDataTable<ArticleCategory, { search: string; }>('/admin/master-data/article-categories', {
+} = useDataTable<ArticleCategory, { search: string; }>('/master-data/article-categories', {
   search: '',
 });
 
@@ -159,7 +159,7 @@ const handleFilterToggle = () => {
 };
 
 const showModal = ref<boolean>(false);
-const initialForm: ArticleCategory = { name: '', slug: '', description: '' };
+const initialForm: ArticleCategory = { id: '', name: '', slug: '', description: '' };
 const form = reactive<ArticleCategory>({ ...initialForm });
 const errors = reactive<{ [key: string]: string | undefined }>({});
 const isSubmitting = ref(false);
@@ -189,7 +189,7 @@ const handleEdit = (id: string) => {
 async function fetchCategoryData(id: string) {
   isSubmitting.value = true;
   try {
-    const response = await useApi().get<ArticleCategory>(`/admin/master-data/article-categories/${id}`);
+    const response = await useApi().get<ArticleCategory>(`/master-data/article-categories/${id}`);
     if (response.status && response.data) {
       Object.assign(form, {
         name: response.data.name,
@@ -223,10 +223,10 @@ const submitForm = async () => {
     let successMessage: string;
 
     if (isEditMode.value && currentEditId.value) {
-      response = await useApi().put(`/admin/article-categories/${currentEditId.value}`, form);
+      response = await useApi().put(`/article-categories/${currentEditId.value}`, form);
       successMessage = 'Kategori artikel berhasil diperbarui!';
     } else {
-      response = await useApi().post(`/admin/master-data/article-categories`, form);
+      response = await useApi().post(`/master-data/article-categories`, form);
       successMessage = 'Kategori artikel berhasil dibuat!';
     }
 
@@ -265,7 +265,7 @@ const handleDelete = async (id: string, name: string) => {
 
     if (!confirmed) return;
 
-    const message = await useApi().destroy(`/admin/master-data/article-categories/${id}`);
+    const message = await useApi().destroy(`/master-data/article-categories/${id}`);
 
     if (message.status) {
       useToast().success(`Kategori Artikel "${name}" berhasil dihapus.`);

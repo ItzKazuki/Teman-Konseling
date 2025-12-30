@@ -56,12 +56,33 @@
               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" />
           </div>
           <div>
-            <label for="schedule-time" class="block text-sm font-medium text-gray-700 mb-1">Pilih Jam</label>
-            <select id="schedule-time" v-model="form.timeSlot" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
-              <option value="" disabled>Pilih slot jam</option>
-              <option v-for="slot in availableTimeSlots" :key="slot" :value="slot">{{ slot }}</option>
-            </select>
+            <label for="schedule-time" class="block text-sm font-medium text-gray-700 mb-1">
+              Pilih Jam
+            </label>
+            <div class="relative">
+              <select id="schedule-time" v-model="form.timeSlot" required
+                :disabled="isLoadingSlots || availableTimeSlots.length === 0"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed">
+
+                <option value="" disabled>
+                  {{ isLoadingSlots ? 'Memuat jam...' : 'Pilih slot jam' }}
+                </option>
+
+                <option v-for="slot in availableTimeSlots" :key="slot" :value="slot">
+                  {{ slot }}
+                </option>
+              </select>
+
+              <div v-if="isLoadingSlots" class="absolute right-8 top-3.5">
+                <Icon name="tabler:loader-2" class="w-5 h-5 animate-spin text-primary-600" />
+              </div>
+            </div>
+
+            <p v-if="!isLoadingSlots && availableTimeSlots.length === 0 && form.date"
+              class="text-xs text-rose-600 mt-2 flex items-center gap-1">
+              <Icon name="tabler:alert-circle" class="w-4 h-4" />
+              Jadwal penuh atau tidak tersedia pada tanggal ini.
+            </p>
           </div>
         </div>
         <p v-if="form.method === 'face-to-face'" class="text-xs text-secondary-600 pt-1">
@@ -87,6 +108,7 @@
 const route = useRoute();
 
 const requestId = route.query.requestId;
+const counselorId = route.query.counselorId;
 
 const form = reactive({
   counselorId: "", // Default/Hardcoded sesuai contoh curl atau ambil dari query
@@ -99,19 +121,37 @@ const form = reactive({
 const counselorName = ref('Guru BK');
 const isSubmitting = ref(false); // State untuk loading tombol
 
-const availableTimeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00'];
+const availableTimeSlots = ref([]); // Sekarang jadi empty array
+const isLoadingSlots = ref(false);
 
-onMounted(() => {
-  // Ambil data dari query params yang dikirim halaman sebelumnya
-  const id = route.query.counselorId;
-  const name = route.query.counselorName;
+// Fungsi untuk mengambil jam tersedia
+async function fetchAvailableSlots() {
+  if (!form.date || !form.counselorId) return;
 
-  if (id) form.counselorId = id;
-  if (name) counselorName.value = name;
+  isLoadingSlots.value = true;
+  availableTimeSlots.value = []; // Reset jam lama
+  form.timeSlot = ""; // Reset pilihan jam
 
-  // Set tanggal default ke hari ini (format YYYY-MM-DD)
-  form.date = new Date().toISOString().slice(0, 10);
-});
+  try {
+    // Sesuaikan endpoint dengan API Laravel Anda
+    // Contoh: /api/v1/counseling/available-slots?counselor_id=1&date=2023-10-25
+    const res = await useApi().get('/student/counseling/available-slots', {
+      params: {
+        counselor_id: counselorId,
+        date: form.date
+      }
+    });
+
+    if (res.status) {
+      availableTimeSlots.value = res.data; // Asumsi res.data adalah ['09:00', '10:00']
+    }
+  } catch (error) {
+    console.error('Error fetch slots:', error);
+    useToast().error('Gagal memuat jadwal tersedia');
+  } finally {
+    isLoadingSlots.value = false;
+  }
+}
 
 const isFormValid = computed(() => {
   return (
@@ -154,4 +194,21 @@ async function submitSchedule() {
     isSubmitting.value = false;
   }
 }
+
+watch(() => form.date, () => {
+  fetchAvailableSlots();
+});
+
+onMounted(async () => {
+  const id = route.query.counselorId;
+  const name = route.query.counselorName;
+
+  if (id) form.counselorId = id;
+  if (name) counselorName.value = name;
+
+  form.date = new Date().toISOString().slice(0, 10);
+
+  // Ambil slot untuk tanggal default hari ini
+  await fetchAvailableSlots();
+});
 </script>

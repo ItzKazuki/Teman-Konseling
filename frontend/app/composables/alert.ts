@@ -45,10 +45,10 @@ export const useAlert = defineStore("modal", {
     warning(message: string, autoClose = true, duration = 3000) {
       this._setupAlert("warning", message, autoClose, duration);
     },
-    
+
     error(message: string, autoClose = false, duration = 4000) {
       // Error biasanya tidak ditutup otomatis agar user melihat pesannya
-      this._setupAlert("error", message, autoClose, duration); 
+      this._setupAlert("error", message, autoClose, duration);
     },
 
     confirm(message: string): Promise<boolean> {
@@ -57,9 +57,9 @@ export const useAlert = defineStore("modal", {
         { label: "Batal", color: "bg-gray-500 hover:bg-gray-600 text-white" },
         { label: "Ya", color: "bg-primary-800 hover:bg-primary-900 text-white" },
       ]);
-      
+
       // Mengubah type menjadi warning/info agar sesuai dengan konteks
-      this.type = "warning"; 
+      this.type = "warning";
 
       return new Promise((resolve) => {
         this._resolver = resolve;
@@ -79,7 +79,7 @@ export const useAlert = defineStore("modal", {
         clearTimeout(this._timer);
         this._timer = null;
       }
-      
+
       this.show = false;
       this.message = "";
       this.actions = [];

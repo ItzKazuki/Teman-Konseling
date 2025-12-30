@@ -52,7 +52,7 @@
 
         <section class="space-y-6">
           <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Pengaturan Publikasi</h2>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="form-label">Thumbnail Artikel</label>
@@ -73,7 +73,8 @@
                       <Icon name="tabler:photo-plus" class="w-10 h-10 text-gray-400 mb-2" />
                       <p class="text-sm text-gray-500 font-medium">Klik untuk ganti gambar</p>
                     </div>
-                    <input id="thumbnail-upload" type="file" class="hidden" accept="image/*" @change="handleThumbnailChange" />
+                    <input id="thumbnail-upload" type="file" class="hidden" accept="image/*"
+                      @change="handleThumbnailChange" />
                   </label>
                 </div>
               </div>
@@ -94,10 +95,12 @@
         </section>
 
         <div class="flex justify-end space-x-3">
-          <NuxtLink to="/articles" class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg">
+          <NuxtLink to="/articles"
+            class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg">
             Batal
           </NuxtLink>
-          <button type="submit" :disabled="isSubmitting || isLoading" class="px-6 py-2 bg-primary-600 text-white rounded-lg shadow-md hover:bg-primary-700">
+          <button type="submit" :disabled="isSubmitting || isLoading"
+            class="px-6 py-2 bg-primary-600 text-white rounded-lg shadow-md hover:bg-primary-700">
             <Icon v-if="isSubmitting" name="tabler:loader-2" class="w-4 h-4 mr-1 animate-spin" />
             Simpan Perubahan
           </button>
@@ -142,7 +145,7 @@ const form = reactive<ArticlePayload>({
 const errors = reactive<{ [key: string]: string[] | undefined }>({});
 const isSubmitting = ref(false);
 const isLoading = ref(true);
-const categories = ref<{ id: string, name: string }[]>([]);
+const categories = ref<ArticleCategory[]>([]);
 
 // File State
 const thumbnailFile = ref<File | null>(null);
@@ -177,8 +180,8 @@ async function fetchInitialData() {
   isLoading.value = true;
   try {
     const [resCat, resArticle] = await Promise.all([
-      useApi().get<{ id: string, name: string }[]>('/master-data/article-categories'),
-      useApi().get<any>(`/admin/articles/${articleId}`)
+      useApi().get<ArticleCategory[]>('/reference/article-categories'),
+      useApi().get<any>(`/articles/${articleId}`)
     ]);
 
     if (resCat.status) categories.value = resCat.data;
@@ -217,7 +220,11 @@ const submitArticleUpdate = async () => {
       if (fileId) form.thumbnail_file_id = fileId;
     }
 
-    const response = await useApi().put(`/admin/articles/${articleId}`, form);
+    if (form.published_at) {
+      form.published_at = convertToUTC(form.published_at);
+    }
+
+    const response = await useApi().put(`/articles/${articleId}`, form);
     if (response.status) {
       useToast().success('Artikel diperbarui!');
       router.push('/articles');

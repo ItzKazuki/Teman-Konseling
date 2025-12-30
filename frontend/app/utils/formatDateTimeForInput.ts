@@ -3,14 +3,31 @@ export default function(isoDate: string | null): string | null {
 
   try {
     const date = new Date(isoDate);
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const hh = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
 
+    // Menggunakan Intl untuk mendapatkan bagian-bagian tanggal dalam zona waktu spesifik
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Jakarta',
+    });
+
+    const parts = formatter.formatToParts(date);
+    const getPart = (type: string) => parts.find(p => p.type === type)?.value;
+
+    const yyyy = getPart('year');
+    const mm = getPart('month');
+    const dd = getPart('day');
+    const hh = getPart('hour');
+    const min = getPart('minute');
+
+    // Menghasilkan format YYYY-MM-DDTHH:mm
     return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
   } catch (e) {
+    console.error("Format error:", e);
     return null;
   }
 }

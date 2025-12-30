@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\MasterData;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClassroomRequest;
 use App\Http\Resources\ClassRoomResource;
 use App\Models\ClassRoom;
-use Illuminate\Http\Request;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\Request;
 
-#[Group('Admin Master Data: Kelas', weight: 10)]
+#[Group('Master Data: Kelas', weight: 10)]
 class ClassroomController extends Controller
 {
     /**
@@ -23,11 +23,11 @@ class ClassroomController extends Controller
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('nis', 'like', "%{$search}%")
-                ->orWhere('nisn', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('nis', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -35,7 +35,7 @@ class ClassroomController extends Controller
         if ($request->has('level') && $request->level != '') {
             $query->where('level', $request->level);
         }
-        
+
         $classrooms = $query->with('homeroomTeacher')->paginate($perPage);
 
         $classrooms->getCollection()->transform(function ($classroom) {

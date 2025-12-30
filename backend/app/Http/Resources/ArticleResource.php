@@ -28,7 +28,7 @@ class ArticleResource extends JsonResource
             'content' => $this->content,
             'status' => $this->status,
             'views' => $this->views,
-            'published_at' => $this->published_at,
+            'published_at' => $this->published_at?->toIso8601String(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

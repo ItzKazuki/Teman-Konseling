@@ -68,7 +68,7 @@ class OtpService
                 }
 
                 Mail::to($recipient->email)
-                ->send(new Otp($recipient->name, $otp, $callbackUrl));
+                    ->send(new Otp($recipient->name, $otp, $callbackUrl));
             }
 
         } catch (Throwable $e) {

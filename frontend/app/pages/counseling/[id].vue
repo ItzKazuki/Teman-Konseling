@@ -31,9 +31,9 @@
             class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-gray-50">
             <Icon name="tabler:printer" /> Cetak
           </button>
-          <NuxtLink :to="`/counseling/tindak-lanjut/${requestData.id}`"
+          <NuxtLink v-if="requestData.schedule" :to="`/counseling/tindak-lanjut/${requestData.id}`"
             class="px-4 py-2 bg-primary-600 text-white rounded-xl text-xs font-bold hover:bg-primary-700 shadow-md">
-            Edit / Tindak Lanjut
+            Tindak Lanjut
           </NuxtLink>
         </div>
       </div>
