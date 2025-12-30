@@ -1,9 +1,9 @@
 <template>
   <div v-if="can(['bk', 'staff'])" class="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+    <div class="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
       <div class="flex items-center space-x-4">
         <div class="p-3 bg-primary-100 rounded-full flex items-center text-primary-600">
-          <Icon name="tabler:users" class="w-6 h-6" />
+          <Icon name="tabler:news" class="w-6 h-6 transition-transform group-hover:scale-110" />
         </div>
         <div>
           <div class="text-2xl font-bold">{{ totalArticles }}</div>
@@ -12,10 +12,10 @@
       </div>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+    <div class="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
       <div class="flex items-center space-x-4">
         <div class="p-3 bg-green-100 rounded-full flex items-center text-green-600">
-          <Icon name="tabler:user-check" class="w-6 h-6" />
+          <Icon name="tabler:eye" class="w-6 h-6 transition-transform group-hover:scale-110" />
         </div>
         <div>
           <div class="text-2xl font-bold">{{ totalViews }}</div>
@@ -24,10 +24,10 @@
       </div>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+    <div class="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
       <div class="flex items-center space-x-4">
         <div class="p-3 bg-orange-100 rounded-full flex items-center text-orange-600">
-          <Icon name="tabler:activity" class="w-6 h-6" />
+          <Icon name="tabler:chart-line" class="w-6 h-6 transition-transform group-hover:scale-110" />
         </div>
         <div>
           <div class="text-2xl font-bold">{{ avgViews }}</div>
@@ -36,10 +36,10 @@
       </div>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+    <div class="group bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
       <div class="flex items-center space-x-4">
         <div class="p-3 bg-red-100 rounded-full flex items-center text-red-600">
-          <Icon name="tabler:alert-triangle" class="w-6 h-6" />
+          <Icon name="tabler:file-pencil" class="w-6 h-6 transition-transform group-hover:scale-110" />
         </div>
         <div>
           <div class="text-2xl font-bold">{{ draftArticles }}</div>
@@ -74,7 +74,7 @@
     <div v-if="isFilterVisible"
       class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50 transition-all duration-300">
       <h4 class="text-sm font-semibold mb-3 text-gray-700">Opsi Filter Artikel</h4>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <input type="text" v-model="filters.search" placeholder="Cari Nama atau slug Artikel"
           class="form-input rounded-lg text-sm border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500" />
         <FormSelect name="filter-status" placeholder="Semua Status" v-model="filters.status" :options="[
@@ -82,6 +82,8 @@
           { label: 'Published', value: 'published' },
           { label: 'Archived', value: 'archived' },
         ]" allow-placeholder-selection />
+        <FormSelect name="category-article" placeholder="Semua Kategori" v-model="filters.article_category_id"
+          :options="categories.map(cat => ({ label: cat.name, value: cat.id }))" allow-placeholder-selection />
         <button @click="applyFilter"
           class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 md:col-span-3 lg:col-span-1">
           Terapkan Filter
@@ -127,7 +129,7 @@
 
           <tr v-for="article in data" :key="article.id" class="hover:bg-primary-50/50 transition-colors duration-100">
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
               {{ article.title }}
             </td>
 
@@ -140,13 +142,15 @@
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-center">
-              <span :class="getStatusClass(article.status)"
-                class="inline-flex px-3 py-1 text-xs leading-5 font-semibold rounded-full uppercase">
+              <span :class="getStatusArticleClass(article.status)"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg transition-all duration-300 border capitalize">
+                <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+
                 {{ article.status }}
               </span>
             </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-center">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
               {{ article.views }}
             </td>
 
@@ -180,10 +184,13 @@ const {
   fetchData,
   changePage,
   applyFilter
-} = useDataTable<Article, { search: string; status: string }>('/articles', {
+} = useDataTable<Article, { search: string; status: string, article_category_id: string }>('/articles', {
   search: '',
-  status: ''
+  status: '',
+  article_category_id: ''
 });
+
+const categories = ref<ArticleCategory[]>([]);
 
 const isFilterVisible = ref<boolean>(false);
 
@@ -229,20 +236,21 @@ const handleDelete = async (id?: string, name?: string) => {
   }
 };
 
-const getStatusClass = (status: string) => {
-  switch (status) {
-    case 'draft':
-      return 'bg-gray-100 text-gray-800';
-    case 'published':
-      return 'bg-green-100 text-green-800';
-    case 'archived':
-      return 'bg-yellow-100 text-yellow-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
+async function fetchCategoryArticle() {
+  try {
+    const res = await useApi().get<ArticleCategory[]>('/reference/article-categories');
+    if (res.status && res.data) {
+      categories.value = res.data;
+    } else {
+      useToast().error('Gagal memuat daftar kategori.');
+    }
+  } catch (e) {
+    useToast().error('Error saat mengambil data kategori.');
   }
-};
+}
 
 onMounted(() => {
   fetchData();
+  fetchCategoryArticle();
 })
 </script>

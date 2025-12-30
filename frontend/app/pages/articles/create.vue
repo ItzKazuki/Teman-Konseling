@@ -114,7 +114,7 @@
           <button type="submit" :disabled="isSubmitting"
             class="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md disabled:bg-primary-400">
             <Icon v-if="isSubmitting" name="tabler:loader-2" class="w-4 h-4 mr-1 animate-spin" />
-            Simpan Artikel
+            Publikasikan Artikel
           </button>
         </div>
 
@@ -154,7 +154,7 @@ const form = reactive<ArticlePayload>({ ...initialForm });
 const errors = reactive<{ [key: string]: string[] | undefined }>({});
 const isSubmitting = ref(false);
 
-const categories = ref<{ id: string, name: string }[]>([]);
+const categories = ref<ArticleCategory[]>([]);
 
 const generateSlug = () => {
   if (form.title && form.slug === slugify(form.slug)) {
@@ -202,9 +202,9 @@ const removeThumbnail = () => {
 
 // end file
 
-async function fetchMasterData() {
+async function fetchCategoryArticle() {
   try {
-    const res = await useApi().get<{ id: string, name: string }[]>('/reference/article-categories');
+    const res = await useApi().get<ArticleCategory[]>('/reference/article-categories');
     if (res.status && res.data) {
       categories.value = res.data;
     } else {
@@ -233,7 +233,7 @@ const submitArticle = async () => {
   Object.keys(errors).forEach(key => errors[key] = undefined); // Reset errors
 
   if (form.status !== 'draft') {
-    const confirm = await useAlert().confirm('Apakah Anda yakin ingin menyimpan artikel ini?');
+    const confirm = await useAlert().confirm('Apakah Anda yakin ingin mempublikasikan artikel ini sekarang?');
 
     if (!confirm) {
       isSubmitting.value = false;
@@ -248,6 +248,10 @@ const submitArticle = async () => {
       if (!fileId) throw new Error('Gagal mengunggah thumbnail');
 
       form.thumbnail_file_id = fileId;
+    }
+
+    if (form.published_at) {
+      form.published_at = convertToUTC(form.published_at);
     }
 
     const response = await useApi().post('/articles', form);
@@ -272,7 +276,7 @@ const submitArticle = async () => {
 };
 
 onMounted(() => {
-  fetchMasterData();
+  fetchCategoryArticle();
 });
 
 </script>

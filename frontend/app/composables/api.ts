@@ -31,7 +31,7 @@ export function useApi(withAuth: boolean = true) {
 
     // 2. Daftar rute yang TIDAK boleh diberi prefix (Public/Common)
     // Contoh: /auth/login, /public/articles, atau master-data jika endpointnya global
-    const excludedPaths = ['/auth', '/master-data', '/files', '/profile', '/dashboard-overview', '/reference']; 
+    const excludedPaths = ['/auth', '/master-data', '/files', '/profile', '/dashboard-overview', '/reference'];
     if (excludedPaths.some(p => url.startsWith(p))) return url;
 
     // 3. Jika URL sudah punya prefix role (mencegah double prefix)
@@ -41,7 +41,7 @@ export function useApi(withAuth: boolean = true) {
     // 4. Tambahkan prefix berdasarkan role
     const roleMap: Record<string, string> = { bk: 'admin', guru: 'teacher', staff: 'staff' };
     const prefix = roleMap[auth?.user?.role] || 'public';
-    
+
     return `/${prefix}${url.startsWith('/') ? url : '/' + url}`;
   };
 

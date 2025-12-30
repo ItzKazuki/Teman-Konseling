@@ -1,10 +1,10 @@
 <template>
   <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-100 pt-6">
-    <p class="text-sm text-gray-500">
-      Menampilkan <span class="font-bold text-gray-800">{{ from }}</span> -
-      <span class="font-bold text-gray-800">{{ to }}</span> dari
-      <span class="font-bold text-gray-800">{{ meta.total }}</span> data
-    </p>
+    <div class="text-sm font-medium text-gray-500">
+      Menampilkan <span class="text-gray-900 font-bold">{{ from }}</span> -
+      <span class="text-gray-900 font-bold">{{ to }}</span> dari
+      <span class="text-gray-900 font-bold">{{ meta.total }}</span> total data
+    </div>
 
     <div class="flex items-center space-x-2">
       <button @click="$emit('change', meta.current_page - 1)" :disabled="meta.current_page === 1"

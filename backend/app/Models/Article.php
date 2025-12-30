@@ -34,6 +34,7 @@ class Article extends Model
     protected function casts(): array
     {
         return [
+            'published_at' => 'datetime',
             'status' => ArticleStatus::class,
         ];
     }
@@ -57,6 +58,10 @@ class Article extends Model
                 }
 
                 $article->slug = $slug;
+            }
+
+            if ($article->status === ArticleStatus::PUBLISHED && ! $article->published_at) {
+                $article->published_at = now();
             }
         });
 

@@ -131,11 +131,16 @@
                 <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Status Keseluruhan
                   Kasus</label>
                 <div class="grid grid-cols-2 gap-2">
-                  <button v-for="rs in ['pending', 'scheduled', 'completed', 'rejected']" :key="rs" type="button"
-                    @click="form.request_status = rs"
-                    :class="['px-2 py-2 rounded-xl text-[10px] font-bold uppercase transition-all border text-center',
-                      form.request_status === rs ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-gray-50 text-gray-400 border-gray-200']">
-                    {{ rs }}
+                  <button v-for="rs in [
+                    { id: 'pending', label: 'Menunggu' },
+                    { id: 'scheduled', label: 'Dijadwalkan' },
+                    { id: 'completed', label: 'Selesai' },
+                    { id: 'rejected', label: 'Ditolak' }
+                  ]" :key="rs.id" type="button" @click="form.request_status = rs.id" :class="[
+                    'px-2 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all border text-center shadow-sm',
+                    getStatusCounselingColorClass(rs.id, form.request_status === rs.id)
+                  ]">
+                    {{ rs.label }}
                   </button>
                 </div>
                 <p class="text-[9px] text-gray-400 italic">* Menentukan apakah laporan ini masih aktif atau sudah
@@ -146,13 +151,20 @@
               </div>
 
               <div class="space-y-2">
-                <label class="text-xs font-black text-gray-500 uppercase tracking-wider">Status Sesi Pertemuan</label>
+                <label class="text-xs font-black text-gray-500 uppercase tracking-wider">
+                  Status Sesi Pertemuan
+                </label>
                 <div class="grid grid-cols-2 gap-2">
-                  <button v-for="ss in ['pending', 'confirmed', 'canceled', 'completed']" :key="ss" type="button"
-                    @click="form.schedule_status = ss"
-                    :class="['px-3 py-2 rounded-xl text-[10px] font-bold uppercase transition-all border',
-                      form.schedule_status === ss ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-gray-50 text-gray-400 border-gray-200']">
-                    {{ ss === 'completed' ? 'Selesai' : ss }}
+                  <button v-for="item in [
+                    { id: 'pending', label: 'Menunggu' },
+                    { id: 'confirmed', label: 'Dikonfirmasi' },
+                    { id: 'completed', label: 'Selesai' },
+                    { id: 'canceled', label: 'Dibatalkan' },
+                  ]" :key="item.id" type="button" @click="form.schedule_status = item.id" :class="[
+                    'px-3 py-2 rounded-xl text-[10px] font-bold uppercase transition-all border',
+                    getScheduleStatusColorClass(item.id, form.schedule_status === item.id)
+                  ]">
+                    {{ item.label }}
                   </button>
                 </div>
               </div>
@@ -216,9 +228,27 @@ function quickFinish() {
 // 4. FITUR: Format Nomor HP untuk WA
 function formatPhone(phone: string) {
   if (!phone) return '';
-  // Mengubah 08... menjadi 628...
   return phone.replace(/^0/, '62');
 }
+
+watch(() => form.request_status, (newStatus) => {
+  if (newStatus === 'completed') {
+    form.schedule_status = 'completed';
+  } else if (newStatus === 'rejected') {
+    form.schedule_status = 'canceled'; // Jika request ditolak, jadwal otomatis batal
+  } else if (newStatus === 'pending') {
+    form.schedule_status = 'pending';
+  }
+});
+
+// Sebaliknya, jika jadwal dibatalkan, mungkin request ingin di-pending atau reject
+watch(() => form.schedule_status, (newStatus) => {
+  if (newStatus === 'canceled' && form.request_status === 'scheduled') {
+    // Logic tambahan: jika jadwal batal tapi request masih 'scheduled', 
+    // mungkin mau diubah ke 'pending' lagi agar bisa dijadwalkan ulang
+    form.request_status = 'pending';
+  }
+});
 
 async function submitFollowUp() {
   loading.value = true;

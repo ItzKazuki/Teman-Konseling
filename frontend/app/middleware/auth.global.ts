@@ -2,19 +2,19 @@ const PUBLIC_ROUTES: (string | RegExp)[] = [/^\/auth/];
 
 const RESTRICTED_PATHS: Record<UserRoleType, (string | RegExp)[]> = {
   // BK: Tidak ada batasan (akses semua)
-  bk: [], 
+  bk: [],
 
   // Guru: Tidak boleh akses manajemen user, master data, dan fitur khusus konseling
   guru: [
-    /^\/users/, 
-    /^\/master-data/, 
+    /^\/users/,
+    /^\/master-data/,
     /^\/counseling/
   ],
 
   // Staff: Tidak boleh akses manajemen user, konseling privasi, dan monitoring mood
   staff: [
-    /^\/users/, 
-    /^\/counseling/, 
+    /^\/users/,
+    /^\/counseling/,
     /^\/moods/
   ],
 };
@@ -44,7 +44,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     // B. Cek Hak Akses (RBAC)
     const role = auth.userRole || "guru";
     const restrictions = RESTRICTED_PATHS[role] || [];
-    
+
     const isForbidden = restrictions.some((rule) =>
       rule instanceof RegExp ? rule.test(path) : path === rule
     );

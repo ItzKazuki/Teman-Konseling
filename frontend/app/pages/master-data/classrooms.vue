@@ -3,7 +3,7 @@
 
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
 
-      <h3 class="text-2xl font-semibold text-gray-800">Data Kelas</h3>
+      <h3 class="text-2xl font-semibold text-gray-800">Master Data: Kelas</h3>
 
       <div class="flex items-center space-x-3">
 
@@ -27,13 +27,12 @@
       <div class="flex flex-col sm:flex-row gap-4 items-center">
         <input type="text" v-model="filters.search" placeholder="Cari berdasarkan Nama atau Deskripsi"
           class="form-input rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-primary-500 focus:border-primary-500" />
-        <select v-model="filters.level"
-          class="form-select rounded-lg text-sm border-gray-300 shadow-sm w-full sm:w-auto focus:ring-primary-500 focus:border-primary-500">
-          <option value="">Semua Level (X, XI, XII)</option>
-          <option value="X">Kelas X</option>
-          <option value="XI">Kelas XI</option>
-          <option value="XII">Kelas XII</option>
-        </select>
+        <FormSelect name="filter-level" v-model="filters.level" :options="[
+          { value: '', label: 'Semua Level (X, XI, XII)' },
+          { value: '10', label: 'Kelas X' },
+          { value: '11', label: 'Kelas XI' },
+          { value: '12', label: 'Kelas XII' },
+        ]" />
         <button @click="applyFilter"
           class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 w-full sm:w-auto">
           Terapkan
@@ -140,7 +139,7 @@
         <p v-if="errors.description" class="mt-1 text-xs text-red-500">{{ errors.description }}</p>
       </div>
 
-      <div class="pt-4 border-t flex justify-end">
+      <div class="flex justify-end">
         <button type="button" @click="closeModal" :disabled="isSubmitting"
           class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 mr-3">
           Batal
