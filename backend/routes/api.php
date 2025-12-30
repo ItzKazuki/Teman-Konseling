@@ -58,6 +58,7 @@ Route::prefix('v1')->group(function () {
         Route::get('articles/{slug}', [StudentArticleController::class, 'show']);
 
         Route::get('counseling', [StudentCounselingController::class, 'index']);
+        Route::get('counseling/available-slots', [StudentCounselingController::class, 'getAvailableSlots']);
         Route::get('counseling/{id}', [StudentCounselingController::class, 'show']);
         Route::post('counseling/new-request', [StudentCounselingController::class, 'store']);
         Route::post('counseling/schedule/{request_id}', [StudentCounselingController::class, 'schedule']);

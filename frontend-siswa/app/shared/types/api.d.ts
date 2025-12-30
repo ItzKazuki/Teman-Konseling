@@ -26,6 +26,10 @@ interface Pagination {
   has_more_pages: boolean;
 }
 
+type GetOptions = {
+  params?: Record<string, any>
+}
+
 type ApiResponse<T = any> = ApiSuccess<T> | ApiError;
 
 type ApiStreamResponse = Blob;

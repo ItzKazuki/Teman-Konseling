@@ -12,6 +12,7 @@ use App\Models\RequestCounseling;
 use App\Models\ScheduleCounseling;
 use App\Models\User;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 #[Group('Student: Counseling', weight: 3)]
@@ -127,5 +128,26 @@ class CounselingController extends Controller
         $requestCounseling->update(['status' => 'scheduled']);
 
         return ApiResponse::success(new ScheduleCounselingResource($schedule->load('counselor')), 'Counseling schedule successfully proposed. Waiting for counselor confirmation.');
+    }
+
+    public function getAvailableSlots(Request $request)
+    {
+        $date = $request->date;
+        $counselorId = $request->counselor_id;
+
+        // 1. Tentukan semua slot jam yang Anda sediakan (Master Jam Kerja)
+        $allSlots = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00'];
+
+        // 2. Ambil jam yang SUDAH DIPESAN di tabel schedule_counselings
+        $bookedSlots = ScheduleCounseling::where('counselor_id', $counselorId)
+            ->whereDate('schedule_date', $date)
+            ->whereNotIn('status', ['completed', 'canceled'])
+            ->pluck('time_slot')
+            ->toArray();
+
+        // 3. Hitung selisihnya (Jam Kerja - Jam Terpakai)
+        $availableSlots = array_values(array_diff($allSlots, $bookedSlots));
+
+        return ApiResponse::success($availableSlots);
     }
 }

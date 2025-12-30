@@ -8,6 +8,18 @@ const createApiError = (status: number, message: string, data?: any) => {
   });
 };
 
+function buildQuery(params?: Record<string, any>) {
+  if (!params) return '';
+
+  const query = new URLSearchParams(
+    Object.entries(params)
+      .filter(([_, v]) => v !== null && v !== undefined && v !== '')
+      .map(([k, v]) => [k, String(v)])
+  ).toString();
+
+  return query ? `?${query}` : '';
+}
+
 export function useApi(withAuth: boolean = true) {
   const config = useRuntimeConfig();
   const auth = withAuth ? useAuthStore() : null;
@@ -93,15 +105,17 @@ export function useApi(withAuth: boolean = true) {
     responseType: "json",
   });
 
-  async function get<T>(url: string) {
-    return fetch<ApiResponse<T>>(url);
+  async function get<T>(url: string, options?: GetOptions) {
+    const query = buildQuery(options?.params);
+
+    return fetch<ApiResponse<T>>(`${url}${query}`);
   }
 
   async function fetchFileBlob(url: string): Promise<Blob> {
     return fetch<Blob>(url, { responseType: "blob" });
   }
 
-  async function post<T = any>(url: string, body: any) {
+  async function post<T = any>(url: string, body?: any) {
     return fetch<ApiResponse<T>>(url, {
       method: "POST",
       body,
