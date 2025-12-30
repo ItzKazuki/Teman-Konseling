@@ -51,7 +51,7 @@ export const useAuthStore = defineStore("auth", {
     },
 
     loadTokenFromCookie() {
-      const tokenCookie = useCookie<string | null>("auth_token")
+      const tokenCookie = useCookie<string | null>("tk_bk_token")
       this.token = tokenCookie.value || null
     },
 
@@ -60,7 +60,7 @@ export const useAuthStore = defineStore("auth", {
 
       const isProd = config.appEnv === "production";
 
-      const tokenCookie = useCookie<string | null>("auth_token", {
+      const tokenCookie = useCookie<string | null>("tk_bk_token", {
         maxAge: 60 * 60 * 24 * 7,
         path: '/',
         secure: isProd,
