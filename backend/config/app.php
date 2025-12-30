@@ -133,7 +133,7 @@ return [
     |
     */
 
-    'version' => '1.0.0',
+    'version' => '1.1.0',
 
     'dashboard-admin' => env('APP_DASHBOARD_ADMIN_URL', 'http://127.0.0.1:8823'),
     'siswa' => env('APP_SISWA_URL', 'http://127.0.0.1:8822'),
