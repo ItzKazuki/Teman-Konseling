@@ -64,18 +64,22 @@
 
 
     <div class="flex flex-col gap-3 pt-4">
-      <button @click="proceedToConfirmation" :disabled="!isReadyToProceed || isSubmitting" :class="[
-        'w-full py-4 rounded-xl font-semibold transition-colors duration-200 text-center',
-        isReadyToProceed
-          ? 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-primary-400'
-          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+      <button type="button" @click="proceedToConfirmation" :disabled="!isReadyToProceed || isSubmitting" :class="[
+        'w-full py-4 rounded-xl font-semibold text-center transition-all duration-200',
+        (!isReadyToProceed || isSubmitting)
+          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+          : 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-primary-400'
       ]">
-        <span v-if="isSubmitting" class="flex items-center gap-2">
-          <div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+        <span v-if="isSubmitting" class="flex items-center justify-center gap-2">
+          <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
           Mengirim...
         </span>
-        <span v-else>Kirim</span>
+
+        <span v-else>
+          Kirim
+        </span>
       </button>
+
 
       <NuxtLink to="/mood-picker/custom"
         class="text-center text-sm font-medium text-gray-600 hover:text-black underline">

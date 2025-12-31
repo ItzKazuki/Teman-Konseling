@@ -28,20 +28,32 @@
         </div>
       </div>
 
+
       <div class="flex justify-between items-center text-sm">
         <div class="flex items-center">
-          <input id="remember-me" name="remember-me" type="checkbox" v-model="form.remember_me"
-            class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
-          <label for="remember-me" class="ml-2 block text-gray-700">Remember me</label>
+          <input id="remember-me" type="checkbox" v-model="form.remember_me"
+            class="h-4 w-4 text-primary-600 border-gray-300 rounded" />
+          <label for="remember-me" class="ml-2 text-gray-700">
+            Remember me
+          </label>
         </div>
+
         <NuxtLink to="/auth/password/forgot" class="font-medium text-primary-600 hover:text-primary-700">
           Forgot password?
         </NuxtLink>
       </div>
 
-      <button type="submit"
-        class="w-full py-3.5 bg-primary-600 text-white rounded-lg font-semibold shadow-md hover:bg-primary-700 focus:ring-2 focus:ring-primary-400 transition duration-150">
-        Log in
+      <button type="submit" :disabled="loading" :class="[
+        'w-full py-3.5 rounded-lg font-semibold transition-all duration-200 flex justify-center items-center gap-2',
+        loading
+          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          : 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-primary-400'
+      ]">
+        <span v-if="loading" class="flex items-center gap-2">
+          <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+          Logging in...
+        </span>
+        <span v-else>Log in</span>
       </button>
     </form>
 
@@ -93,22 +105,21 @@ const togglePasswordVisibility = () => {
 };
 
 const handleLogin = async () => {
-  loading.value = true;
+  if (loading.value) return
+
+  loading.value = true
   try {
-    await auth.login(form.value);
-    useToast().success(`Login berhasil, Selamat datang ${auth.user?.name}!`)
-    return navigateTo('/home');
+    await auth.login(form.value)
+    useToast().success(`Login berhasil, selamat datang ${auth.user?.name}!`)
+    await navigateTo('/home')
   } catch (err: any) {
-    if (err?.data?.errors) {
-      // setErrors(err.data.errors);
-    } else if (err?.data?.message) {
-      useToast().error(err.data.message);
+    if (err?.data?.message) {
+      useToast().error(err.data.message)
     } else {
       useToast().error('Terjadi kesalahan. Silakan coba lagi.')
     }
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-
-};
+}
 </script>
