@@ -16,10 +16,10 @@
         Login
       </NuxtLink>
 
-      <NuxtLink to="/auth/register"
+      <!-- <NuxtLink to="/auth/register"
         class="w-full py-4 rounded-xl border border-gray-300 text-gray-800 font-semibold hover:border-gray-500 hover:bg-gray-50 transition duration-200">
         Buat Akun Baru
-      </NuxtLink>
+      </NuxtLink> -->
     </div>
   </div>
 </template>
