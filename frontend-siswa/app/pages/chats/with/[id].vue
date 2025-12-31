@@ -5,9 +5,17 @@
       <img src="/static/teman-konseling-sm.svg" alt="Logo" class="h-6 w-auto" />
     </div>
 
-    <div v-if="isLoading" class="flex flex-col items-center py-20">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
-      <p class="mt-4 text-gray-500 font-medium">Memuat info sesi...</p>
+    <div v-if="isLoading" class="flex flex-col items-center justify-center py-20 animate-fade-in">
+      <div class="relative flex items-center justify-center">
+        <div class="absolute inset-0 bg-primary-200 rounded-full blur-xl opacity-40 animate-pulse"></div>
+
+        <Icon name="svg-spinners:ring-resize" class="w-12 h-12 text-primary-600 relative z-10" />
+      </div>
+
+      <div class="mt-4 text-center">
+        <p class="text-lg font-bold text-gray-800">Mohon Tunggu</p>
+        <p class="text-sm text-gray-500">Sedang memuat info sesi konseling kamu...</p>
+      </div>
     </div>
 
     <template v-else-if="counselingDetail">

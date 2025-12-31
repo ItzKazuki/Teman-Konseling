@@ -22,6 +22,22 @@
 
     <form @submit.prevent="onSubmit" class="space-y-6">
       <div class="space-y-4">
+        <h1 class="font-bold text-lg text-gray-800 border-b pb-2">Informasi Akademik</h1>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label-custom">NIS</label>
+            <input v-model="form.nis" type="text" class="form-input-custom bg-gray-50" readonly
+              title="NIS tidak dapat diubah" />
+          </div>
+          <div>
+            <label class="form-label-custom">NISN</label>
+            <input v-model="form.nisn" type="text" class="form-input-custom bg-gray-50" readonly
+              title="NISN tidak dapat diubah" />
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
         <h1 class="font-bold text-lg text-gray-800 border-b pb-2">Detail Personal</h1>
 
         <div class="space-y-4">
@@ -38,8 +54,8 @@
                 required />
             </div>
             <div>
-              <label for="phone" class="form-label-custom">Nomor Telepon</label>
-              <input id="phone" v-model="form.phone" type="text" class="form-input-custom" placeholder="0812..."
+              <label for="phone_number" class="form-label-custom">Nomor Telepon</label>
+              <input id="phone_number" v-model="form.phone_number" type="text" class="form-input-custom" @input="formatPhoneNumber('phone_number')" placeholder="6281234..."
                 required />
             </div>
           </div>
@@ -59,7 +75,7 @@
         </div>
       </div>
 
-      <div class="space-y-4 pt-4">
+      <div class="space-y-4">
         <div>
           <h1 class="font-bold text-lg text-gray-800 border-b pb-2">Detail Alamat</h1>
           <p class="text-sm text-gray-500 mt-2">Mengapa kami membutuhkan alamat Anda?
@@ -96,6 +112,22 @@
         </div>
       </div>
 
+      <div class="space-y-4">
+        <h1 class="font-bold text-lg text-gray-800 border-b pb-2">Data Orang Tua / Wali</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="parent_name" class="form-label-custom">Nama Orang Tua</label>
+            <input id="parent_name" v-model="form.parent_name" type="text" class="form-input-custom"
+              placeholder="Nama Ayah/Ibu/Wali" />
+          </div>
+          <div>
+            <label for="parent_phone" class="form-label-custom">No. Telp Orang Tua</label>
+            <input id="parent_phone" v-model="form.parent_phone_number" type="text" class="form-input-custom"
+              placeholder="628..." @input="formatPhoneNumber('parent_phone_number')" />
+          </div>
+        </div>
+      </div>
+
       <button type="submit" :disabled="isSubmitting" class="w-full py-4 bg-primary-600 text-white rounded-xl font-semibold shadow-md shadow-primary-500/30 
                hover:bg-primary-700 focus:ring-2 focus:ring-primary-400 transition duration-200 disabled:bg-gray-400">
         <Icon v-if="isSubmitting" name="svg-spinners:ring-resize" class="mr-2" />
@@ -122,16 +154,17 @@ const showCropper = ref(false);
 const form = reactive({
   name: auth.user?.name || '',
   email: auth.user?.email || '',
-  phone: auth.user?.phone || '',
+  phone_number: auth.user?.phone || '',
   postal_code: auth.user?.postal_code || '',
   address: auth.user?.address || '',
   village: auth.user?.village || '',
   district: auth.user?.district || '',
   city: auth.user?.city || '',
   province: auth.user?.province || '',
-  // Data pendukung yang tidak diubah di form ini tapi perlu untuk integritas data jika diperlukan
   parent_name: auth.user?.parent_name || '',
   parent_phone_number: auth.user?.parent_phone_number || '',
+  nis: auth.user?.nis || '',
+  nisn: auth.user?.nisn || '',
 });
 
 // Handle input file
@@ -154,6 +187,18 @@ function onCropped(base64) {
   avatarFile.value = base64ToFile(base64, "avatar_siswa.png");
   showCropper.value = false;
 }
+
+const formatPhoneNumber = (field) => {
+  let cleaned = form[field].replace(/\D/g, '');
+
+  if (cleaned.startsWith('0')) {
+    cleaned = '62' + cleaned.substring(1);
+  } else if (cleaned.startsWith('8')) {
+    cleaned = '62' + cleaned;
+  }
+
+  form[field] = cleaned;
+};
 
 async function onSubmit() {
   isSubmitting.value = true;
