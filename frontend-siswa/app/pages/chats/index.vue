@@ -22,7 +22,7 @@
           <p class="text-lg font-bold text-gray-800">Mohon Tunggu</p>
           <p class="text-sm text-gray-500">Sedang memuat riwayat konseling kamu...</p>
         </div>
-      </div>  
+      </div>
 
       <div v-else-if="counselingList.length > 0" class="space-y-4">
         <div v-for="item in counselingList" :key="item.id"
@@ -34,7 +34,7 @@
                 <h3 class="text-lg font-bold text-gray-900">{{ item.title }}</h3>
                 <span :class="[
                   'text-[10px] px-2 py-0.5 rounded-full font-bold uppercase',
-                  item.urgency === 'high' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                  item.urgency === 'high' ? 'bg-red-100 text-red-600' : 'bg-primary-100 text-primary-600'
                 ]">
                   {{ item.urgency }}
                 </span>
@@ -47,7 +47,7 @@
                   <span :class="[
                     'w-2.5 h-2.5 rounded-full mr-2',
                     !item.schedule ? 'bg-amber-500' :
-                      (item.schedule.status === 'pending' ? 'bg-blue-500' : 'bg-green-500')
+                      (item.schedule.status === 'pending' ? 'bg-primary-500' : 'bg-green-500')
                   ]"></span>
 
                   <p class="text-xs font-semibold text-gray-500">
@@ -106,43 +106,48 @@
 const counselingList = ref([]);
 const isLoading = ref(true);
 
-const ACTION_BUTTON_CONFIG = {
-  none: {
-    text: 'Pilih Jadwal',
-    icon: 'heroicons:calendar-days-solid',
-    class: 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm',
-    disabled: false,
-  },
-  pending: {
-    text: 'Menunggu Persetujuan',
-    icon: 'heroicons:clock-solid',
-    class: 'bg-gray-200 text-gray-400 cursor-not-allowed',
-    disabled: true,
-  },
-  confirmed: {
-    text: 'Mulai Chat',
-    icon: 'heroicons:chat-bubble-left-right-solid',
-    class: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm',
-    disabled: false,
-  },
-  completed: {
-    text: 'Selesai',
-    icon: 'heroicons:check-circle-solid',
-    class: 'bg-slate-200 text-slate-600 cursor-default',
-    disabled: true,
-  },
-  canceled: {
-    text: 'Ditolak',
-    icon: 'heroicons:x-circle-solid',
-    class: 'bg-red-100 text-red-600 cursor-default',
-    disabled: true,
-  },
-}
+const getActionButton = (item) => {
+  const status = item.schedule?.status || 'none';
+  const type = item.schedule.method;
 
-function getActionButton(item) {
-  if (!item.schedule) return ACTION_BUTTON_CONFIG.none
-  return ACTION_BUTTON_CONFIG[item.schedule.status] ?? ACTION_BUTTON_CONFIG.none
-}
+  const configs = {
+    none: {
+      text: 'Pilih Jadwal',
+      icon: 'heroicons:calendar-days-solid',
+      class: 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm',
+      disabled: false,
+    },
+    pending: {
+      text: 'Menunggu Persetujuan',
+      icon: 'heroicons:clock-solid',
+      class: 'bg-gray-200 text-gray-400 cursor-not-allowed',
+      disabled: true,
+    },
+    confirmed: {
+      // LOGIKA DINAMIS DI SINI
+      text: type === 'chat' ? 'Mulai Chat' : 'Detail Pertemuan',
+      icon: type === 'chat' ? 'heroicons:chat-bubble-left-right-solid' : 'heroicons:map-pin-solid',
+      class: type === 'chat'
+        ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
+        : 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm',
+      disabled: false,
+    },
+    completed: {
+      text: 'Selesai',
+      icon: 'heroicons:check-circle-solid',
+      class: 'bg-slate-200 text-slate-600 cursor-default',
+      disabled: true,
+    },
+    canceled: {
+      text: 'Ditolak',
+      icon: 'heroicons:x-circle-solid',
+      class: 'bg-red-100 text-red-600 cursor-default',
+      disabled: true,
+    },
+  };
+
+  return configs[status] || configs.none;
+};
 
 const fetchData = async () => {
   isLoading.value = true;
@@ -179,9 +184,19 @@ function handleAction(item) {
 
   // 3. Jika sudah dikonfirmasi (Confirmed), baru boleh masuk ke chat
   if (item.schedule.status === 'confirmed') {
-    return navigateTo({
-      path: `/chats/with/${item.id}`,
-    });
+    const counselingType = item.schedule.method;
+
+    if (counselingType === 'chat') {
+      return navigateTo({
+        path: `/chats/with/${item.id}`,
+      });
+    } else if (counselingType === 'face-to-face' || counselingType === 'f2f') {
+      return navigateTo({
+        path: `/chats/${item.id}`,
+      });
+    } else {
+      useToast().error("Tipe konseling tidak dikenali.");
+    }
   }
 }
 </script>

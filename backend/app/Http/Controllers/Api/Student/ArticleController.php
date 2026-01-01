@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Support\Facades\Cache;
 
 #[Group('Student: Article', weight: 3)]
 class ArticleController extends Controller
@@ -25,6 +26,14 @@ class ArticleController extends Controller
 
         if (! $article) {
             return ApiResponse::error('Artikel tidak ditemukan', 404);
+        }
+
+        $cacheKey = 'viewed_article_'.$article->id.'_'.request()->ip();
+
+        if (! Cache::has($cacheKey)) {
+            $article->increment('views');
+
+            Cache::put($cacheKey, true, 3600);
         }
 
         return ApiResponse::success(new ArticleResource($article));
