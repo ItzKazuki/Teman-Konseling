@@ -72,6 +72,8 @@ class UserSeeder extends Seeder
         ]);
 
         // another data
-        User::factory()->count(100)->create();
+        if ($this->command->confirm('Generate dummy data teacher with Faker?')) {
+            User::factory()->count(100)->create();
+        }
     }
 }

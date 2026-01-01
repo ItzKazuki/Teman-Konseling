@@ -12,6 +12,8 @@ class StudentSeeder extends Seeder
      */
     public function run(): void
     {
-        Student::factory()->count(100)->create();
+        if ($this->command->confirm('Generate dummy data student with Faker?')) {
+            Student::factory()->count(100)->create();
+        }
     }
 }

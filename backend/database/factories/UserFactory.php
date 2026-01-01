@@ -29,7 +29,7 @@ class UserFactory extends Factory
         $jabatan = match ($role) {
             'bk' => 'Guru BK',
             'guru' => 'Guru Mata Pelajaran',
-            'staff' => 'Staff Administrasi',
+            'staff' => 'Staff Tata Usaha',
         };
 
         return [
