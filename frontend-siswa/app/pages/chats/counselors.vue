@@ -28,7 +28,7 @@
         <p class="mt-4 text-gray-500">Memuat daftar konselor...</p>
       </div>
 
-      <div v-else-if="availableCounselors.length > 0">
+      <template v-else-if="availableCounselors.length > 0">
         <div v-for="counselor in availableCounselors" :key="counselor.id"
           class="bg-white p-4 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition duration-200">
 
@@ -61,7 +61,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </template>
 
       <div v-else class="text-center py-10 text-gray-500">
         <p>Saat ini tidak ada Guru BK yang tersedia untuk membuat jadwal.</p>
