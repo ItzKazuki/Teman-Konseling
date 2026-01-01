@@ -169,6 +169,14 @@
               </tbody>
             </table>
           </div>
+
+          <div v-if="(overview?.recent_requests?.length ?? 0) > 0 && !loading" class="mt-6 pt-4 border-t border-gray-50">
+            <NuxtLink to="/counseling"
+              class="w-full py-3 flex items-center justify-center gap-2 text-xs font-black text-gray-500 bg-gray-50 rounded-2xl hover:bg-primary-50 hover:text-primary-600 transition-all group">
+              LIHAT SEMUA PERMINTAAN
+              <Icon name="tabler:arrow-narrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </NuxtLink>
+          </div>
         </div>
       </template>
 
