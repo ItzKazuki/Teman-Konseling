@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Student;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StudentResource;
+use App\Notifications\AccountDetailChangeNotification;
 use App\Notifications\AccountPasswordResetNotification;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
@@ -55,6 +56,8 @@ class ProfileController extends Controller
 
         // Load Accessor avatar_url agar Nuxt menerima URL yang sudah jadi
         $user->append('avatar_url');
+
+        $user->notify(new AccountDetailChangeNotification);
 
         return ApiResponse::success(new StudentResource($user), 'Profil berhasil diperbarui');
     }

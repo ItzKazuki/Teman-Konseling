@@ -71,12 +71,20 @@
         <h1 class="text-2xl font-bold text-gray-800">Halo, {{ auth.user?.name }}!</h1>
       </div>
 
-      <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg shadow-sm">
+      <div
+        class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg shadow-sm min-h-25 flex flex-col justify-center">
         <h2 class="text-sm font-semibold text-yellow-700 mb-2">✨ Motivasi Hari Ini</h2>
-        <p class="italic text-yellow-800 text-base">
-          "Kekuatan terbesar kita adalah keberanian untuk bangkit setelah kita jatuh."
-        </p>
-        <p class="text-right text-xs text-yellow-600 mt-2">— Teman Konseling</p>
+
+        <div v-if="loadingMotivation" class="animate-pulse">
+          <p class="italic text-yellow-600 text-base">Mencari inspirasi untukmu...</p>
+        </div>
+
+        <div v-else>
+          <p class="italic text-yellow-800 text-base">
+            "{{ motivationQuote }}"
+          </p>
+          <p class="text-right text-xs text-yellow-600 mt-2">— {{ 'Teman Konseling' }}</p>
+        </div>
       </div>
 
       <div class="pt-2">
@@ -136,17 +144,20 @@
 
 <script setup lang="ts">
 const auth = useAuthStore();
+const motivationQuote = ref<string>("");
+const loadingMotivation = ref<boolean>(true);
 const { data: articles, pending, error } = await useAsyncData(
   'latest-articles',
   async () => {
     // Ganti '/student/articles' dengan endpoint API Anda yang benar
     // Asumsi useApi().get mengembalikan { status: boolean, data: Article[] }
-    const res = await useApi().get<{ status: boolean, data: Article[] }>('/student/articles'); 
+    const res = await useApi().get<Article[]>('/student/articles');
 
-    if (res.status && Array.isArray(res.data)) {
+    if (res.status) {
       // Kita hanya ingin menampilkan 3 artikel terbaru di sini (misalnya)
       return res.data.slice(0, 3);
     }
+
     return []; // Kembalikan array kosong jika gagal atau tidak ada data
   }
 );
@@ -154,7 +165,7 @@ const { data: articles, pending, error } = await useAsyncData(
 const checkDailyMood = async () => {
   try {
     const res = await useApi().get<{ has_filled_today: boolean }>('/student/daily-moods/check');
-    
+
     // Jika BELUM mengisi (has_filled_today === false)
     if (res.status && res.data && !res.data.has_filled_today) {
       // Arahkan ke halaman pilih emosi
@@ -165,7 +176,35 @@ const checkDailyMood = async () => {
   }
 };
 
+const getMotivationQuote = async () => {
+  loadingMotivation.value = true;
+  
+  // Mencatat waktu mulai
+  const startTime = Date.now();
+  const minimumDelay = 1000; // Delay minimum 1 detik (1000ms)
+
+  try {
+    const res = await useApi().get<string>('/student/motivation');
+
+    if (res.status) {
+      motivationQuote.value = res.data;
+    }
+  } catch (err: any) {
+    useAlert().error(`Gagal memuat kutipan motivasi: ${err.message}`);
+  } finally {
+    // Menghitung berapa lama API sudah berjalan
+    const elapsedTime = Date.now() - startTime;
+    const remainingDelay = Math.max(0, minimumDelay - elapsedTime);
+
+    // Memberikan jeda tambahan jika API selesai terlalu cepat
+    setTimeout(() => {
+      loadingMotivation.value = false;
+    }, remainingDelay);
+  }
+}
+
 onMounted(() => {
   checkDailyMood();
+  getMotivationQuote();
 });
 </script>

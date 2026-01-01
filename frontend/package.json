@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "type": "module",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "private": true,
   "scripts": {
     "build": "cross-env BUILD_VERSION=$(node scripts/build-version.cjs) nuxt build",

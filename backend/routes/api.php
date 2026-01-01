@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Staff\StudentController as StaffStudentController;
 use App\Http\Controllers\Api\Student\ArticleController as StudentArticleController;
 use App\Http\Controllers\Api\Student\CounselingController as StudentCounselingController;
 use App\Http\Controllers\Api\Student\MoodController as StudentMoodController;
+use App\Http\Controllers\Api\Student\MotivationController;
 use App\Http\Controllers\Api\Student\NotificationController as StudentNotificationController;
 use App\Http\Controllers\Api\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Api\Teacher\ArticleController as TeacherArticleController;
@@ -73,6 +74,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/notifications', [StudentNotificationController::class, 'index']);
         Route::post('/notifications/{id}/mark-as-read', [StudentNotificationController::class, 'read']);
         Route::post('/notifications/mark-all-read', [StudentNotificationController::class, 'readAll']);
+
+        Route::get('motivation', [MotivationController::class, 'index']);
     });
 
     Route::middleware(['auth:sanctum'])->group(function () {
