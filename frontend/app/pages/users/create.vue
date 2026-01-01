@@ -83,7 +83,7 @@
             ]" required :disabled="isSubmitting" />
           </div>
 
-          <div class="flex flex-col">
+          <div v-if="form.role === 'bk'" class="flex flex-col">
             <label class="form-label mb-2">Status Ketersediaan</label>
             <div class="flex items-center space-x-3 h-full">
               <button type="button" @click="form.is_available = form.is_available === 1 ? 0 : 1"
