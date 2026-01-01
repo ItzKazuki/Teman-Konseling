@@ -52,41 +52,54 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
 
-          <tr v-if="data.length === 0">
-            <td colspan="4" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
-              <div class="flex justify-center items-center">
-                <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
-                <p>Tidak ada data kategori yang ditemukan.</p>
+          <tr v-if="loading">
+            <td colspan="4" class="px-6 py-12 whitespace-nowrap">
+              <div class="flex flex-col items-center justify-center gap-3">
+                <Icon name="svg-spinners:ring-resize" class="w-8 h-8 text-primary-600" />
+                <p class="text-sm font-medium text-gray-500 animate-pulse">Memuat daftar kategori artikel...</p>
               </div>
             </td>
           </tr>
 
-          <tr v-for="classItem in data" :key="classItem.id"
-            class="hover:bg-primary-50/50 transition-colors duration-100">
-
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              {{ classItem.name }}
-            </td>
-
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ classItem.slug }}
-            </td>
-
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ classItem.description || '-' }}
-            </td>
-
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
-              <button @click="handleEdit(classItem.id ?? '')"
-                class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
-                <Icon name="tabler:edit" class="w-4 h-4" />
-              </button>
-              <button @click="handleDelete(classItem.id ?? '', classItem.name)"
-                class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
-                <Icon name="tabler:trash" class="w-4 h-4" />
-              </button>
+          <tr v-else-if="data.length === 0">
+            <td colspan="4" class="px-6 py-10 whitespace-nowrap">
+              <div class="flex flex-col items-center justify-center text-center">
+                <div class="bg-yellow-50 p-3 rounded-full mb-3 flex items-center">
+                  <Icon name="tabler:info-circle" class="w-8 h-8 text-yellow-400" />
+                </div>
+                <p class="text-gray-500 font-medium">Tidak ada data kategori artikel yang ditemukan.</p>
+              </div>
             </td>
           </tr>
+
+          <template v-else>
+            <tr v-for="classItem in data" :key="classItem.id"
+              class="hover:bg-primary-50/50 transition-colors duration-100">
+
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {{ classItem.name }}
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ classItem.slug }}
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ classItem.description || '-' }}
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
+                <button @click="handleEdit(classItem.id ?? '')"
+                  class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
+                  <Icon name="tabler:edit" class="w-4 h-4" />
+                </button>
+                <button @click="handleDelete(classItem.id ?? '', classItem.name)"
+                  class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
+                  <Icon name="tabler:trash" class="w-4 h-4" />
+                </button>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>

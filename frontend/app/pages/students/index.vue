@@ -63,80 +63,93 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
 
-          <tr v-if="data.length === 0">
-            <td colspan="5" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
-
-              <div class="flex items-center justify-center">
-                <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
-                <span>Tidak ada data siswa yang ditemukan.</span>
+          <tr v-if="loading">
+            <td colspan="5" class="px-6 py-12 whitespace-nowrap">
+              <div class="flex flex-col items-center justify-center gap-3">
+                <Icon name="svg-spinners:ring-resize" class="w-8 h-8 text-primary-600" />
+                <p class="text-sm font-medium text-gray-500 animate-pulse">Memuat daftar siswa...</p>
               </div>
             </td>
           </tr>
 
-          <tr v-for="student in data" :key="student.id" class="hover:bg-primary-50/50 transition-colors duration-100">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center gap-3">
-                <div class="relative inline-flex">
-                  <img :src="student.avatar_url || `https://ui-avatars.com/api/?name=${student.name}&background=random`"
-                    class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm" :alt="student.name" />
-                  <span :class="[
-                    'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white',
-                    student.is_online ? 'bg-emerald-500' : 'bg-gray-300'
-                  ]" :title="student.is_online ? 'Online' : 'Offline'"></span>
+          <tr v-else-if="data.length === 0">
+            <td colspan="5" class="px-6 py-10 whitespace-nowrap">
+              <div class="flex flex-col items-center justify-center text-center">
+                <div class="bg-yellow-50 p-3 rounded-full mb-3 flex items-center">
+                  <Icon name="tabler:info-circle" class="w-8 h-8 text-yellow-400" />
                 </div>
-                <div>
-                  <div class="text-sm font-bold text-gray-900 leading-none mb-1">{{ student.name }}</div>
-                  <div class="text-[11px] text-gray-500 flex items-center gap-1">
-                    <Icon name="tabler:mail" class="w-3.5 h-3.5" />
-                    {{ student.email }}
+                <p class="text-gray-500 font-medium">Tidak ada siswa yang ditemukan.</p>
+              </div>
+            </td>
+          </tr>
+
+          <template v-else>
+            <tr v-for="student in data" :key="student.id" class="hover:bg-primary-50/50 transition-colors duration-100">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-3">
+                  <div class="relative inline-flex">
+                    <img
+                      :src="student.avatar_url || `https://ui-avatars.com/api/?name=${student.name}&background=random`"
+                      class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm" :alt="student.name" />
+                    <span :class="[
+                      'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white',
+                      student.is_online ? 'bg-emerald-500' : 'bg-gray-300'
+                    ]" :title="student.is_online ? 'Online' : 'Offline'"></span>
+                  </div>
+                  <div>
+                    <div class="text-sm font-bold text-gray-900 leading-none mb-1">{{ student.name }}</div>
+                    <div class="text-[11px] text-gray-500 flex items-center gap-1">
+                      <Icon name="tabler:mail" class="w-3.5 h-3.5" />
+                      {{ student.email }}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
+              </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
-              <div class="flex items-center gap-1.5">
-                <Icon name="tabler:door-enter" class="w-4 h-4 text-gray-400" />
-                {{ student.classroom_name ?? '-' }}
-              </div>
-            </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                <div class="flex items-center gap-1.5">
+                  <Icon name="tabler:door-enter" class="w-4 h-4 text-gray-400" />
+                  {{ student.classroom_name ?? '-' }}
+                </div>
+              </td>
 
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex flex-col gap-1">
-                <span
-                  class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 w-fit">
-                  NIS: {{ student.nis }}
-                </span>
-                <span
-                  class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-600 w-fit">
-                  NISN: {{ student.nisn }}
-                </span>
-              </div>
-            </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex flex-col gap-1">
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 w-fit">
+                    NIS: {{ student.nis }}
+                  </span>
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-600 w-fit">
+                    NISN: {{ student.nisn }}
+                  </span>
+                </div>
+              </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ student.email }}
-            </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ student.email }}
+              </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-              <div class="flex items-center justify-center gap-1">
-                <NuxtLink :to="`/students/detail/${student.id}`"
-                  class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Detail Siswa">
-                  <Icon name="tabler:eye" class="w-5 h-5" />
-                </NuxtLink>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <div class="flex items-center justify-center gap-1">
+                  <NuxtLink :to="`/students/detail/${student.id}`"
+                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Detail Siswa">
+                    <Icon name="tabler:eye" class="w-5 h-5" />
+                  </NuxtLink>
 
-                <NuxtLink :to="`/students/${student.id}`" v-if="can(['bk', 'staff'])"
-                  class="p-2 text-amber-600 hover:bg-amber-50 rounded-xl transition-all" title="Edit Data">
-                  <Icon name="tabler:edit" class="w-5 h-5" />
-                </NuxtLink>
+                  <NuxtLink :to="`/students/${student.id}`" v-if="can(['bk', 'staff'])"
+                    class="p-2 text-amber-600 hover:bg-amber-50 rounded-xl transition-all" title="Edit Data">
+                    <Icon name="tabler:edit" class="w-5 h-5" />
+                  </NuxtLink>
 
-                <button @click="handleDelete(student.id ?? '', student.name)" v-if="can(['bk', 'staff'])"
-                  class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-all" title="Hapus Siswa">
-                  <Icon name="tabler:trash" class="w-5 h-5" />
-                </button>
-              </div>
-            </td>
-          </tr>
+                  <button @click="handleDelete(student.id ?? '', student.name)" v-if="can(['bk', 'staff'])"
+                    class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-all" title="Hapus Siswa">
+                    <Icon name="tabler:trash" class="w-5 h-5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
