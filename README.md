@@ -21,8 +21,8 @@ TemanKonseling adalah aplikasi konseling digital berbasis web yang dapat memonit
 Penjelasan singkat:
 
 * **backend**: Aplikasi Laravel yang menyediakan REST API untuk seluruh kebutuhan sistem.
-* **frontend**: Aplikasi Nuxt untuk dashboard admin, guru, dan pihak internal.
-* **frontend-siswa**: Aplikasi Nuxt terpisah untuk pengguna siswa.
+* **frontend**: Aplikasi Nuxt untuk dashboard admin, guru, dan pihak internal. (disarankan untuk desktop, tidak cocok untuk mobile phone)
+* **frontend-siswa**: Aplikasi Nuxt terpisah untuk pengguna siswa. (disarankan untuk mobile phone, belum responsive)
 * **builds**: Direktori output hasil build frontend yang siap dideploy ke server.
 
 ---
@@ -39,7 +39,7 @@ Arsitektur aplikasi menggunakan pendekatan **decoupled frontend-backend**:
 
 Karakteristik utama:
 
-* Backend hanya bertugas sebagai API (tidak menyajikan view).
+* Backend hanya bertugas sebagai REST API.
 * Frontend dan frontend-siswa berkomunikasi dengan backend melalui HTTP REST API.
 * Autentikasi menggunakan token (Laravel Sanctum).
 * Build frontend bersifat statis, atau bisa di ubah `ssr: false` di nuxt.config.ts
@@ -50,16 +50,15 @@ Karakteristik utama:
 
 ### Backend
 
-* PHP 8+
-* Laravel
+* PHP 8.3+ (DISARANKAN)
+* Laravel 12
 * Laravel Sanctum
 * MySQL / PostgreSQL
 
 ### Frontend
 
-* Node.js 20+
+* Node.js 24+ (DISARANKAN)
 * Nuxt 4
-* Vue 3
 * Pinia
 * Tailwind CSS
 
@@ -72,9 +71,9 @@ Karakteristik utama:
 ```bash
 cd backend
 composer install
-cp .env.example .env
+cp .env.example .env # jangan lupa setting user dan password database di file .env
 php artisan key:generate
-php artisan migrate
+php artisan migrate # gunakan php artisan migrate --seed untuk seed data dummy & juga user awal
 php artisan serve
 ```
 
@@ -88,15 +87,21 @@ http://localhost:8000
 
 ```bash
 cd frontend
+cp .env.example .env
 npm install
 npm run dev
 ```
 
+> ubah `NUXT_PUBLIC_API_URL` ke url backend di file .env
+
 ```bash
 cd frontend-siswa
+cp .env.example .env
 npm install
 npm run dev
 ```
+
+> ubah `NUXT_PUBLIC_API_URL` ke url backend di file .env
 
 ---
 
@@ -108,32 +113,29 @@ Frontend dan frontend-siswa menggunakan konfigurasi script yang sama.
 
 ```bash
 cd frontend
-npm run build
+npm run generate # untuk membuat web statis, cocok untuk cpanel yang ringan
 ```
 
 ### Build Frontend Siswa
 
 ```bash
 cd frontend-siswa
-npm run build
+npm run generate # untuk membuat web statis, cocok untuk cpanel yang ringan
 ```
 
 Output build:
 
-* `nuxt build` → `builds/`
-* `nuxt generate` → `builds/`
-
 ```
 builds/
-├── teman-konseling-dashboard
-└── teman-konseling-siswa
+├── teman-konseling-dashboard # dari folder project 'frontend'
+└── teman-konseling-siswa # dari folder project 'frontend-siswa'
 ```
 
-Direktori inilah yang digunakan untuk production ke server.
+Direktori inilah yang digunakan untuk production ke server untuk tampilan web nya.
 
 ---
 
-## Deployment
+## Deployment to Server
 
 ### Backend Deployment
 
@@ -147,7 +149,7 @@ composer install --no-dev --optimize-autoloader
 3. Set environment:
 
 ```bash
-cp .env.example .env
+cp .env.example .env # jangan lupa set user dan password database;
 php artisan key:generate
 ```
 
@@ -172,14 +174,10 @@ backend/public
 
 ## Konfigurasi Environment Frontend
 
-Pastikan endpoint API sudah benar pada `nuxt.config.ts` sebelum build:
+Pastikan endpoint API sudah benar pada `.env` sebelum build:
 
-```ts
-runtimeConfig: {
-  public: {
-    apiBase: 'http://<your-ip-laravel-serve-and-port>/api'
-  }
-}
+```bash
+NUXT_PUBLIC_API_URL="http://<yout-backend-already-hosted-domain>:8821" # url api backend
 ```
 
 ---
