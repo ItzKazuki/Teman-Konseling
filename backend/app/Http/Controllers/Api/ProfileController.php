@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Notifications\AccountDetailChangeNotification;
 use App\Notifications\AccountPasswordResetNotification;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
@@ -30,6 +31,8 @@ class ProfileController extends Controller
         ]);
 
         $user->update($validated);
+
+        $user->notify(new AccountDetailChangeNotification);
 
         return ApiResponse::success(new UserResource($user), 'Profil berhasil diperbarui!');
     }
