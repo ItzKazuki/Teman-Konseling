@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-12 gap-6">
+    <div class="grid grid-cols-12 gap-6 items-start">
       <div v-if="can(['bk', 'guru'])"
         class="col-span-12 lg:col-span-8 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
         <div class="flex items-center justify-between mb-8">
@@ -42,12 +42,32 @@
       </div>
 
       <div class="col-span-12 lg:col-span-4 space-y-6">
-        <div v-if="can(['bk', 'guru'])" class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div v-if="can(['bk', 'guru'])"
+          class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm min-h-[300px] flex flex-col">
           <h3 class="text-sm font-black text-gray-900 mb-6 flex items-center gap-2">
             <Icon name="tabler:alert-triangle" class="text-red-500" />
             Intervensi Mendesak
           </h3>
-          <div class="space-y-4">
+
+          <div v-if="loading" class="flex-1 flex flex-col items-center justify-center py-10">
+            <Icon name="svg-spinners:ring-resize" class="w-10 h-10 text-red-500 mb-3" />
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse">
+              Menganalisis Data...
+            </p>
+          </div>
+
+          <div v-else-if="!overview?.urgent_interventions?.length"
+            class="flex-1 flex flex-col items-center justify-center py-10 text-center">
+            <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
+              <Icon name="tabler:circle-check" class="text-green-500 w-8 h-8" />
+            </div>
+            <p class="text-sm font-black text-gray-900">Semua Terkendali</p>
+            <p class="text-[10px] text-gray-500 mt-1 max-w-[200px] mx-auto uppercase font-bold tracking-tight">
+              Tidak ada siswa yang memerlukan intervensi mendesak saat ini.
+            </p>
+          </div>
+
+          <div v-else class="flex-1 space-y-4">
             <div v-for="student in overview?.urgent_interventions" :key="student.name"
               class="p-4 bg-red-50 rounded-2xl border border-red-100 group hover:bg-red-100 transition-colors">
               <div class="flex justify-between items-start">
@@ -62,8 +82,9 @@
               </div>
             </div>
           </div>
-          <button
-            class="w-full mt-6 py-3 text-xs font-black text-primary-600 border-2 border-primary-50 rounded-2xl hover:bg-primary-50 transition-all">
+
+          <button :disabled="loading || !overview?.urgent_interventions?.length"
+            class="w-full mt-6 py-3 text-xs font-black text-primary-600 border-2 border-primary-50 rounded-2xl hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
             LIHAT SEMUA DATA RENTAN
           </button>
         </div>
@@ -84,8 +105,9 @@
           </div>
         </div>
 
-        <div class="col-span-12 lg:col-span-8 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div class="col-span-12 lg:col-span-8 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm min-h-[400px]">
           <h3 class="text-sm font-black text-gray-900 mb-6">Permintaan Konseling Terbaru</h3>
+
           <div class="overflow-x-auto">
             <table class="w-full">
               <thead>
@@ -97,7 +119,30 @@
                   <th class="pb-4"></th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-50">
+
+              <tbody v-if="loading">
+                <tr v-for="i in 5" :key="i">
+                  <td colspan="5" class="py-4">
+                    <div class="bg-gray-50 rounded-xl animate-pulse w-full"></div>
+                  </td>
+                </tr>
+              </tbody>
+
+              <tbody v-else-if="!overview?.recent_requests?.length">
+                <tr>
+                  <td colspan="5" class="py-20 text-center">
+                    <div class="flex flex-col items-center justify-center">
+                      <Icon name="tabler:database-x" class="w-12 h-12 text-gray-200 mb-2" />
+                      <p class="text-sm font-bold text-gray-900">Belum Ada Permintaan</p>
+                      <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mt-1">
+                        Daftar akan muncul di sini jika ada siswa yang mengajukan
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+
+              <tbody v-else class="divide-y divide-gray-50">
                 <tr v-for="req in overview?.recent_requests" :key="req.id" class="group">
                   <td class="py-4">
                     <p class="text-sm font-bold text-gray-900">{{ req.student }}</p>
@@ -161,7 +206,7 @@ ChartJS.register(
 
 const auth = useAuthStore();
 
-const { data: overview, pending, error, refresh } = await useAsyncData(
+const { data: overview, pending: loading, error, refresh } = await useAsyncData(
   `overview`,
   async () => {
     try {
