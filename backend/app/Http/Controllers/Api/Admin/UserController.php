@@ -121,7 +121,7 @@ class UserController extends Controller
 
         Mail::to($user->email)->send(new UserResetPasswordMail($user, $newPassword));
 
-        $user->notify(new AccountPasswordResetNotification());
+        $user->notify(new AccountPasswordResetNotification);
 
         return ApiResponse::success(null, 'Kata sandi berhasil direset dan dikirim ke email pengguna.');
     }

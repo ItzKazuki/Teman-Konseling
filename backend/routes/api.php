@@ -1,32 +1,32 @@
 <?php
 
 use App\Helpers\ApiResponse;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\Admin\MoodController;
-use App\Http\Controllers\Api\Admin\UserController;
-use App\Http\Controllers\Api\Auth\LoginController;
-use App\Http\Controllers\Api\MasterDataController;
-use App\Http\Controllers\Api\Auth\LogoutController;
-use App\Http\Controllers\Api\Common\FileController;
-use App\Http\Controllers\Api\Auth\AccountController;
 use App\Http\Controllers\Api\Admin\ArticleController;
-use App\Http\Controllers\Api\Admin\StudentController;
 use App\Http\Controllers\Api\Admin\CounselingController;
+use App\Http\Controllers\Api\Admin\MoodController;
+use App\Http\Controllers\Api\Admin\StudentController;
+use App\Http\Controllers\Api\Admin\UserController;
+use App\Http\Controllers\Api\Auth\AccountController;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
-use App\Http\Controllers\Api\MasterData\ClassroomController;
-use App\Http\Controllers\Api\Student\NotificationController as StudentNotificationController;
+use App\Http\Controllers\Api\Common\FileController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\MasterData\ArticleCategoryController;
+use App\Http\Controllers\Api\MasterData\ClassroomController;
+use App\Http\Controllers\Api\MasterDataController;
 use App\Http\Controllers\Api\ProfileController as UserProfileController;
-use App\Http\Controllers\Api\Student\MoodController as StudentMoodController;
-use App\Http\Controllers\Api\Teacher\MoodController as TeacherMoodController;
 use App\Http\Controllers\Api\Staff\ArticleController as StaffArticleController;
 use App\Http\Controllers\Api\Staff\StudentController as StaffStudentController;
 use App\Http\Controllers\Api\Student\ArticleController as StudentArticleController;
+use App\Http\Controllers\Api\Student\CounselingController as StudentCounselingController;
+use App\Http\Controllers\Api\Student\MoodController as StudentMoodController;
+use App\Http\Controllers\Api\Student\NotificationController as StudentNotificationController;
 use App\Http\Controllers\Api\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Api\Teacher\ArticleController as TeacherArticleController;
+use App\Http\Controllers\Api\Teacher\MoodController as TeacherMoodController;
 use App\Http\Controllers\Api\Teacher\StudentController as TeacherStudentController;
-use App\Http\Controllers\Api\Student\CounselingController as StudentCounselingController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     /**
@@ -93,7 +93,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/counselings/{id}/reminder', [CounselingController::class, 'sendReminder']);
         Route::get('students/details/{id}', [StudentController::class, 'detail']);
         Route::get('counselings/summary', [CounselingController::class, 'summary']);
-        
+
         Route::apiResource('users', UserController::class);
         Route::apiResource('students', StudentController::class);
         Route::apiResource('articles', ArticleController::class);

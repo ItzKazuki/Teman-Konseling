@@ -15,7 +15,7 @@ class StudentResource extends JsonResource
     public function toArray(Request $request): array
     {
         $isReallyOnline = $this->is_online && $this->last_seen_at?->gt(now()->subMinutes(5));
-        
+
         return [
             'id' => $this->id,
             'nis' => $this->nis,

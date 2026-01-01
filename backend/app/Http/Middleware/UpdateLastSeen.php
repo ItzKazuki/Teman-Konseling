@@ -21,7 +21,7 @@ class UpdateLastSeen
             $user->timestamps = false;
             $user->update([
                 'last_seen_at' => now(),
-                'is_online' => true
+                'is_online' => true,
             ]);
         }
 

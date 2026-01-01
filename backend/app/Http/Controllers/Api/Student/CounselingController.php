@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\Api\Student;
 
-use App\Models\User;
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
-use App\Models\RequestCounseling;
-use App\Models\ScheduleCounseling;
 use App\Http\Controllers\Controller;
-use Dedoc\Scramble\Attributes\Group;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\CounselingResource;
 use App\Http\Requests\CounselingFormRequest;
 use App\Http\Requests\CounselingScheduleRequest;
+use App\Http\Resources\CounselingResource;
 use App\Http\Resources\ScheduleCounselingResource;
-use App\Notifications\Student\ScheduleCounselingCreated;
-use App\Notifications\Bk\ReminderCounselingStudentNotification;
+use App\Models\RequestCounseling;
+use App\Models\ScheduleCounseling;
+use App\Models\User;
 use App\Notifications\Student\RequestCounselingCreatedNotification;
+use App\Notifications\Student\ScheduleCounselingCreated;
+use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 #[Group('Student: Counseling', weight: 3)]
 class CounselingController extends Controller

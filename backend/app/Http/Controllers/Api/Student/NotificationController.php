@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Student;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\NotificationResource;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {

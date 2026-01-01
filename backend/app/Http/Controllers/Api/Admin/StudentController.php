@@ -167,7 +167,7 @@ class StudentController extends Controller
 
         Mail::to($student->email)->send(new StudentResetPasswordMail($student, $newPassword));
 
-        $student->notify(new AccountPasswordResetNotification());
+        $student->notify(new AccountPasswordResetNotification);
 
         return ApiResponse::success(null, 'Kata sandi berhasil direset dan dikirim ke email pengguna.');
     }
