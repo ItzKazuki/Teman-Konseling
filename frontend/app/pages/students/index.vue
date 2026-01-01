@@ -65,8 +65,11 @@
 
           <tr v-if="data.length === 0">
             <td colspan="5" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
-              <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
-              Tidak ada data siswa yang ditemukan.
+
+              <div class="flex items-center justify-center">
+                <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
+                <span>Tidak ada data siswa yang ditemukan.</span>
+              </div>
             </td>
           </tr>
 
