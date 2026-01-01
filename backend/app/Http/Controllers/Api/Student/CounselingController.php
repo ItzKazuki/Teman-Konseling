@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers\Api\Student;
 
+use App\Models\User;
 use App\Helpers\ApiResponse;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CounselingFormRequest;
-use App\Http\Requests\CounselingScheduleRequest;
-use App\Http\Resources\CounselingResource;
-use App\Http\Resources\ScheduleCounselingResource;
+use Illuminate\Http\Request;
 use App\Models\RequestCounseling;
 use App\Models\ScheduleCounseling;
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use Dedoc\Scramble\Attributes\Group;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\CounselingResource;
+use App\Http\Requests\CounselingFormRequest;
+use App\Http\Requests\CounselingScheduleRequest;
+use App\Http\Resources\ScheduleCounselingResource;
+use App\Notifications\Student\ScheduleCounselingCreated;
+use App\Notifications\Bk\ReminderCounselingStudentNotification;
+use App\Notifications\Student\RequestCounselingCreatedNotification;
 
 #[Group('Student: Counseling', weight: 3)]
 class CounselingController extends Controller
@@ -54,6 +57,8 @@ class CounselingController extends Controller
             'description' => $request->description,
             'urgency' => $request->urgency,
         ]);
+
+        $student->notify(new RequestCounselingCreatedNotification($counselingRequest));
 
         return ApiResponse::success([
             'request_id' => $counselingRequest->id,
@@ -126,6 +131,8 @@ class CounselingController extends Controller
 
         // 5. Update status Request menjadi 'scheduled'
         $requestCounseling->update(['status' => 'scheduled']);
+
+        $student->notify(new ScheduleCounselingCreated($schedule));
 
         return ApiResponse::success(new ScheduleCounselingResource($schedule->load('counselor')), 'Counseling schedule successfully proposed. Waiting for counselor confirmation.');
     }

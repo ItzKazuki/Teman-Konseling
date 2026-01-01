@@ -115,7 +115,7 @@
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-black text-gray-900">Panel Intervensi</h3>
               <div class="space-x-2">
-                <button type="button"
+                <button type="button" @click="reminderStudent"
                   class="text-[10px] font-black text-yellow-600 bg-yellow-50 px-3 py-1.5 rounded-lg hover:bg-yellow-100 transition-colors">
                   Ingatkan Siswa
                 </button>
@@ -250,6 +250,27 @@ watch(() => form.schedule_status, (newStatus) => {
   }
 });
 
+async function reminderStudent() {
+  loading.value = true;
+
+  const confirmed = await useAlert().confirm('Apakah Anda yakin ingin mengirim pengingat kepada siswa?');
+
+  if (!confirmed) {
+    loading.value = false;
+    return;
+  }
+
+  try {
+    await useApi().post(`/admin/counselings/${requestData.value?.schedule.id}/reminder`);
+
+    useToast().success('Pengingat berhasil dikirim ke siswa!');
+  } catch (e) {
+    useToast().error('Gagal mengirim pengingat. Silakan coba lagi.');
+  } finally {
+    loading.value = false;
+  }
+}
+
 async function submitFollowUp() {
   loading.value = true;
   try {
@@ -264,7 +285,7 @@ async function submitFollowUp() {
 
     await useApi().patch(`/admin/counselings/${counselingId.value}`, payload);
 
-    alert('Tindak lanjut dan pembaruan jadwal berhasil disimpan!');
+    useToast().success('Tindak lanjut dan pembaruan jadwal berhasil disimpan!');
     navigateTo('/counseling');
   } catch (e) {
     useToast().error('Gagal menyimpan tindak lanjut. Silakan coba lagi.');

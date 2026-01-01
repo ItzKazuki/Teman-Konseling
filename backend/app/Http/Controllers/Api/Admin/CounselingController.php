@@ -6,6 +6,9 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CounselingResource;
 use App\Models\RequestCounseling;
+use App\Models\ScheduleCounseling;
+use App\Notifications\Bk\ReminderCounselingStudentNotification;
+use App\Notifications\Student\CounselingStatusUpdated;
 use Carbon\Carbon;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
@@ -132,6 +135,17 @@ class CounselingController extends Controller
 
             DB::commit();
 
+            $student = $requestCounseling->student;
+
+            if ($student) {
+                $student->notify(
+                    new CounselingStatusUpdated(
+                        $requestCounseling,
+                        $request->schedule_status,
+                    )
+                );
+            }
+
             return ApiResponse::success($requestCounseling->load('schedule'), 'Counseling updated successfully.');
 
         } catch (\Exception $e) {
@@ -139,5 +153,20 @@ class CounselingController extends Controller
 
             return ApiResponse::error('Failed to update counseling: '.$e->getMessage(), 500);
         }
+    }
+
+    public function sendReminder(string $id)
+    {
+        $schedule = ScheduleCounseling::with('request.student')->findOrFail($id);
+
+        $student = $schedule->request->student;
+
+        $student->notify(
+            new ReminderCounselingStudentNotification($schedule)
+        );
+
+        return ApiResponse::success(
+            message: 'Reminder berhasil dikirim.'
+        );
     }
 }
