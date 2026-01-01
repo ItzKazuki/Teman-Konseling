@@ -90,7 +90,7 @@ const counselor = computed(() => {
   const data = counselingDetail.value?.schedule?.counselor;
   return {
     name: data?.name || "Memuat...",
-    phoneNumber: data?.phone_number || "",
+    phoneNumber: data?.phone || "",
     photoUrl: data?.avatar_url || "/static/images/profile.png",
     availability: data?.is_available ? "Tersedia untuk Chat" : "Sedang Tidak Aktif",
     jabatan: data?.jabatan || "Guru BK"

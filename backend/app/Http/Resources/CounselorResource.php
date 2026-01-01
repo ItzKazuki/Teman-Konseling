@@ -20,6 +20,7 @@ class CounselorResource extends JsonResource
             'jabatan' => $this->jabatan,
             'is_available' => $this->is_available,
             'avatar_url' => $this->avatar_url,
+            'phone' => $this->phone_number,
         ];
     }
 }
