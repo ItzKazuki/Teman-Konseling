@@ -39,7 +39,7 @@
       </div>
 
       <div class="space-y-2">
-        <h4 class="text-md text-gray-600 font-semibold">Presensi</h4>
+        <h4 class="text-md text-gray-600 font-semibold">Teman Konseling</h4>
 
         <div class="bg-white border border-gray-300 flex flex-col rounded-xl shadow-xl divide-y divide-gray-300">
           <AppMenuButton :items="detailAppMenu" />

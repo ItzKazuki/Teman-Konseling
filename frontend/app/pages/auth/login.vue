@@ -59,7 +59,7 @@ definePageMeta({
 
 const auth = useAuthStore();
 
-const form = ref < LoginRequest > ({
+const form = ref<LoginRequest>({
   email: '',
   password: '',
   remember_me: false,
@@ -78,9 +78,7 @@ const handleLogin = async () => {
     useToast().success(`Login berhasil, Selamat datang ${auth.user?.name}!`)
     return navigateTo('/dashboard');
   } catch (err: any) {
-    if (err?.data?.errors) {
-      // setErrors(err.data.errors);
-    } else if (err?.data?.message) {
+    if (err?.data?.message) {
       useToast().error(err.data.message);
     } else {
       useToast().error('Terjadi kesalahan. Silakan coba lagi.')

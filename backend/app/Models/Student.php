@@ -34,7 +34,7 @@ class Student extends Authenticatable implements CanResetPasswordContract
         'parent_name',
         'parent_phone_number',
         'is_online',
-        'last_seen_at'
+        'last_seen_at',
     ];
 
     /**

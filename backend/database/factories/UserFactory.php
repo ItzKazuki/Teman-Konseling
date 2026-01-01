@@ -23,6 +23,15 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $role = $this->faker->randomElement(['bk', 'guru', 'staff']);
+        $enableAvailableCounseling = $this->faker->boolean(60); // set to 60% user with role bk
+
+        $jabatan = match ($role) {
+            'bk' => 'Guru BK',
+            'guru' => 'Guru Mata Pelajaran',
+            'staff' => 'Staff Tata Usaha',
+        };
+
         return [
             'id' => (string) Str::uuid(),
 
@@ -31,8 +40,8 @@ class UserFactory extends Factory
 
             'email' => $this->faker->unique()->safeEmail(),
 
-            'role' => $this->faker->randomElement(['bk', 'guru', 'staff']),
-            'jabatan' => $this->faker->jobTitle(),
+            'role' => $role,
+            'jabatan' => $jabatan,
 
             'email_verified_at' => now(),
 
@@ -40,13 +49,15 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
 
             'avatar_file_id' => null,
-            'phone_number' => $this->faker->phoneNumber(),
 
-            'is_available' => 1,
+            'phone_number' => '62'.$this->faker->numerify('8#########'),
+
+            'is_available' => $role === 'bk' ? $enableAvailableCounseling : false,
 
             'created_at' => now(),
             'updated_at' => now(),
         ];
+
     }
 
     /**

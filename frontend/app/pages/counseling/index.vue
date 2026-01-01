@@ -47,100 +47,101 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4">
-      <div v-if="loading" class="absolute inset-0 bg-white/50 z-10 flex justify-center pt-20">
-        <Icon name="svg-spinners:ring-resize" class="w-10 h-10 text-primary-600" />
+      <div v-if="loading"
+        class="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100">
+        <Icon name="svg-spinners:ring-resize" class="w-12 h-12 text-primary-600 mb-3" />
+        <p class="text-gray-500 font-medium animate-pulse">Memuat data konseling...</p>
       </div>
 
-      <div v-for="item in data" :key="item.id"
-        class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
-        <div class="flex flex-col lg:flex-row gap-6">
+      <template v-else>
+        <div v-for="item in data" :key="item.id"
+          class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
+          <div class="flex flex-col lg:flex-row gap-6">
 
-          <div class="flex-1 space-y-3">
-            <div class="flex items-center gap-2">
-              <span
-                :class="['px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider', getUrgencyClass(item.urgency)]">
-                {{ item.urgency }} Priority
-              </span>
-              <span
-                :class="['px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider', getStatusClass(item.status)]">
-                {{ item.status }}
-              </span>
-            </div>
-
-            <div>
-              <h3 class="text-lg font-bold text-gray-900">{{ item.title }}</h3>
-              <p class="text-sm text-gray-600 line-clamp-2 mt-1 italic">"{{ item.description }}"</p>
-            </div>
-
-            <div class="flex items-center gap-4 text-xs text-gray-500 mt-4">
-              <span class="flex items-center gap-1">
-                <Icon name="tabler:user" /> Nama Siswa: {{ item.student.name }}
-              </span>
-              <span class="flex items-center gap-1">
-                <Icon name="tabler:calendar-plus" /> Dibuat: {{ formatDateFull(item.created_at) }}
-              </span>
-            </div>
-          </div>
-
-          <div class="lg:w-80 bg-gray-50 rounded-xl p-4 border border-gray-100">
-            <div v-if="item.schedule" class="space-y-3">
-              <div class="flex items-center gap-3">
-                <img :src="item.schedule.counselor.avatar_url"
-                  class="w-8 h-8 rounded-full border border-white shadow-sm" />
-                <div>
-                  <p class="text-xs font-bold text-gray-900">{{ item.schedule.counselor.name }}</p>
-                  <p class="text-[10px] text-gray-500">{{ item.schedule.counselor.jabatan }}</p>
-                </div>
+            <div class="flex-1 space-y-3">
+              <div class="flex items-center gap-2">
+                <span
+                  :class="['px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider', getUrgencyClass(item.urgency)]">
+                  {{ item.urgency }} Priority
+                </span>
+                <span
+                  :class="['px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider', getStatusClass(item.status)]">
+                  {{ item.status }}
+                </span>
               </div>
 
-              <div class="pt-3 border-t border-gray-200 space-y-2">
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-gray-500">Metode:</span>
-                  <span class="font-bold flex items-center gap-1">
-                    <Icon :name="item.schedule.method === 'chat' ? 'tabler:messages' : 'tabler:users-group'"
-                      class="text-primary-600" />
-                    {{ item.schedule.method === 'chat' ? 'Online Chat' : 'Tatap Muka' }}
-                  </span>
-                </div>
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-gray-500">Waktu:</span>
-                  <span class="font-bold text-gray-900">{{ formatDateFull(item.schedule.schedule_date) }} | {{
-                    item.schedule.time_slot }}</span>
-                </div>
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">{{ item.title }}</h3>
+                <p class="text-sm text-gray-600 line-clamp-2 mt-1 italic">"{{ item.description }}"</p>
+              </div>
+
+              <div class="flex items-center gap-4 text-xs text-gray-500 mt-4">
+                <span class="flex items-center gap-1">
+                  <Icon name="tabler:user" /> Nama Siswa: {{ item.student.name }}
+                </span>
+                <span class="flex items-center gap-1">
+                  <Icon name="tabler:calendar-plus" /> Dibuat: {{ formatDateFull(item.created_at) }}
+                </span>
               </div>
             </div>
 
-            <div v-else class="h-full flex flex-col items-center justify-center text-center py-4">
-              <Icon name="tabler:calendar-off" class="text-gray-300 w-8 h-8 mb-2" />
-              <p class="text-xs text-gray-500">Jadwal Belum Dibuat</p>
-            </div>
-          </div>
+            <div class="lg:w-80 bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <div v-if="item.schedule" class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <img :src="item.schedule.counselor.avatar_url"
+                    class="w-8 h-8 rounded-full border border-white shadow-sm" />
+                  <div>
+                    <p class="text-xs font-bold text-gray-900">{{ item.schedule.counselor.name }}</p>
+                    <p class="text-[10px] text-gray-500">{{ item.schedule.counselor.jabatan }}</p>
+                  </div>
+                </div>
 
-          <div class="flex lg:flex-col gap-2 justify-center lg:w-40">
-            <NuxtLink v-if="item.schedule" :to="`/counseling/tindak-lanjut/${item.id}`"
-              class="flex-1 lg:flex-none py-2 px-4 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 transition">
-              Tindak Lanjut
-            </NuxtLink>
-            <NuxtLink :to="`/counseling/${item.id}`"
-              class="flex-1 lg:flex-none py-2 px-4 bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-50">
-              Lihat Detail
-            </NuxtLink>
+                <div class="pt-3 border-t border-gray-200 space-y-2">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-500">Metode:</span>
+                    <span class="font-bold flex items-center gap-1">
+                      <Icon :name="item.schedule.method === 'chat' ? 'tabler:messages' : 'tabler:users-group'"
+                        class="text-primary-600" />
+                      {{ item.schedule.method === 'chat' ? 'Online Chat' : 'Tatap Muka' }}
+                    </span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-500">Waktu:</span>
+                    <span class="font-bold text-gray-900">{{ formatDate(item.schedule.schedule_date) }} | {{
+                      item.schedule.time_slot }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="h-full flex flex-col items-center justify-center text-center py-4">
+                <Icon name="tabler:calendar-off" class="text-gray-300 w-8 h-8 mb-2" />
+                <p class="text-xs text-gray-500">Jadwal Belum Dibuat</p>
+              </div>
+            </div>
+
+            <div class="flex lg:flex-col gap-2 justify-center lg:w-40">
+              <NuxtLink v-if="item.schedule" :to="`/counseling/tindak-lanjut/${item.id}`"
+                class="flex-1 lg:flex-none py-2 px-4 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 transition">
+                Tindak Lanjut
+              </NuxtLink>
+              <NuxtLink :to="`/counseling/${item.id}`"
+                class="flex-1 lg:flex-none py-2 px-4 bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-50">
+                Lihat Detail
+              </NuxtLink>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div v-if="data.length === 0 && !loading" class="text-center py-20 rounded-2xl">
-        <Icon name="tabler:database-off" class="w-12 h-12 text-gray-300 mb-2" />
-        <p class="text-gray-500">Tidak ada data permintaan konseling.</p>
-      </div>
+        <div v-if="data.length === 0 && !loading" class="text-center py-20 rounded-2xl">
+          <Icon name="tabler:database-off" class="w-12 h-12 text-gray-300 mb-2" />
+          <p class="text-gray-500">Tidak ada data permintaan konseling.</p>
+        </div>
+      </template>
+
     </div>
 
-    <AppPagination 
-      v-if="data.length > 0" 
-      :meta="meta" 
-      @change="changePage" 
-    />
-    
+    <AppPagination v-if="data.length > 0" :meta="meta" @change="changePage" />
+
   </div>
 </template>
 

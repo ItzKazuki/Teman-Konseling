@@ -11,10 +11,18 @@
     </div>
 
     <div class="space-y-4">
-      <div v-if="isLoading" class="text-center py-10">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-        <p class="mt-4 text-gray-500">Memuat riwayat konseling...</p>
-      </div>
+      <div v-if="isLoading" class="flex flex-col items-center justify-center py-20 animate-fade-in">
+        <div class="relative flex items-center justify-center">
+          <div class="absolute inset-0 bg-primary-200 rounded-full blur-xl opacity-40 animate-pulse"></div>
+
+          <Icon name="svg-spinners:ring-resize" class="w-12 h-12 text-primary-600 relative z-10" />
+        </div>
+
+        <div class="mt-4 text-center">
+          <p class="text-lg font-bold text-gray-800">Mohon Tunggu</p>
+          <p class="text-sm text-gray-500">Sedang memuat riwayat konseling kamu...</p>
+        </div>
+      </div>  
 
       <div v-else-if="counselingList.length > 0" class="space-y-4">
         <div v-for="item in counselingList" :key="item.id"

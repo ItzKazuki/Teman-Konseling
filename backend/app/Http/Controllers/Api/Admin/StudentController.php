@@ -8,6 +8,7 @@ use App\Http\Requests\StudentRequest;
 use App\Http\Resources\StudentResource;
 use App\Mail\StudentResetPasswordMail;
 use App\Models\Student;
+use App\Notifications\AccountPasswordResetNotification;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -165,6 +166,8 @@ class StudentController extends Controller
         ]);
 
         Mail::to($student->email)->send(new StudentResetPasswordMail($student, $newPassword));
+
+        $student->notify(new AccountPasswordResetNotification);
 
         return ApiResponse::success(null, 'Kata sandi berhasil direset dan dikirim ke email pengguna.');
     }

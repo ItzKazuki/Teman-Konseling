@@ -53,7 +53,7 @@
             class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl z-10 border border-gray-100 origin-top-right animate-fade-in overflow-hidden">
             <div class="p-2 space-y-1">
 
-              <div class="px-4 py-3 bg-gray-50 rounded-xl mb-2">
+              <div v-if="can('bk')" class="px-4 py-3 bg-gray-50 rounded-xl mb-2">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Status Konselor</span>
                   <button @click="toggleAvailability"
@@ -93,6 +93,7 @@
 </template>
 
 <script setup lang="ts">
+const { can } = usePermission();
 const route = useRoute()
 const auth = useAuthStore();
 

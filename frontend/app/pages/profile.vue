@@ -74,7 +74,7 @@
               <p v-if="errors.jabatan" class="mt-1 text-xs text-red-500">{{ errors.jabatan[0] }}</p>
             </div>
 
-            <div class="flex flex-col justify-center">
+            <div v-if="can('bk')" class="flex flex-col justify-center">
               <label class="form-label mb-2">Status Ketersediaan Konseling</label>
               <div class="flex items-center space-x-3 h-full">
                 <button type="button" @click="profileForm.is_available = !profileForm.is_available"
@@ -151,6 +151,7 @@
 </template>
 
 <script setup lang="ts">
+const { can } = usePermission();
 const auth = useAuthStore();
 const config = useRuntimeConfig();
 

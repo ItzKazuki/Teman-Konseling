@@ -55,7 +55,7 @@
               <label for="phone_number" class="form-label">Nomor Telepon Siswa <span
                   class="text-red-600">*</span></label>
               <input type="text" id="phone_number" v-model="form.phone_number" class="form-input" required
-                :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" />
+                :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" @input="formatPhoneNumber('phone_number')" />
               <p v-if="errors.phone_number" class="mt-1 text-xs text-red-500">{{ errors.phone_number[0] }}</p>
             </div>
 
@@ -113,7 +113,7 @@
             </div>
             <div>
               <label for="parent_phone_number" class="form-label">Nomor Telepon Orang Tua</label>
-              <input type="text" id="parent_phone_number" v-model="form.parent_phone_number" class="form-input"
+              <input type="text" id="parent_phone_number" v-model="form.parent_phone_number" class="form-input" @input="formatPhoneNumber('parent_phone_number')"
                 :disabled="isSubmitting" />
             </div>
           </div>
@@ -206,6 +206,18 @@ const isSubmitting = ref(false);
 const isLoading = ref(true);
 
 const classRooms = ref<MasterDataClassroom[]>([]);
+
+const formatPhoneNumber = (field: keyof StudentUpdatePayload) => {
+  let cleaned = form[field].replace(/\D/g, '');
+
+  if (cleaned.startsWith('0')) {
+    cleaned = '62' + cleaned.substring(1);
+  } else if (cleaned.startsWith('8')) {
+    cleaned = '62' + cleaned;
+  }
+
+  form[field] = cleaned;
+};
 
 async function fetchInitialData() {
   isLoading.value = true;

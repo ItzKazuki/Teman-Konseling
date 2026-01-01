@@ -28,7 +28,7 @@
         <p class="mt-4 text-gray-500">Memuat daftar konselor...</p>
       </div>
 
-      <div v-else-if="availableCounselors.length > 0">
+      <template v-else-if="availableCounselors.length > 0">
         <div v-for="counselor in availableCounselors" :key="counselor.id"
           class="bg-white p-4 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition duration-200">
 
@@ -61,7 +61,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </template>
 
       <div v-else class="text-center py-10 text-gray-500">
         <p>Saat ini tidak ada Guru BK yang tersedia untuk membuat jadwal.</p>
@@ -73,6 +73,7 @@
 
 <script setup>
 const route = useRoute();
+const requestId = route.query.requestId;
 const isLoading = ref(true);
 const availableCounselors = ref([]);
 const requestData = ref(null); // Data permintaan yang baru diajukan
@@ -107,29 +108,50 @@ const getUrgencyLabel = (urgency) => {
   }
 };
 
-
 const fetchData = async () => {
   isLoading.value = true;
 
   try {
-    const requestId = route.query.requestId;
-    // Ambil detail permintaan konseling berdasarkan requestId
     const requestRes = await useApi().get(`/student/counseling/${requestId}`);
+
     if (requestRes.status && requestRes.data) {
-      requestData.value = requestRes.data;
+      const data = requestRes.data;
+
+      if (data.schedule) {
+        useToast().error("Permintaan ini sudah dijadwalkan. Silakan cek jadwal Anda.");
+        return navigateTo('/chats');
+      }
+
+      requestData.value = data;
     }
 
     const listCounselors = await useApi().get('/reference/counselors');
     if (listCounselors.status && listCounselors.data) {
-      // availableCounselors.value = listCounselors.data.filter(c => c.is_available);
       availableCounselors.value = listCounselors.data;
     }
   } catch (err) {
-    console.error('Error fetching counselors:', err);
+    useToast().error("Data permintaan tidak ditemukan.");
+    navigateTo('/chats');
   } finally {
     isLoading.value = false;
   }
 };
+
+function scheduleConsultation(counselor) {
+  if (!counselor.is_available) {
+    useToast().error(`Maaf, ${counselor.name} sedang penuh jadwal.`);
+    return;
+  }
+
+  navigateTo({
+    path: '/chats/schedule/form',
+    query: {
+      counselorId: counselor.id,
+      counselorName: counselor.name,
+      requestId: requestData.value.id,
+    }
+  });
+}
 
 onMounted(() => {
   if (!route.query.requestId) {
@@ -140,24 +162,4 @@ onMounted(() => {
   }
   fetchData();
 });
-
-function scheduleConsultation(counselor) {
-  if (!counselor.is_available) {
-    useToast().error(`Maaf, ${counselor.name} sedang penuh jadwal.`);
-    return;
-  }
-
-  // Mengarahkan ke halaman jadwal spesifik dan membawa data konselor + data permintaan
-  navigateTo({
-    path: '/chats/schedule/form',
-    query: {
-      counselorId: counselor.id,
-      counselorName: counselor.name,
-      // Penting: Kirim juga Request ID agar formulir jadwal tahu permintaan mana yang sedang dijadwalkan
-      requestId: requestData.value.id,
-    }
-  });
-
-  console.log(`Mengarahkan ke halaman jadwal untuk ${counselor.name}.`);
-}
 </script>

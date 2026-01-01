@@ -52,7 +52,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label for="schedule-date" class="block text-sm font-medium text-gray-700 mb-1">Pilih Tanggal</label>
-            <input id="schedule-date" type="date" v-model="form.date" required
+            <input id="schedule-date" type="date" v-model="form.date" required :min="todayDate"
               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" />
           </div>
           <div>
@@ -109,6 +109,7 @@ const route = useRoute();
 
 const requestId = route.query.requestId;
 const counselorId = route.query.counselorId;
+const todayDate = new Date().toISOString().split('T')[0];
 
 const form = reactive({
   counselorId: "", // Default/Hardcoded sesuai contoh curl atau ambil dari query
@@ -133,8 +134,6 @@ async function fetchAvailableSlots() {
   form.timeSlot = ""; // Reset pilihan jam
 
   try {
-    // Sesuaikan endpoint dengan API Laravel Anda
-    // Contoh: /api/v1/counseling/available-slots?counselor_id=1&date=2023-10-25
     const res = await useApi().get('/student/counseling/available-slots', {
       params: {
         counselor_id: counselorId,
@@ -197,6 +196,18 @@ async function submitSchedule() {
 
 watch(() => form.date, () => {
   fetchAvailableSlots();
+});
+
+watch(() => form.date, (newDate) => {
+  if (!newDate) return;
+
+  const date = new Date(newDate);
+  const day = date.getDay(); // 0 = Minggu, 6 = Sabtu
+
+  if (day === 0 || day === 6) {
+    useAlert().warning('Mohon maaf, konseling hanya tersedia pada hari kerja (Senin - Jumat).')
+    form.date = ''; // Reset tanggal jika tidak valid
+  }
 });
 
 onMounted(async () => {

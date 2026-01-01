@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Student;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StudentResource;
+use App\Notifications\AccountPasswordResetNotification;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,8 +22,10 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
-            'phone' => 'required|string|max:20',
+            'email' => 'required|email|unique:students,email,'.$user->id,
+
+            'phone_number' => 'required|numeric|digits_between:10,15',
+
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'address' => 'nullable|string',
             'postal_code' => 'nullable|string|max:10',
@@ -30,6 +33,9 @@ class ProfileController extends Controller
             'district' => 'nullable|string',
             'city' => 'nullable|string',
             'province' => 'nullable|string',
+
+            'parent_name' => 'nullable|string|max:255',
+            'parent_phone_number' => 'nullable|numeric|digits_between:10,15',
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -65,6 +71,8 @@ class ProfileController extends Controller
         $user->update([
             'password' => Hash::make($request->password),
         ]);
+
+        $user->notify(new AccountPasswordResetNotification(false));
 
         return ApiResponse::success(null, 'Kata sandi berhasil diubah');
     }

@@ -87,7 +87,7 @@
             <div>
               <label for="phone_number" class="form-label">Nomor Telepon <span class="text-red-600">*</span></label>
               <input type="text" id="phone_number" v-model="form.phone_number" class="form-input" required
-                :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" />
+                :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" @input="formatPhoneNumber('phone_number')" />
               <p v-if="errors.phone_number" class="mt-1 text-xs text-red-500">{{ errors.phone_number[0] }}</p>
             </div>
 
@@ -99,7 +99,7 @@
             ]" required :disabled="isSubmitting" />
           </div>
 
-          <div class="flex flex-col">
+          <div v-if="form.role === 'bk'" class="flex flex-col">
             <label class="form-label mb-2">Status Ketersediaan</label>
             <div class="flex items-center space-x-3 h-full">
               <button type="button" @click="form.is_available = !form.is_available"
@@ -182,6 +182,20 @@ const isSubmitting = ref(false);
 const isLoading = ref(true);
 
 const resetPasswordMessage = ref<{ status: 'success' | 'error', message: string } | null>(null);
+
+const formatPhoneNumber = (field: keyof UserUpdatePayload) => {
+  if (typeof form[field] !== 'string') return;
+
+  let cleaned = (form[field] as string).replace(/\D/g, '');
+
+  if (cleaned.startsWith('0')) {
+    cleaned = '62' + cleaned.substring(1);
+  } else if (cleaned.startsWith('8')) {
+    cleaned = '62' + cleaned;
+  }
+
+  (form[field] as any) = cleaned;
+};
 
 async function fetchUserData() {
   isLoading.value = true;

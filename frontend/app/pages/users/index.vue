@@ -64,73 +64,86 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
 
-          <tr v-if="data.length === 0">
-            <td colspan="5" class="px-6 py-6 whitespace-nowrap text-center text-sm text-gray-500">
-              <div class="flex items-center justify-center">
-                <Icon name="tabler:info-circle" class="w-5 h-5 inline-block mr-1 text-yellow-500" />
-                <p>Tidak ada pengguna yang ditemukan.</p>
+          <tr v-if="loading">
+            <td colspan="5" class="px-6 py-12 whitespace-nowrap">
+              <div class="flex flex-col items-center justify-center gap-3">
+                <Icon name="svg-spinners:ring-resize" class="w-8 h-8 text-primary-600" />
+                <p class="text-sm font-medium text-gray-500 animate-pulse">Memuat daftar pengguna...</p>
               </div>
             </td>
           </tr>
 
-          <tr v-for="user in data" :key="user.id" class="hover:bg-primary-50/50 transition-colors duration-100">
-
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center gap-3">
-                <div class="relative inline-flex">
-                  <img :src="user.avatar_url" class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm"
-                    :alt="user.name" />
-                  <span :class="[
-                    'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white',
-                    user.is_online ? 'bg-emerald-500' : 'bg-gray-300'
-                  ]" :title="user.is_online ? 'Online' : 'Offline'"></span>
+          <tr v-else-if="data.length === 0">
+            <td colspan="5" class="px-6 py-10 whitespace-nowrap">
+              <div class="flex flex-col items-center justify-center text-center">
+                <div class="bg-yellow-50 p-3 rounded-full mb-3 flex items-center">
+                  <Icon name="tabler:info-circle" class="w-8 h-8 text-yellow-400" />
                 </div>
+                <p class="text-gray-500 font-medium">Tidak ada pengguna yang ditemukan.</p>
+              </div>
+            </td>
+          </tr>
 
-                <div>
-                  <div class="text-sm font-bold text-gray-900 leading-none mb-1">{{ user.name }}</div>
-                  <div class="text-xs text-gray-500 flex items-center gap-1">
-                    <Icon name="tabler:mail" class="w-3 h-3" />
-                    {{ user.email }}
+          <template v-else>
+            <tr v-for="user in data" :key="user.id" class="hover:bg-primary-50/50 transition-colors duration-100">
+
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-3">
+                  <div class="relative inline-flex">
+                    <img :src="user.avatar_url"
+                      class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm" :alt="user.name" />
+                    <span :class="[
+                      'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white',
+                      user.is_online ? 'bg-emerald-500' : 'bg-gray-300'
+                    ]" :title="user.is_online ? 'Online' : 'Offline'"></span>
+                  </div>
+
+                  <div>
+                    <div class="text-sm font-bold text-gray-900 leading-none mb-1">{{ user.name }}</div>
+                    <div class="text-xs text-gray-500 flex items-center gap-1">
+                      <Icon name="tabler:mail" class="w-3 h-3" />
+                      {{ user.email }}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
+              </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ user.jabatan }}
-            </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ user.jabatan }}
+              </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-center">
-              <span :class="getRoleClass(user.role)"
-                class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-lg border capitalize">
-                {{ user.role }}
-              </span>
-            </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <span :class="getRoleClass(user.role)"
+                  class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-lg border capitalize">
+                  {{ user.role }}
+                </span>
+              </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-center">
-              <span :class="user.is_available
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : 'bg-rose-50 text-rose-700 border-rose-200'"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg border transition-all">
-                <span :class="[
-                  'w-1.5 h-1.5 rounded-full bg-current',
-                  user.is_available ? 'animate-pulse' : ''
-                ]"></span>
-                {{ user.is_available ? 'Tersedia' : 'Sibuk' }}
-              </span>
-            </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <span :class="user.is_available
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  : 'bg-rose-50 text-rose-700 border-rose-200'"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg border transition-all">
+                  <span :class="[
+                    'w-1.5 h-1.5 rounded-full bg-current',
+                    user.is_available ? 'animate-pulse' : ''
+                  ]"></span>
+                  {{ user.is_available ? 'Tersedia' : 'Sibuk' }}
+                </span>
+              </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
-              <NuxtLink :to="`/users/${user.id}`"
-                class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
-                <Icon name="tabler:edit" class="w-4 h-4" />
-              </NuxtLink>
-              <button @click="handleDelete(user.id ?? '', user.name)"
-                class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
-                <Icon name="tabler:trash" class="w-4 h-4" />
-              </button>
-            </td>
-          </tr>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
+                <NuxtLink :to="`/users/${user.id}`"
+                  class="text-primary-600 hover:text-primary-800 transition-colors p-1 rounded hover:bg-primary-100/50">
+                  <Icon name="tabler:edit" class="w-4 h-4" />
+                </NuxtLink>
+                <button @click="handleDelete(user.id ?? '', user.name)"
+                  class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-100/50">
+                  <Icon name="tabler:trash" class="w-4 h-4" />
+                </button>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
