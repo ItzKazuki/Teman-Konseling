@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Student;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\StudentResource;
+use App\Notifications\AccountPasswordResetNotification;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -70,6 +71,8 @@ class ProfileController extends Controller
         $user->update([
             'password' => Hash::make($request->password),
         ]);
+
+        $user->notify(new AccountPasswordResetNotification(false));
 
         return ApiResponse::success(null, 'Kata sandi berhasil diubah');
     }

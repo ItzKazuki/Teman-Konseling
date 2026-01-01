@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Notifications\AccountPasswordResetNotification;
 use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -42,16 +43,21 @@ class ProfileController extends Controller
             'current_password.current_password' => 'Kata sandi saat ini tidak cocok.',
         ]);
 
-        $request->user()->update([
+        $user = $request->user();
+
+        $user->update([
             'password' => Hash::make($validated['password']),
         ]);
+
+        $user->notify(new AccountPasswordResetNotification(false));
 
         return ApiResponse::success(null, 'Kata sandi berhasil diubah!');
     }
 
-    public function status(Request $request) {
+    public function status(Request $request)
+    {
         $validated = $request->validate([
-            'is_available' => 'required|boolean'
+            'is_available' => 'required|boolean',
         ]);
 
         $request->user()->update($validated);
