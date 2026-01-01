@@ -71,7 +71,8 @@
             <div>
               <label for="phone_number" class="form-label">Nomor Telepon <span class="text-red-600">*</span></label>
               <input type="text" id="phone_number" v-model="form.phone_number" class="form-input" required
-                :disabled="isSubmitting" :class="{ 'border-red-500': errors.phone_number }" />
+                @input="formatPhoneNumber('phone_number')" :disabled="isSubmitting"
+                :class="{ 'border-red-500': errors.phone_number }" />
               <p v-if="errors.phone_number" class="mt-1 text-xs text-red-500">{{ errors.phone_number[0] }}</p>
             </div>
 
@@ -86,15 +87,15 @@
           <div v-if="form.role === 'bk'" class="flex flex-col">
             <label class="form-label mb-2">Status Ketersediaan</label>
             <div class="flex items-center space-x-3 h-full">
-              <button type="button" @click="form.is_available = form.is_available === 1 ? 0 : 1"
-                :class="form.is_available === 1 ? 'bg-primary-600' : 'bg-gray-300'"
+              <button type="button" @click="form.is_available = !form.is_available"
+                :class="form.is_available ? 'bg-primary-600' : 'bg-gray-300'"
                 class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none"
                 :disabled="isSubmitting">
-                <span :class="form.is_available === 1 ? 'translate-x-6' : 'translate-x-1'"
+                <span :class="form.is_available ? 'translate-x-6' : 'translate-x-1'"
                   class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
               </button>
               <span class="text-sm font-medium text-gray-700">
-                {{ form.is_available === 1 ? 'Tersedia' : 'Tidak Tersedia' }}
+                {{ form.is_available ? 'Tersedia' : 'Tidak Tersedia' }}
               </span>
             </div>
             <p class="mt-1 text-[10px] text-gray-500 italic">Khusus untuk role BK/Konselor guna status layanan.</p>
@@ -126,10 +127,10 @@ interface UserCreationPayload {
   name: string;
   email: string;
   nip: string;
-  role: 'bk' | 'guru' | 'staff' | string;
+  role: 'bk' | 'guru' | 'staff';
   jabatan: string;
   phone_number: string;
-  is_available: number;
+  is_available: boolean;
   password: string;
   password_confirmation: string;
 }
@@ -138,10 +139,10 @@ const initialForm: UserCreationPayload = {
   name: '',
   email: '',
   nip: '',
-  role: '',
+  role: 'guru',
   jabatan: '',
   phone_number: '',
-  is_available: 1,
+  is_available: true,
   password: '',
   password_confirmation: '',
 };
@@ -149,6 +150,20 @@ const initialForm: UserCreationPayload = {
 const form = reactive<UserCreationPayload>({ ...initialForm });
 const errors = reactive<{ [key: string]: string[] | undefined }>({});
 const isSubmitting = ref(false);
+
+const formatPhoneNumber = (field: keyof UserCreationPayload) => {
+  if (typeof form[field] !== 'string') return;
+
+  let cleaned = (form[field] as string).replace(/\D/g, '');
+
+  if (cleaned.startsWith('0')) {
+    cleaned = '62' + cleaned.substring(1);
+  } else if (cleaned.startsWith('8')) {
+    cleaned = '62' + cleaned;
+  }
+
+  (form[field] as any) = cleaned;
+};
 
 const submitUser = async () => {
   isSubmitting.value = true;
