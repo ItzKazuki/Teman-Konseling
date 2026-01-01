@@ -71,7 +71,7 @@ Karakteristik utama:
 ```bash
 cd backend
 composer install
-cp .env.example .env # jangan lupa setting user dan password database di file .env
+cp .env.example .env # jangan lupa setting user dan password database di file .env, untuk windows gunakan command copy
 php artisan key:generate
 php artisan migrate # gunakan php artisan migrate --seed untuk seed data dummy & juga user awal
 php artisan serve
@@ -87,7 +87,7 @@ http://localhost:8000
 
 ```bash
 cd frontend
-cp .env.example .env
+cp .env.example .env # untuk windows gunakan command copy
 npm install
 npm run dev
 ```
@@ -96,7 +96,7 @@ npm run dev
 
 ```bash
 cd frontend-siswa
-cp .env.example .env
+cp .env.example .env # untuk windows gunakan command copy
 npm install
 npm run dev
 ```
