@@ -2,11 +2,9 @@ name: Build Nuxt Frontends
 
 on:
   push:
-    branches:
-      - main # Jalankan otomatis saat push ke branch main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
@@ -14,29 +12,42 @@ jobs:
     environment: prod
 
     env:
-      NUXT_APP_NAME: 'Teman Konseling'
-      NUXT_APP_ENV: 'production'
-      NUXT_APP_DEBUG: 'false'
-      NUXT_APP_LOCALE: 'id-ID'
-      NUXT_APP_TIMEZONE: 'Asia/Jakarta'
+      NUXT_APP_NAME: "Teman Konseling"
+      NUXT_APP_ENV: "production"
+      NUXT_APP_DEBUG: "false"
+      NUXT_APP_LOCALE: "id-ID"
+      NUXT_APP_TIMEZONE: "Asia/Jakarta"
       NUXT_PUBLIC_API_URL: ${{ secrets.API_BASE_URL }}
-      NUXT_PUBLIC_API_VERSION: 'v1'
+      NUXT_PUBLIC_API_VERSION: "v1"
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Penting: agar git rev-list di script build-version.cjs bekerja
+          fetch-depth: 0 # wajib untuk git rev-list
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24' # Sesuaikan dengan versi node kamu
-          cache: 'npm'
-          # Kita arahkan cache ke salah satu folder atau root
-          cache-dependency-path: './**/package-lock.json'
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: "./**/package-lock.json"
 
-      # --- Build Folder frontend ---
+      # ===============================
+      # Generate build version (push only)
+      # ===============================
+      - name: Generate Build Version
+        id: version
+        if: github.event_name == 'push'
+        working-directory: ./frontend
+        run: |
+          VERSION=$(node scripts/build-version.cjs)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Build version: $VERSION"
+
+      # ===============================
+      # Frontend Dashboard
+      # ===============================
       - name: Install Dependencies (Frontend Dashboard)
         working-directory: ./frontend
         run: npm ci
@@ -45,7 +56,9 @@ jobs:
         working-directory: ./frontend
         run: npm run generate
 
-      # --- Build Folder frontend-siswa ---
+      # ===============================
+      # Frontend Siswa
+      # ===============================
       - name: Install Dependencies (Frontend Siswa)
         working-directory: ./frontend-siswa
         run: npm ci
@@ -54,11 +67,14 @@ jobs:
         working-directory: ./frontend-siswa
         run: npm run generate
 
-      # (Opsional) Simpan hasil build folder .output atau dist sebagai artifact
+      # ===============================
+      # Upload Artifact (push only)
+      # ===============================
       - name: Upload Build Artifacts
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
-          name: production-builds
+          name: teman-konseling-${{ steps.version.outputs.version }}
           path: |
             builds/teman-konseling-dashboard
             builds/teman-konseling-siswa
