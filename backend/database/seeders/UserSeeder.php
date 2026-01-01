@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
         }
 
         // another data
-        if ($this->command->confirm('Generate dummy data teacher with Faker?')) {
+        if ($this->command->confirm('Generate dummy data user with role bk, staff, and guru with Faker?')) {
             User::factory()->count(100)->create();
         }
     }
